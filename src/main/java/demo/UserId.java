@@ -1,8 +1,12 @@
 package demo;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import jakarta.annotation.PostConstruct;
+
 public class UserId {
 	
-	private final  String  superapp = "2023b.shir.zur";
+	private String superapp;
 	private String email;
 	
 	
@@ -11,24 +15,30 @@ public class UserId {
 		this.email = email;
 	}
 
-
 	public UserId() {
 		super();
 	}
-
+	
+	@PostConstruct
+	public void setUp() {
+		System.err.println(this.superapp);
+	}
 
 	public String getEmail() {
 		return email;
 	}
 
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
-
 	public String getSuperapp() {
 		return superapp;
+	}
+	
+	@Value("${spring.application.name}")
+	public void setSuperapp(String superapp) {
+		this.superapp = superapp;
 	}
 
 

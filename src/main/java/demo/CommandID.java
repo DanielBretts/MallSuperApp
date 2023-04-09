@@ -1,8 +1,13 @@
 package demo;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import jakarta.annotation.PostConstruct;
+
 public class CommandID {
+	
+	private String superapp;
 	private String miniApp;
-	private final String superapp = "2023b.shir.zur";
 	private String internalCommandID;
 	static int counterCommandID = 0;
 
@@ -14,6 +19,11 @@ public class CommandID {
 		super();
 		this.miniApp = miniApp;
 		this.internalCommandID = String.valueOf(++counterCommandID);
+	}
+	
+	@PostConstruct
+	public void setUp() {
+		System.err.println(this.superapp);
 	}
 
 	public String getMiniApp() {
@@ -35,5 +45,12 @@ public class CommandID {
 	public String getSuperapp() {
 		return superapp;
 	}
+
+	@Value("${spring.application.name}")
+	public void setSuperapp(String superapp) {
+		this.superapp = superapp;
+	}
+	
+	
 
 }

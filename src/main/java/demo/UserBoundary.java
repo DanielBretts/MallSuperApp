@@ -2,7 +2,7 @@ package demo;
 
 public class UserBoundary {
 	String email;
-	String role; 
+	roleEnum role; 
 	String username;
 	String avatar; 
 	UserId userId;
@@ -14,7 +14,7 @@ public class UserBoundary {
 	public UserBoundary(String email, String role, String username, String avatar, UserId userId) {
 		super();
 		this.email = email;
-		this.role = role;
+		this.role = roleEnum.valueOf(role);
 		this.username = username;
 		this.avatar = avatar;
 		this.userId = userId;
@@ -28,12 +28,12 @@ public class UserBoundary {
 		this.email = email;
 	}
 
-	public String getRole() {
+	public roleEnum getRole() {
 		return role;
 	}
 
 	public void setRole(String role) {
-		this.role = role;
+		this.role = roleEnum.valueOf(role);
 	}
 
 	public String getUsername() {

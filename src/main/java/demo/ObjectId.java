@@ -1,8 +1,10 @@
 package demo;
 
+//import org.springframework.beans.factory.annotation.Value;
+
 public class ObjectId {
 	
-	private final  String  superapp = "2023b.shir.zur";
+	private final String superapp = "2023b.shir.zur";
 	private String internalObjectId;
 
 	private static int counterObjectID = 0;

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,15 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AdminUserController {
+	
+	private UsersService usersService;
+	
+	@Autowired
+	public void setUsersService(UsersService usersService) {
+		this.usersService = usersService;
+	}
+	
 	@RequestMapping(path = { "/superapp/admin/users" }, method = { RequestMethod.GET }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	public ArrayList<UserBoundary> getAllUsers() {
-		ArrayList<UserBoundary> allUsers = new ArrayList<>();
-		allUsers.add(new NewUserBoundary("Shir", "google.com", "shirrzurr@gmail.com", "Team Leader").getUserBoundary());
-		allUsers.add(new NewUserBoundary("Daniel", "google.com", "daniel@gmail.com", "The ! - Team Leader")
-				.getUserBoundary());
-		allUsers.add(new NewUserBoundary("Rabea", "google.com", "rabea@gmail.com", "CEO").getUserBoundary());
-		return allUsers;
+	public List<UserBoundary> getAllUsers() {
+		return usersService.getAllUsers();
 	}
 
 	@RequestMapping(path = { "/superapp/admin/miniapp" }, method = { RequestMethod.GET }, produces = {

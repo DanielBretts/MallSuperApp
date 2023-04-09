@@ -5,6 +5,7 @@ public class NewUserBoundary{
 	private String username;
 	private String avatar;
 	private String role;
+	private String email;
 	private UserBoundary userBoundary;
 	
 	public NewUserBoundary() {
@@ -15,6 +16,7 @@ public class NewUserBoundary{
 		super();
 		this.username = username;
 		this.avatar = avatar;
+		this.email = email;
 		this.role = role;
 		this.userBoundary = new UserBoundary(email,role,username,avatar,new UserId(email));
 	}
@@ -57,6 +59,16 @@ public class NewUserBoundary{
 
 	public void setUserBoundary(UserBoundary userBoundary) {
 		this.userBoundary = userBoundary;
+	}
+
+
+	public String getEmail() {
+		return email;
+	}
+
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 

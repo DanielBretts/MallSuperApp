@@ -1,5 +1,6 @@
 package demo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
+	private UsersService usersService;
+	
+	@Autowired
+	public void setUsersService(UsersService usersService) {
+		this.usersService = usersService;
+	}
+
 	/*
 	 * Create a new user
 	 */
@@ -19,7 +27,9 @@ public class UserController {
 			produces = {MediaType.APPLICATION_JSON_VALUE },
 			consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public UserBoundary createUserBoundary(@RequestBody NewUserBoundary nub) {
-		return nub.getUserBoundary();
+		UserBoundary ub = new UserBoundary(nub.getEmail(),nub.getRole(),nub.getUsername(),nub.getAvatar(),new UserId(nub.getEmail()));
+//		nub.setUserBoundary(new UserBoundary(nub.getEmail(),nub.getRole(),nub.getUsername(),nub.getAvatar(),new UserId(nub.getEmail())));
+		return usersService.createUser(ub);
 	}
 
 	/*
