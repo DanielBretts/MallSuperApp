@@ -1,8 +1,12 @@
 package demo;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,11 +89,54 @@ public class ObjectServiceRdb implements ObjectService{
 
 	@Override
 	@Transactional
-	public void updatObject(String superApp, String id, ObjectBoundary ob) {
+	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectBoundaryEntity existing = this.objectCrud
 				.findById(id)
 				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + id));
-			
-		
+		if(ob.getType() != null) {
+			existing.setType(ob.getType());
+		}
+		if(ob.getAlias() != null) {
+			existing.setAlias(ob.getAlias());
+		}
+		if(ob.getActive() != null) {
+			existing.setActive(ob.getActive());
+		}
+		if(ob.getLocation() != null) {
+			existing.setLocation(ob.getLocation());
+		}
+		if(ob.getObjectDetails() != null) {
+			existing.setObjectDetails(ob.getObjectDetails());
+		}
+		existing = this.objectCrud.save(existing);
+		return this.toBoundary(existing);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
+		return this.objectCrud
+				.findById(id)
+				.map(this::toBoundary);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<ObjectBoundary> getAllObjects() {
+		Iterable<ObjectBoundaryEntity> iterable = this.objectCrud.findAll();
+		Iterator<ObjectBoundaryEntity> iterator = iterable.iterator();
+		List<ObjectBoundary> rv = new ArrayList<>();
+		while (iterator.hasNext()) {
+			ObjectBoundary objectBoundary = toBoundary(iterator.next());
+			rv.add(objectBoundary);
+		}
+		return rv;
+	}
+
+	@Override
+	public void deleteAllObjects() {
+		this.objectCrud.deleteAll();
+	}
+	
+	
 }

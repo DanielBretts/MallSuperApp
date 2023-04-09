@@ -1,10 +1,20 @@
 package interfaces;
 
+import java.util.List;
+import java.util.Optional;
+
 import demo.ObjectBoundary;
 
 public interface ObjectService {
 	
 	public ObjectBoundary creatObject(ObjectBoundary object);
 
-	public void updatObject(String superApp, String id, ObjectBoundary ob);
+	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob);
+
+	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id);
+
+	public List<ObjectBoundary> getAllObjects();
+	
+	public void deleteAllObjects();
+	
 }

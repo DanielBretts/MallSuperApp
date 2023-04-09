@@ -3,6 +3,7 @@ package demo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,39 +43,28 @@ public class ObjectController {
 				objectService.updatObject(superApp, id, ob);
 	}
 	
-//	----------------------------------------------------------------
-
-	@RequestMapping( // Get All objects
-	path = {"/superapp/objects"},
-	method = {RequestMethod.GET},
-	produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ArrayList<ObjectBoundary> getObjects () {
-		Map <String, Object> objectDetails = new HashMap<String, Object>();
-		objectDetails.put("key1", "can be set to any value you wish");
-		objectDetails.put("key2", "you can also name the attributrs any name you like");
-		objectDetails.put("key3", 9.99);
-		objectDetails.put("key4", true);
-		ObjectBoundary ob = new ObjectBoundary(new ObjectId(),"dummyType","demo instance",true
-				,new Location(32.1133,34.818),new UserId("email : jill@demo.org"), objectDetails);
-		ArrayList<ObjectBoundary> arrOB = new ArrayList<>();
-		arrOB.add(ob);
-		return arrOB;
-	}
-	
 	@RequestMapping( // Retrieve object
-	path = {"/superapp/objects/{superApp}/{id}"},
-	method = {RequestMethod.GET},
-	produces = {MediaType.APPLICATION_JSON_VALUE})
-	@ResponseBody
-	public ObjectBoundary getObjectById(@PathVariable("id") String id){
-		Map <String, Object> objectDetails = new HashMap<String, Object>();
-		objectDetails.put("key1", "can be set to any value you wish");
-		objectDetails.put("key2", "you can also name the attributrs any name you like");
-		objectDetails.put("key3", 9.99);
-		objectDetails.put("key4", true);
-		return new ObjectBoundary(new ObjectId().setInternalObjectId(id),"dummyType","demo instance",true
-				,new Location(32.1133,34.818),new UserId("email : jill@demo.org"), objectDetails);
-	}
+			path = {"/superapp/objects/{superApp}/{id}"},
+			method = {RequestMethod.GET},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+			@ResponseBody
+			public Optional<ObjectBoundary> getObjectById(@PathVariable ("superApp") String superApp
+					,@PathVariable("id") String id){
+				return this.objectService.getSpecificObject(superApp , id);
+			}
+	
+	@RequestMapping( // Get All objects
+			path = {"/superapp/objects"},
+			method = {RequestMethod.GET},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+			public ObjectBoundary[] getObjects () {
+				return objectService.getAllObjects().toArray(new ObjectBoundary[0]);
+			}
+	
+
+	
+	
+	
 	
 	
 	

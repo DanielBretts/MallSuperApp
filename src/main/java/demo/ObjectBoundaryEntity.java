@@ -24,7 +24,6 @@ public class ObjectBoundaryEntity {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationTimestamp;
 	private Location location;
-	@Id
 	private String createdBy;
 	
 	@Convert(converter = ConverterOfMapToJson.class)
