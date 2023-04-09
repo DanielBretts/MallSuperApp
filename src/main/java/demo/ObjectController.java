@@ -1,8 +1,5 @@
 package demo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import interfaces.ObjectService;
-
 @RestController
 public class ObjectController {
 	private ObjectService objectService;
 	
 	@Autowired
-	public ObjectController(ObjectService objectService) {
+	public ObjectController (ObjectService objectService) {
 		this.objectService = objectService;		
 	}
 	
@@ -60,15 +54,5 @@ public class ObjectController {
 			public ObjectBoundary[] getObjects () {
 				return objectService.getAllObjects().toArray(new ObjectBoundary[0]);
 			}
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }
