@@ -1,111 +1,99 @@
 package demo;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectBoundary{
-	
-	private ObjectId objectId;
-	private String type;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
+
+@Entity
+@Table(name = "SuperAppObjectEntity")
+public class ObjectBoundaryEntity {
+	@Id
+	private String id;
+	private String type; /// TODO : to check if its need to be enum!
 	private String alias;
-	private Boolean active;
+	private boolean active;
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationTimestamp;
 	private Location location;
-	private UserId createdBy;
+	@Id
+	private String createdBy;
+	
+	@Convert(converter = ConverterOfMapToJson.class)
+	@Lob
 	private Map<String, Object> objectDetails;
-	
-	
-	public ObjectBoundary() {
+
+	public ObjectBoundaryEntity() {
+		this.objectDetails = new HashMap<>();
 	}
 
-	public ObjectBoundary(ObjectId objectId, String type, String alias, Boolean active,
-			Location location, UserId createdBy, Map<String, Object> objectDetails) {
-		super();
-		this.objectId = objectId;
-		this.type = type;
-		this.alias = alias;
-		this.active = active;
-		this.creationTimestamp = new Date();
-		this.location = location;
-		this.createdBy = createdBy;
-		this.objectDetails = objectDetails;
+	public String getId() {
+		return id;
 	}
 
-	public ObjectId getObjectId() {
-		return objectId;
+	public void setId(String id) {
+		this.id = id;
 	}
-
-
-	public ObjectBoundary setObjectId(ObjectId objectId) {
-		this.objectId = objectId;
-		return this;
-	}
-
 
 	public String getType() {
 		return type;
 	}
 
-
 	public void setType(String type) {
 		this.type = type;
 	}
-
 
 	public String getAlias() {
 		return alias;
 	}
 
-
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
-
 
 	public Boolean getActive() {
 		return active;
 	}
 
-
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
-
 
 	public Date getCreationTimestamp() {
 		return creationTimestamp;
 	}
 
-
 	public void setCreationTimestamp(Date creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
-
 
 	public Location getLocation() {
 		return location;
 	}
 
-
 	public void setLocation(Location location) {
 		this.location = location;
 	}
 
-
-	public UserId getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-
 	public void setCreatedBy(UserId createdBy) {
-		this.createdBy = createdBy;
+		this.createdBy = createdBy.getEmail();
 	}
-
 
 	public Map<String, Object> getObjectDetails() {
 		return objectDetails;
 	}
-
 
 	public void setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
@@ -113,15 +101,10 @@ public class ObjectBoundary{
 
 	@Override
 	public String toString() {
-		return "ObjectBoundary [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active=" + active
+		return "ObjectBoundaryEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
 				+ ", creationTimestamp=" + creationTimestamp + ", location=" + location + ", createdBy=" + createdBy
 				+ ", objectDetails=" + objectDetails + "]";
 	}
-
-	
-	
-
-	
 	
 
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,9 +13,36 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import interfaces.ObjectService;
+
 @RestController
 public class ObjectController {
+	private ObjectService objectService;
 	
+	@Autowired
+	public ObjectController(ObjectService objectService) {
+		this.objectService = objectService;		
+	}
+	
+	@RequestMapping( // Create an object
+			path = {"/superapp/objects"},
+			method = {RequestMethod.POST},
+			produces = {MediaType.APPLICATION_JSON_VALUE},
+			consumes = {MediaType.APPLICATION_JSON_VALUE})
+			public ObjectBoundary createObjectBoundary (@RequestBody ObjectBoundary ob) {
+				return this.objectService.creatObject(ob);
+	}
+	
+	@RequestMapping( // Update an object
+			path = {"/superapp/objects/{superApp}/{id}"},
+			method = {RequestMethod.PUT},
+			consumes = {MediaType.APPLICATION_JSON_VALUE})
+			public void update (@PathVariable ("superApp") String superApp , @PathVariable ("id") String id,
+					@RequestBody ObjectBoundary ob) {
+				objectService.updatObject(superApp, id, ob);
+	}
+	
+//	----------------------------------------------------------------
 
 	@RequestMapping( // Get All objects
 	path = {"/superapp/objects"},
@@ -49,24 +76,9 @@ public class ObjectController {
 				,new Location(32.1133,34.818),new UserId("email : jill@demo.org"), objectDetails);
 	}
 	
-	@RequestMapping( // Create an object
-	path = {"/superapp/objects"},
-	method = {RequestMethod.POST},
-	produces = {MediaType.APPLICATION_JSON_VALUE},
-	consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public ObjectBoundary createObjectBoundary (@RequestBody ObjectBoundary ob) {
-		return ob;
-	}
 	
-	@RequestMapping( // Update an object
-	path = {"/superapp/objects/{superApp}/{id}"},
-	method = {RequestMethod.PUT},
-	consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public void update (@RequestBody ObjectBoundary ob) {
-		ObjectBoundary ob1 = new ObjectBoundary();
-		ob1.setAlias(ob.getAlias());
-		System.err.println(ob.toString());
-	}
+	
+	
 	
 	
 }
