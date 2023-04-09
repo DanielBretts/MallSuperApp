@@ -15,7 +15,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "SuperAppObjectEntity")
-public class ObjectBoundaryEntity {
+public class ObjectEntity {
 	@Id
 	private String id;
 	private String type; /// TODO : to check if its need to be enum!
@@ -30,7 +30,7 @@ public class ObjectBoundaryEntity {
 	@Lob
 	private Map<String, Object> objectDetails;
 
-	public ObjectBoundaryEntity() {
+	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
 	}
 
