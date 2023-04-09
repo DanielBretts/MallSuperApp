@@ -23,7 +23,8 @@ public class ObjectEntity {
 	private boolean active;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationTimestamp;
-	private Location location;
+	private Double lat;
+	private Double lng;
 	private String createdBy;
 	
 	@Convert(converter = ConverterOfMapToJson.class)
@@ -74,12 +75,20 @@ public class ObjectEntity {
 		this.creationTimestamp = creationTimestamp;
 	}
 
-	public Location getLocation() {
-		return location;
+	public Double getLat() {
+		return lat;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+
+	public Double getLng() {
+		return lng;
+	}
+
+	public void setLng(Double lng) {
+		this.lng = lng;
 	}
 
 	public String getCreatedBy() {
@@ -100,10 +109,12 @@ public class ObjectEntity {
 
 	@Override
 	public String toString() {
-		return "ObjectBoundaryEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
-				+ ", creationTimestamp=" + creationTimestamp + ", location=" + location + ", createdBy=" + createdBy
-				+ ", objectDetails=" + objectDetails + "]";
+		return "ObjectEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
+				+ ", creationTimestamp=" + creationTimestamp + ", lat=" + lat + ", lng=" + lng + ", createdBy="
+				+ createdBy + ", objectDetails=" + objectDetails + "]";
 	}
+
+	
 	
 
 }

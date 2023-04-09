@@ -40,7 +40,7 @@ public class ObjectServiceRdb implements ObjectService{
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
-		ob.setLocation(entity.getLocation());
+		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
 		UserId userId =  new UserId();
 		userId.setEmail(entity.getCreatedBy());
 		ob.setCreatedBy(userId);
@@ -72,9 +72,11 @@ public class ObjectServiceRdb implements ObjectService{
 		entity.setCreationTimestamp(object.getCreationTimestamp());
 		
 		if (object.getLocation() != null) {
-			entity.setLocation(object.getLocation());
+			entity.setLat(object.getLocation().getLat());
+			entity.setLng(object.getLocation().getLng());
 		}else {
-			entity.setId(null);
+			entity.setLat((double) 0);
+			entity.setLng((double) 0);
 		}
 		
 		entity.setCreatedBy(object.getCreatedBy());
@@ -103,7 +105,8 @@ public class ObjectServiceRdb implements ObjectService{
 			existing.setActive(ob.getActive());
 		}
 		if(ob.getLocation() != null) {
-			existing.setLocation(ob.getLocation());
+			existing.setLat(ob.getLocation().getLat());
+			existing.setLng(ob.getLocation().getLng());
 		}
 		if(ob.getObjectDetails() != null) {
 			existing.setObjectDetails(ob.getObjectDetails());
