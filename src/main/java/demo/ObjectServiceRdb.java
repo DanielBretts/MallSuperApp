@@ -26,14 +26,14 @@ public class ObjectServiceRdb implements ObjectService{
 	@Transactional//(readOnly = false)
 	public ObjectBoundary creatObject(ObjectBoundary object) {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
-		ObjectBoundaryEntity entity = toEntity(object);
+		ObjectEntity entity = toEntity(object);
 		/// TODO: need to be enum to type!!
 		entity.setCreationTimestamp(new Date());
 		entity = this.objectCrud.save(entity);
 		return this.toBoundary(entity);
 	}
 
-	private ObjectBoundary toBoundary(ObjectBoundaryEntity entity) {
+	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
 		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getId()));
 		ob.setType(entity.getType()); /// TODO: need to be enum
@@ -48,8 +48,8 @@ public class ObjectServiceRdb implements ObjectService{
 		return ob;
 	}
 
-	private ObjectBoundaryEntity toEntity(ObjectBoundary object) {
-		ObjectBoundaryEntity entity = new ObjectBoundaryEntity();
+	private ObjectEntity toEntity(ObjectBoundary object) {
+		ObjectEntity entity = new ObjectEntity();
 		
 		entity.setId(object.getObjectId().getInternalObjectId());
 		
@@ -90,7 +90,7 @@ public class ObjectServiceRdb implements ObjectService{
 	@Override
 	@Transactional
 	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
-		ObjectBoundaryEntity existing = this.objectCrud
+		ObjectEntity existing = this.objectCrud
 				.findById(id)
 				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + id));
 		if(ob.getType() != null) {
@@ -123,8 +123,8 @@ public class ObjectServiceRdb implements ObjectService{
 	@Override
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects() {
-		Iterable<ObjectBoundaryEntity> iterable = this.objectCrud.findAll();
-		Iterator<ObjectBoundaryEntity> iterator = iterable.iterator();
+		Iterable<ObjectEntity> iterable = this.objectCrud.findAll();
+		Iterator<ObjectEntity> iterator = iterable.iterator();
 		List<ObjectBoundary> rv = new ArrayList<>();
 		while (iterator.hasNext()) {
 			ObjectBoundary objectBoundary = toBoundary(iterator.next());
