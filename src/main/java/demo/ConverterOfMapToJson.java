@@ -4,7 +4,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ConverterOfMapToJson {
+import jakarta.persistence.AttributeConverter;
+
+public class ConverterOfMapToJson implements AttributeConverter<Map<String, Object>, String> {
 	
 private ObjectMapper jackson;
 	
@@ -12,7 +14,7 @@ private ObjectMapper jackson;
 		this.jackson = new ObjectMapper();
 	}
 	
-	
+	@Override
 	public String convertToDatabaseColumn(Map<String, Object> attribute) {
 		try {
 			return this.jackson.writeValueAsString(attribute);
@@ -20,7 +22,8 @@ private ObjectMapper jackson;
 			throw new RuntimeException(e);
 		}
 	}
-
+	
+	@Override
 	public Map<String, Object> convertToEntityAttribute(String dbData) {
 		try {
 			return this.jackson.readValue(dbData, Map.class);

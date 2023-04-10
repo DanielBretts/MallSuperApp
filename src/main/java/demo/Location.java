@@ -18,16 +18,18 @@ public class Location {
 		return lat;
 	}
 
-	public void setLat(Double lat) {
+	public Location setLat(Double lat) {
 		this.lat = lat;
+		return this;
 	}
 
 	public Double getLng() {
 		return lng;
 	}
 
-	public void setLng(Double lng) {
+	public Location setLng(Double lng) {
 		this.lng = lng;
+		return this;
 	}
 
 }

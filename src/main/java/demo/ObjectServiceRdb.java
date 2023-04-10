@@ -10,11 +10,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+<<<<<<< HEAD
 import interfaces.ObjectCrud;
 import interfaces.ObjectService;
 
+=======
+@Service
+>>>>>>> branch 'master' of https://AmitBarel17@bitbucket.org/mallsuperapp/2023b.shir.zur2.git
 public class ObjectServiceRdb implements ObjectService{
 	private ObjectCrud objectCrud;
 
@@ -22,42 +27,89 @@ public class ObjectServiceRdb implements ObjectService{
 	public void setObjectCrud(ObjectCrud objectCrud) {
 		this.objectCrud = objectCrud;
 	}
-	
-	@Override
-	@Transactional//(readOnly = false)
-	public ObjectBoundary creatObject(ObjectBoundary object) {
-		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
-		ObjectBoundaryEntity entity = toEntity(object);
-		/// TODO: need to be enum to type!!
-		entity.setCreationTimestamp(new Date());
-		entity = this.objectCrud.save(entity);
-		return this.toBoundary(entity);
-	}
 
-	private ObjectBoundary toBoundary(ObjectBoundaryEntity entity) {
+//	@Override
+//	public Object toBoundary(Object entity) {
+//		ObjectEntity oEntity = (ObjectEntity)entity;
+//		ObjectBoundary ob = new ObjectBoundary();
+//		ob.setObjectId(new ObjectId().setInternalObjectId(oEntity.getId()));
+//		ob.setType(oEntity.getType()); /// TODO: need to be enum
+//		ob.setAlias(oEntity.getAlias());
+//		ob.setActive(oEntity.getActive());
+//		ob.setCreationTimestamp(oEntity.getCreationTimestamp());
+//		ob.setLocation(new Location().setLat(oEntity.getLat()).setLng(oEntity.getLng()));
+//		UserId userId =  new UserId();
+//		userId.setEmail(oEntity.getCreatedBy());
+//		ob.setCreatedBy(userId);
+//		ob.setObjectDetails(oEntity.getObjectDetails());
+//		return ob;
+//	}
+//	@Override
+//	public Object toEntity(Object boundary) {
+//		ObjectBoundary object = (ObjectBoundary)boundary;
+//		ObjectEntity entity = new ObjectEntity();
+//		
+//		entity.setId(object.getObjectId().getInternalObjectId());
+//		
+//		if (object.getType() != null) {
+//			entity.setType(object.getType());
+//		}else {
+//			entity.setType(null);// TODO : do defult enum
+//		}
+//		if (object.getAlias() != null) {
+//			entity.setAlias(object.getAlias());
+//		}else {
+//			object.setAlias(null);
+//		}
+//		if (object.getActive() != null) {
+//			entity.setActive(object.getActive());
+//		}else {
+//			object.setActive(true);
+//		}
+//		
+//		entity.setCreationTimestamp(object.getCreationTimestamp());
+//		
+//		if (object.getLocation() != null) {
+//			entity.setLat(object.getLocation().getLat());
+//			entity.setLng(object.getLocation().getLng());
+//		}else {
+//			entity.setLat((double) 0);
+//			entity.setLng((double) 0);
+//		}
+//		
+//		entity.setCreatedBy(object.getCreatedBy());
+//		
+//		if (object.getObjectDetails() != null) {
+//			entity.setObjectDetails(object.getObjectDetails());
+//		}else {
+//			entity.setObjectDetails(new HashMap<>());
+//		}
+//		return entity;
+//	}
+	
+	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
 		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getId()));
 		ob.setType(entity.getType()); /// TODO: need to be enum
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
-		ob.setLocation(entity.getLocation());
+		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
 		UserId userId =  new UserId();
 		userId.setEmail(entity.getCreatedBy());
 		ob.setCreatedBy(userId);
 		ob.setObjectDetails(entity.getObjectDetails());
 		return ob;
 	}
-
-	private ObjectBoundaryEntity toEntity(ObjectBoundary object) {
-		ObjectBoundaryEntity entity = new ObjectBoundaryEntity();
+	private ObjectEntity toEntity(ObjectBoundary object) {
+		ObjectEntity entity = new ObjectEntity();
 		
 		entity.setId(object.getObjectId().getInternalObjectId());
 		
 		if (object.getType() != null) {
 			entity.setType(object.getType());
 		}else {
-			// TODO : do defult enum
+			entity.setType(null);// TODO : do defult enum
 		}
 		if (object.getAlias() != null) {
 			entity.setAlias(object.getAlias());
@@ -73,9 +125,11 @@ public class ObjectServiceRdb implements ObjectService{
 		entity.setCreationTimestamp(object.getCreationTimestamp());
 		
 		if (object.getLocation() != null) {
-			entity.setLocation(object.getLocation());
+			entity.setLat(object.getLocation().getLat());
+			entity.setLng(object.getLocation().getLng());
 		}else {
-			entity.setId(null);
+			entity.setLat((double) 0);
+			entity.setLng((double) 0);
 		}
 		
 		entity.setCreatedBy(object.getCreatedBy());
@@ -89,9 +143,21 @@ public class ObjectServiceRdb implements ObjectService{
 	}
 
 	@Override
+	@Transactional//(readOnly = false)
+	public ObjectBoundary creatObject(ObjectBoundary object) {
+		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
+		ObjectEntity entity = (ObjectEntity) toEntity(object);
+		/// TODO: need to be enum to type!!
+		entity.setCreationTimestamp(new Date());
+		entity = this.objectCrud.save(entity);
+		return (ObjectBoundary) this.toBoundary(entity);
+	}
+
+
+	@Override
 	@Transactional
 	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
-		ObjectBoundaryEntity existing = this.objectCrud
+		ObjectEntity existing = this.objectCrud
 				.findById(id)
 				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + id));
 		if(ob.getType() != null) {
@@ -104,31 +170,40 @@ public class ObjectServiceRdb implements ObjectService{
 			existing.setActive(ob.getActive());
 		}
 		if(ob.getLocation() != null) {
-			existing.setLocation(ob.getLocation());
+			existing.setLat(ob.getLocation().getLat());
+			existing.setLng(ob.getLocation().getLng());
 		}
 		if(ob.getObjectDetails() != null) {
 			existing.setObjectDetails(ob.getObjectDetails());
 		}
 		existing = this.objectCrud.save(existing);
-		return this.toBoundary(existing);
+		return (ObjectBoundary) this.toBoundary(existing);
 	}
 
+//	@Override
+//	@Transactional(readOnly = true)
+//	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
+//		return this.objectCrud
+//				.findById(id)
+//				.map(this::toBoundary);
+//	}
 	@Override
 	@Transactional(readOnly = true)
 	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
-		return this.objectCrud
-				.findById(id)
+	    return this.objectCrud
+	    		.findById(id)
 				.map(this::toBoundary);
 	}
+	
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects() {
-		Iterable<ObjectBoundaryEntity> iterable = this.objectCrud.findAll();
-		Iterator<ObjectBoundaryEntity> iterator = iterable.iterator();
+		Iterable<ObjectEntity> iterable = this.objectCrud.findAll();
+		Iterator<ObjectEntity> iterator = iterable.iterator();
 		List<ObjectBoundary> rv = new ArrayList<>();
 		while (iterator.hasNext()) {
-			ObjectBoundary objectBoundary = toBoundary(iterator.next());
+			ObjectBoundary objectBoundary = (ObjectBoundary) toBoundary(iterator.next());
 			rv.add(objectBoundary);
 		}
 		return rv;
@@ -138,6 +213,8 @@ public class ObjectServiceRdb implements ObjectService{
 	public void deleteAllObjects() {
 		this.objectCrud.deleteAll();
 	}
-	
-	
+
+
 }
+
+
