@@ -1,7 +1,9 @@
-package demo;
+package interfaces;
 
 import java.util.List;
 import java.util.Optional;
+
+import demo.ObjectBoundary;
 
 public interface ObjectService {
 	

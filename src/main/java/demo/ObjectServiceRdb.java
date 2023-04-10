@@ -13,13 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-<<<<<<< HEAD
 import interfaces.ObjectCrud;
 import interfaces.ObjectService;
 
-=======
+
 @Service
->>>>>>> branch 'master' of https://AmitBarel17@bitbucket.org/mallsuperapp/2023b.shir.zur2.git
 public class ObjectServiceRdb implements ObjectService{
 	private ObjectCrud objectCrud;
 
