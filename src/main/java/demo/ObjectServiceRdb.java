@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import interfaces.ObjectCrud;
 import interfaces.ObjectService;
 
 public class ObjectServiceRdb implements ObjectService{

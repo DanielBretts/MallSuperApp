@@ -1,6 +1,8 @@
-package demo;
+package interfaces;
 
 import java.util.List;
+
+import demo.UserBoundary;
 
 public interface UsersService {
 	

@@ -1,4 +1,4 @@
-package demo;
+package interfaces;
 
 public interface MiniAppCommandsService {
 	

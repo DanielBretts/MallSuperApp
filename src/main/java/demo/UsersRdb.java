@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import interfaces.ConnectionsDb;
+import interfaces.UserCrud;
+import interfaces.UsersService;
+
 @Service
 public class UsersRdb implements UsersService,ConnectionsDb{
 	
