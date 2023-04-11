@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import superapp.logic.UserCrud;
 import superapp.logic.UsersService;
 import superapp.data.roleEnum;
@@ -56,10 +55,30 @@ public class UsersRdb implements UsersService{
 
 	@Override
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
-//		UserEntity outdated = this.userCrud.
-//				findById(userEmail).
-//				orElseThrow(()->new UserNotFoundException("Could not find user to update by this email: " + userEmail));
-		return null;
+		UserEntity entity = this.userCrud
+				.findById(userSuperApp+userEmail)
+				.orElseThrow(()->new UserNotFoundException("could not find user with mail " + userEmail));
+			
+		if (update.getEmail() != null) {
+			entity.setEmail(update.getEmail());
+		}
+		if(update.getRole() != null) {
+			entity.setRole(update.getRole().toString());
+		}
+		if(update.getAvatar() != null) {
+			entity.setAvatar(update.getAvatar());
+		}
+		if(update.getUsername() != null) {
+			entity.setUsername(update.getUsername());
+		}
+		UserId updatedUserId = update.getUserId();
+		if(updatedUserId != null) {
+			entity.setId(updatedUserId.getSuperapp()+updatedUserId.getEmail());
+		}else {
+			//entity.setId(updatedUserId.getSuperapp()+updatedUserId.getEmail());
+		}
+		entity = this.userCrud.save(entity);
+		return this.toBoundary(entity);
 	}
 
 	@Override

@@ -60,7 +60,7 @@ public class UserController {
 		 * Need to find the old UserBoundary and PUT the new details.
 		 * userBounady.update(update);
 		 */
-		System.err.println(update.toString());
+		this.usersService.updateUser(superapp, email, update);
 	}
 
 }
