@@ -1,9 +1,5 @@
 package superapp;
 
-import org.springframework.beans.factory.annotation.Value;
-
-import jakarta.annotation.PostConstruct;
-
 public class UserId {
 	
 	private String superapp;
@@ -18,11 +14,6 @@ public class UserId {
 	public UserId() {
 		super();
 	}
-	
-	@PostConstruct
-	public void setUp() {
-		System.err.println(this.superapp);
-	}
 
 	public String getEmail() {
 		return email;
@@ -36,7 +27,6 @@ public class UserId {
 		return superapp;
 	}
 	
-	@Value("${spring.application.name}")
 	public void setSuperapp(String superapp) {
 		this.superapp = superapp;
 	}

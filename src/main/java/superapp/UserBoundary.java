@@ -16,7 +16,8 @@ public class UserBoundary {
 	public UserBoundary(String email, String role, String username, String avatar, UserId userId) {
 		super();
 		this.email = email;
-		this.role = roleEnum.valueOf(role);
+		if (role != null)
+			this.role = roleEnum.valueOf(role);
 		this.username = username;
 		this.avatar = avatar;
 		this.userId = userId;

@@ -19,6 +19,7 @@ public class UsersRdb implements UsersService{
 	
 	private UserCrud userCrud;
 	private roleEnum defaultRole;
+	private String superapp;
 	
 	@Autowired
 	public void setUserCrud(UserCrud userCrud) {
@@ -28,6 +29,11 @@ public class UsersRdb implements UsersService{
 	@Value("${mallApp.default.role:MINIAPP_USER}")
 	public void setDefaultRole(roleEnum defaultRole) {
 		this.defaultRole = defaultRole;
+	}
+	
+	@Value("${spring.application.name:2023b.shir.zur}")
+	public void setSuperapp(String name) {
+		this.superapp = name;
 	}
 
 	@Override
@@ -82,18 +88,13 @@ public class UsersRdb implements UsersService{
 		ub.setRole(entity.getRole());
 		ub.setUsername(entity.getUsername());
 		ub.setUserId(new UserId(entity.getEmail()));
+		ub.getUserId().setSuperapp(superapp);
 		return ub;
 	}
 
 	public UserEntity toEntity(UserBoundary boundary) {	
 		UserEntity ue = new UserEntity();
-		
-		if (boundary.getUserId() != null)
-			ue.setId(boundary.getUserId().getSuperapp()+boundary.getUserId().getEmail());
-//		else {
-//			ue.setId( + boundary.getEmail());
-//		}
-				
+	
 		if(boundary.getAvatar() == null) {
 			ue.setAvatar(null);
 		}else {
@@ -113,6 +114,12 @@ public class UsersRdb implements UsersService{
 			ue.setEmail(boundary.getUsername() + "@email.com");
 		}else {
 			ue.setEmail(boundary.getEmail());
+		}	
+		if (boundary.getUserId().getSuperapp() == null) {
+			ue.setId(this.superapp + ue.getEmail());
+		}
+		else {
+			ue.setId(boundary.getUserId().getSuperapp() + boundary.getUserId().getEmail()); 
 		}
 		return ue;
 	}
