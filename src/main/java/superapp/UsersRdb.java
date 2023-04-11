@@ -1,4 +1,4 @@
-package demo;
+package superapp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,12 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import interfaces.ConnectionsDb;
-import interfaces.UserCrud;
-import interfaces.UsersService;
+import superapp.logic.UserCrud;
+import superapp.logic.UsersService;
+import superapp.data.roleEnum;
+import superapp.data.UserEntity;
 
 @Service
-public class UsersRdb implements UsersService,ConnectionsDb{
+public class UsersRdb implements UsersService{
 	
 	private UserCrud userCrud;
 	private roleEnum defaultRole;
@@ -31,7 +32,6 @@ public class UsersRdb implements UsersService,ConnectionsDb{
 
 	@Override
 	public UserBoundary createUser(UserBoundary user) {
-//		message.setId(UUID.randomUUID().toString());
 		UserEntity entity = (UserEntity) this.toEntity(user);
 		if (entity.getAvatar() == null) {
 			entity.setAvatar(user.getUsername().substring(0,2));
@@ -42,8 +42,10 @@ public class UsersRdb implements UsersService,ConnectionsDb{
 
 	@Override
 	public UserBoundary login(String userSuperApp, String userEmail) {
-		// TODO Auto-generated method stub
-		return null;
+		UserEntity existing = this.userCrud
+				.findById(userSuperApp + userEmail)
+				.orElseThrow(()->new UserNotFoundException("Could not find user by this id: " + userSuperApp + userEmail));
+		return toBoundary(existing);
 	}
 
 	@Override
@@ -73,42 +75,44 @@ public class UsersRdb implements UsersService,ConnectionsDb{
 		userCrud.deleteAll();
 	}
 
-	@Override
-	public Object toBoundary(Object entity) {
-		UserEntity ue = (UserEntity) entity;
+	public UserBoundary toBoundary(UserEntity entity) {
 		UserBoundary ub = new UserBoundary();		
-		ub.setAvatar(ue.getAvatar());
-		ub.setEmail(ue.getEmail());
-		ub.setRole(ue.getRole());
-		ub.setUsername(ue.getUsername());
-		ub.setUserId(new UserId(ue.getEmail()));
+		ub.setAvatar(entity.getAvatar());
+		ub.setEmail(entity.getEmail());
+		ub.setRole(entity.getRole());
+		ub.setUsername(entity.getUsername());
+		ub.setUserId(new UserId(entity.getEmail()));
 		return ub;
 	}
 
-	@Override
-	public Object toEntity(Object boundary) {
-		UserBoundary ub = (UserBoundary) boundary;		
+	public UserEntity toEntity(UserBoundary boundary) {	
 		UserEntity ue = new UserEntity();
 		
-		if(ub.getAvatar() == null) {
+		if (boundary.getUserId() != null)
+			ue.setId(boundary.getUserId().getSuperapp()+boundary.getUserId().getEmail());
+//		else {
+//			ue.setId( + boundary.getEmail());
+//		}
+				
+		if(boundary.getAvatar() == null) {
 			ue.setAvatar(null);
 		}else {
-			ue.setAvatar(ub.getAvatar());			
+			ue.setAvatar(boundary.getAvatar());			
 		}
-		if(ub.getRole() == null) {
+		if(boundary.getRole() == null) {
 			ue.setRole(defaultRole.toString());
 		}else {
-			ue.setRole(ub.getRole().toString());
+			ue.setRole(boundary.getRole().toString());
 		}
-		if(ub.getUsername() == null) {
+		if(boundary.getUsername() == null) {
 			ue.setUsername(null);
 		}else {
-			ue.setUsername(ub.getUsername());
+			ue.setUsername(boundary.getUsername());
 		}
-		if(ub.getEmail() == null) {
-			ue.setEmail(ub.getUsername() + "@email.com");
+		if(boundary.getEmail() == null) {
+			ue.setEmail(boundary.getUsername() + "@email.com");
 		}else {
-			ue.setEmail(ub.getEmail());
+			ue.setEmail(boundary.getEmail());
 		}
 		return ue;
 	}

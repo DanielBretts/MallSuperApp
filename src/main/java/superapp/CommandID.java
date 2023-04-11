@@ -1,4 +1,4 @@
-package demo;
+package superapp;
 
 import org.springframework.beans.factory.annotation.Value;
 

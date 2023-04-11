@@ -1,4 +1,4 @@
-package demo;
+package superapp;
 
 import java.util.Optional;
 
@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import interfaces.ObjectService;
+import superapp.logic.ObjectService;
+
 @RestController
 public class ObjectController {
 	private ObjectService objectService;

@@ -1,4 +1,4 @@
-package demo;
+package superapp.data;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +11,8 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import superapp.ConverterOfMapToJson;
+import superapp.UserId;
 
 
 @Entity

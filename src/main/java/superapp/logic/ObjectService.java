@@ -1,9 +1,9 @@
-package interfaces;
+package superapp.logic;
 
 import java.util.List;
 import java.util.Optional;
 
-import demo.ObjectBoundary;
+import superapp.ObjectBoundary;
 
 public interface ObjectService {
 	

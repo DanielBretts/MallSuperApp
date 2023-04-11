@@ -1,10 +1,9 @@
-package interfaces;
+package superapp.logic;
 
 import org.springframework.data.repository.CrudRepository;
 
-import demo.UserEntity;
+import superapp.data.UserEntity;
 
 public interface UserCrud extends CrudRepository<UserEntity,String>{
 	
-
 }

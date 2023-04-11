@@ -1,4 +1,6 @@
-package demo;
+package superapp;
+
+import superapp.data.roleEnum;
 
 public class UserBoundary {
 	String email;

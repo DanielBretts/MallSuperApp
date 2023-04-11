@@ -1,4 +1,4 @@
-package demo;
+package superapp;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import interfaces.ObjectCrud;
-import interfaces.ObjectService;
+import superapp.logic.ObjectCrud;
+import superapp.logic.ObjectService;
+import superapp.data.ObjectEntity;
 
 
 @Service
@@ -26,65 +27,6 @@ public class ObjectServiceRdb implements ObjectService{
 		this.objectCrud = objectCrud;
 	}
 
-//	@Override
-//	public Object toBoundary(Object entity) {
-//		ObjectEntity oEntity = (ObjectEntity)entity;
-//		ObjectBoundary ob = new ObjectBoundary();
-//		ob.setObjectId(new ObjectId().setInternalObjectId(oEntity.getId()));
-//		ob.setType(oEntity.getType()); /// TODO: need to be enum
-//		ob.setAlias(oEntity.getAlias());
-//		ob.setActive(oEntity.getActive());
-//		ob.setCreationTimestamp(oEntity.getCreationTimestamp());
-//		ob.setLocation(new Location().setLat(oEntity.getLat()).setLng(oEntity.getLng()));
-//		UserId userId =  new UserId();
-//		userId.setEmail(oEntity.getCreatedBy());
-//		ob.setCreatedBy(userId);
-//		ob.setObjectDetails(oEntity.getObjectDetails());
-//		return ob;
-//	}
-//	@Override
-//	public Object toEntity(Object boundary) {
-//		ObjectBoundary object = (ObjectBoundary)boundary;
-//		ObjectEntity entity = new ObjectEntity();
-//		
-//		entity.setId(object.getObjectId().getInternalObjectId());
-//		
-//		if (object.getType() != null) {
-//			entity.setType(object.getType());
-//		}else {
-//			entity.setType(null);// TODO : do defult enum
-//		}
-//		if (object.getAlias() != null) {
-//			entity.setAlias(object.getAlias());
-//		}else {
-//			object.setAlias(null);
-//		}
-//		if (object.getActive() != null) {
-//			entity.setActive(object.getActive());
-//		}else {
-//			object.setActive(true);
-//		}
-//		
-//		entity.setCreationTimestamp(object.getCreationTimestamp());
-//		
-//		if (object.getLocation() != null) {
-//			entity.setLat(object.getLocation().getLat());
-//			entity.setLng(object.getLocation().getLng());
-//		}else {
-//			entity.setLat((double) 0);
-//			entity.setLng((double) 0);
-//		}
-//		
-//		entity.setCreatedBy(object.getCreatedBy());
-//		
-//		if (object.getObjectDetails() != null) {
-//			entity.setObjectDetails(object.getObjectDetails());
-//		}else {
-//			entity.setObjectDetails(new HashMap<>());
-//		}
-//		return entity;
-//	}
-	
 	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
 		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getId()));

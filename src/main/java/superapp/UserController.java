@@ -1,4 +1,4 @@
-package demo;
+package superapp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import interfaces.UsersService;
+import superapp.logic.UsersService;
 
 @RestController
 public class UserController {
@@ -30,7 +30,6 @@ public class UserController {
 			consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public UserBoundary createUserBoundary(@RequestBody NewUserBoundary nub) {
 		UserBoundary ub = new UserBoundary(nub.getEmail(),nub.getRole(),nub.getUsername(),nub.getAvatar(),new UserId(nub.getEmail()));
-//		nub.setUserBoundary(new UserBoundary(nub.getEmail(),nub.getRole(),nub.getUsername(),nub.getAvatar(),new UserId(nub.getEmail())));
 		return usersService.createUser(ub);
 	}
 
@@ -47,8 +46,7 @@ public class UserController {
 		 * 
 		 * According to this UserId get object UserBoundary
 		 */
-		UserBoundary ub = new UserBoundary(email,"Team Leader", "Shir","google.com", new UserId(email));
-		return ub;
+		return this.usersService.login(superapp, email);
 	}
 
 	@RequestMapping( // Update the details

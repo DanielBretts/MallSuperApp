@@ -1,4 +1,4 @@
-package interfaces;
+package superapp.logic;
 
 public interface MiniAppCommandsService {
 	

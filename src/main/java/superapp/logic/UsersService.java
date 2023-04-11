@@ -1,8 +1,8 @@
-package interfaces;
+package superapp.logic;
 
 import java.util.List;
 
-import demo.UserBoundary;
+import superapp.UserBoundary;
 
 public interface UsersService {
 	
