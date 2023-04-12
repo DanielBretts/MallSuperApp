@@ -9,7 +9,6 @@ public class CommandID {
 	private String superapp;
 	private String miniApp;
 	private String internalCommandID;
-	static int counterCommandID = 0;
 
 	public CommandID() {
 
@@ -18,7 +17,6 @@ public class CommandID {
 	public CommandID(String miniApp) {
 		super();
 		this.miniApp = miniApp;
-		this.internalCommandID = String.valueOf(++counterCommandID);
 	}
 	
 	@PostConstruct

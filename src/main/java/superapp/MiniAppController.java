@@ -29,9 +29,9 @@ public class MiniAppController {
 	method = {RequestMethod.POST},
 	produces = {MediaType.APPLICATION_JSON_VALUE},
 	consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public MiniAppCommandBoundary invokeCommand (@PathVariable("miniAppName") String miniAppName ,@RequestBody MiniAppCommandBoundary miniApp) {
-//		miniApp.setCommand(miniAppName);
-		return (MiniAppCommandBoundary) miniAppCommandsService.invokeCommand(miniApp);
+	public Object invokeCommand (@PathVariable("miniAppName") String miniAppName ,@RequestBody MiniAppCommandBoundary miniApp) {
+		miniApp.setCommandId(new CommandID(miniAppName));
+		return miniAppCommandsService.invokeCommand(miniApp);
 	}
 
 }
