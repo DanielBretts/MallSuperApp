@@ -1,5 +1,5 @@
 package superapp.data;
 
-public enum roleEnum {
+public enum UserRole {
 	MINIAPP_USER, SUPERAPP_USER, ADMIN
 }

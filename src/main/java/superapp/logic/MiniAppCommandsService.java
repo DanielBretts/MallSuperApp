@@ -1,7 +1,16 @@
 package superapp.logic;
 
+import java.util.List;
+
+import superapp.MiniAppCommandBoundary;
+
 public interface MiniAppCommandsService {
 	
-	public Object invokeCommand();
-
+	public Object invokeCommand(MiniAppCommandBoundary command);
+	
+	public List<MiniAppCommandBoundary> getAllCommands();
+	
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName);
+	
+	public void deleteAllCommands();
 }

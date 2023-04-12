@@ -1,10 +1,10 @@
 package superapp;
 
-import superapp.data.roleEnum;
+import superapp.data.UserRole;
 
 public class UserBoundary {
 	String email;
-	roleEnum role; 
+	UserRole role; 
 	String username;
 	String avatar; 
 	UserId userId;
@@ -17,7 +17,7 @@ public class UserBoundary {
 		super();
 		this.email = email;
 		if (role != null)
-			this.role = roleEnum.valueOf(role);
+			this.role = UserRole.valueOf(role);
 		this.username = username;
 		this.avatar = avatar;
 		this.userId = userId;
@@ -31,12 +31,12 @@ public class UserBoundary {
 		this.email = email;
 	}
 
-	public roleEnum getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
 	public void setRole(String role) {
-		this.role = roleEnum.valueOf(role);
+		this.role = UserRole.valueOf(role);
 	}
 
 	public String getUsername() {

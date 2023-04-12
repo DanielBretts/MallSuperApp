@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import superapp.logic.UserCrud;
 import superapp.logic.UsersService;
-import superapp.data.roleEnum;
+import superapp.data.UserRole;
 import superapp.data.UserEntity;
 
 @Service
 public class UsersRdb implements UsersService{
 	
 	private UserCrud userCrud;
-	private roleEnum defaultRole;
+	private UserRole defaultRole;
 	private String superapp;
 	
 	@Autowired
@@ -26,7 +26,7 @@ public class UsersRdb implements UsersService{
 	}
 	
 	@Value("${mallApp.default.role:MINIAPP_USER}")
-	public void setDefaultRole(roleEnum defaultRole) {
+	public void setDefaultRole(UserRole defaultRole) {
 		this.defaultRole = defaultRole;
 	}
 	
