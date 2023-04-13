@@ -1,13 +1,19 @@
 package superapp;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import superapp.data.MiniAppCommandEntity;
 import superapp.logic.MiniAppCommandsCrud;
@@ -48,7 +54,7 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		boundary.setInvokedBy(entity.getInvokedBy());
 		boundary.setTargetObject(entity.getTargetObject());
-		return null;
+		return boundary;
 	}
 
 	private MiniAppCommandEntity toEntity(MiniAppCommandBoundary command) {
@@ -72,21 +78,37 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllCommands() {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<MiniAppCommandEntity> iterable = this.miniAppCommandsCrud.findAll();
+		Iterator<MiniAppCommandEntity> iterator = iterable.iterator();
+		List<MiniAppCommandBoundary> list = new ArrayList<>();
+		while (iterator.hasNext()) {
+			MiniAppCommandBoundary boundary = toBoundary(iterator.next());
+			list.add(boundary);
+		}
+		return list;
 	}
-
+	
 	@Override
+	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Iterable<MiniAppCommandEntity> iterable = this.miniAppCommandsCrud.findAll();
+		Iterator<MiniAppCommandEntity> iterator = iterable.iterator();
+		List<MiniAppCommandBoundary> list = new ArrayList<>();
+		while (iterator.hasNext()) {
+			MiniAppCommandBoundary boundary = toBoundary(iterator.next());
+			if(boundary.getCommandId().getMiniApp().equals(miniAppName))		
+				list.add(boundary);
+		}
+		return list;
 	}
+	
 
 	@Override
 	public void deleteAllCommands() {
-		// TODO Auto-generated method stub
-		
+		this.miniAppCommandsCrud.deleteAll();		
 	}
 
 }
