@@ -5,14 +5,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectService;
 import superapp.data.ObjectEntity;
@@ -21,16 +19,22 @@ import superapp.data.ObjectEntity;
 @Service
 public class ObjectServiceRdb implements ObjectService{
 	private ObjectCrud objectCrud;
+	private String superapp;
+
 
 	@Autowired
 	public void setObjectCrud(ObjectCrud objectCrud) {
 		this.objectCrud = objectCrud;
 	}
+	@Value("${spring.application.name:2023b.shir.zur}")
+	public void setSuperapp(String name) {
+		this.superapp = name;
+	}
 
 	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
 		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getId()));
-		ob.setType(entity.getType()); /// TODO: need to be enum
+		ob.setType(entity.getType());
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
@@ -39,9 +43,10 @@ public class ObjectServiceRdb implements ObjectService{
 		userId.setEmail(entity.getCreatedBy());
 		ob.setCreatedBy(userId);
 		ob.setObjectDetails(entity.getObjectDetails());
+		ob.getObjectId().setSuperapp(superapp);
 		return ob;
 	}
-	private ObjectEntity toEntity(ObjectBoundary object) {
+	private ObjectEntity toEntity(ObjectBoundary object) throws UserNotFoundException {
 		ObjectEntity entity = new ObjectEntity();
 		
 		entity.setId(object.getObjectId().getInternalObjectId());
@@ -49,7 +54,7 @@ public class ObjectServiceRdb implements ObjectService{
 		if (object.getType() != null) {
 			entity.setType(object.getType());
 		}else {
-			entity.setType(null);// TODO : do defult enum
+			entity.setType(null);
 		}
 		if (object.getAlias() != null) {
 			entity.setAlias(object.getAlias());
@@ -71,8 +76,11 @@ public class ObjectServiceRdb implements ObjectService{
 			entity.setLat((double) 0);
 			entity.setLng((double) 0);
 		}
-		
-		entity.setCreatedBy(object.getCreatedBy());
+		if(object.getCreatedBy() != null) {
+			entity.setCreatedBy(object.getCreatedBy());
+		}else {
+			throw new UserNotFoundException("The user this action was created by is not a valid user");
+		}
 		
 		if (object.getObjectDetails() != null) {
 			entity.setObjectDetails(object.getObjectDetails());
@@ -86,8 +94,8 @@ public class ObjectServiceRdb implements ObjectService{
 	@Transactional//(readOnly = false)
 	public ObjectBoundary creatObject(ObjectBoundary object) {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
+		object.getObjectId().setSuperapp(superapp);
 		ObjectEntity entity = (ObjectEntity) toEntity(object);
-		/// TODO: need to be enum to type!!
 		entity.setCreationTimestamp(new Date());
 		entity = this.objectCrud.save(entity);
 		return (ObjectBoundary) this.toBoundary(entity);
@@ -119,14 +127,6 @@ public class ObjectServiceRdb implements ObjectService{
 		existing = this.objectCrud.save(existing);
 		return (ObjectBoundary) this.toBoundary(existing);
 	}
-
-//	@Override
-//	@Transactional(readOnly = true)
-//	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
-//		return this.objectCrud
-//				.findById(id)
-//				.map(this::toBoundary);
-//	}
 	@Override
 	@Transactional(readOnly = true)
 	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
@@ -135,7 +135,6 @@ public class ObjectServiceRdb implements ObjectService{
 				.map(this::toBoundary);
 	}
 	
-
 	@Override
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects() {

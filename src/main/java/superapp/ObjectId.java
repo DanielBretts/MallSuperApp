@@ -1,7 +1,7 @@
 package superapp;
 public class ObjectId {
 	
-	private final String superapp = "2023b.shir.zur";
+	private String superapp;
 	private String internalObjectId;
 	
 	public ObjectId() {
@@ -19,6 +19,11 @@ public class ObjectId {
 
 	public String getSuperapp() {
 		return superapp;
+	}
+	
+
+	public void setSuperapp(String superapp) {
+		this.superapp = superapp;
 	}
 
 	@Override

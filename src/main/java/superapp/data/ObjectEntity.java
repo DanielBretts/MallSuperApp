@@ -20,7 +20,7 @@ import superapp.UserId;
 public class ObjectEntity {
 	@Id
 	private String id;
-	private String type; /// TODO : to check if its need to be enum!
+	private String type;
 	private String alias;
 	private boolean active;
 	@Temporal(TemporalType.TIMESTAMP)
