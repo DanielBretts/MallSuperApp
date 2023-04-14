@@ -22,8 +22,9 @@ public class ObjectId {
 	}
 	
 
-	public void setSuperapp(String superapp) {
+	public ObjectId setSuperapp(String superapp) {
 		this.superapp = superapp;
+		return this;
 	}
 
 	@Override

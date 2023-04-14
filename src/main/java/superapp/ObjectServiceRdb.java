@@ -40,10 +40,10 @@ public class ObjectServiceRdb implements ObjectService{
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
 		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
 		UserId userId =  new UserId();
+		userId.setSuperapp(superapp);
 		userId.setEmail(entity.getCreatedBy());
 		ob.setCreatedBy(userId);
 		ob.setObjectDetails(entity.getObjectDetails());
-		ob.getObjectId().setSuperapp(superapp);
 		return ob;
 	}
 	private ObjectEntity toEntity(ObjectBoundary object) throws UserNotFoundException {
@@ -65,10 +65,7 @@ public class ObjectServiceRdb implements ObjectService{
 			entity.setActive(object.getActive());
 		}else {
 			object.setActive(true);
-		}
-		
-		entity.setCreationTimestamp(object.getCreationTimestamp());
-		
+		}		
 		if (object.getLocation() != null) {
 			entity.setLat(object.getLocation().getLat());
 			entity.setLng(object.getLocation().getLng());
