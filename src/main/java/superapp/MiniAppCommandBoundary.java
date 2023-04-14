@@ -10,14 +10,14 @@ public class MiniAppCommandBoundary {
 	private Date invocationTimeStamp;
 	private Map<String,ObjectId> targetObject;
 	private Map<String,UserId> invokedBy;
-	private Map<String,Map<String,String>> commandAttributes;
+	private Map<String,Object> commandAttributes;
 	
 	public MiniAppCommandBoundary() {
 		
 	}
 
 	public MiniAppCommandBoundary(CommandID commandId, String command, Map<String,ObjectId> targetObject,
-			Map<String,UserId> invokedBy, Map<String, Map<String,String>> commandAttributes) {
+			Map<String,UserId> invokedBy, Map<String, Object> commandAttributes) {
 		super();
 		this.commandId = commandId;
 		this.command = command;
@@ -71,11 +71,11 @@ public class MiniAppCommandBoundary {
 
 	
 
-	public Map<String, Map<String,String>> getCommandAttributes() {
+	public Map<String, Object> getCommandAttributes() {
 		return commandAttributes;
 	}
 
-	public void setCommandAttributes(Map<String, Map<String,String>> commandAttributes) {
+	public void setCommandAttributes(Map<String, Object> commandAttributes) {
 		this.commandAttributes = commandAttributes;
 	}
 

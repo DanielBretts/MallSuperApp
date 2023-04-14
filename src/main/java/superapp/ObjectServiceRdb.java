@@ -76,7 +76,7 @@ public class ObjectServiceRdb implements ObjectService{
 		if(object.getCreatedBy() != null) {
 			entity.setCreatedBy(object.getCreatedBy());
 		}else {
-			throw new UserNotFoundException("The user this action was created by is not a valid user");
+			new UserNotFoundException("The user this action was created by is not a valid user");
 		}
 		
 		if (object.getObjectDetails() != null) {
