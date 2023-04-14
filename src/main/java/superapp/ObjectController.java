@@ -28,6 +28,7 @@ public class ObjectController {
 			produces = {MediaType.APPLICATION_JSON_VALUE},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
 			public ObjectBoundary createObjectBoundary (@RequestBody ObjectBoundary ob) {
+				System.out.println(ob.toString());
 				return this.objectService.creatObject(ob);
 	}
 	
