@@ -55,7 +55,6 @@ public class UserController {
 			consumes = {MediaType.APPLICATION_JSON_VALUE })
 	public void update(@PathVariable("superapp") String superapp, @PathVariable("userEmail") String email,
 			@RequestBody UserBoundary update) {
-
 		/*
 		 * Need to find the old UserBoundary and PUT the new details.
 		 * userBounady.update(update);

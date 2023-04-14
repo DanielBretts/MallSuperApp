@@ -1,7 +1,4 @@
 package superapp;
-
-//import org.springframework.beans.factory.annotation.Value;
-
 public class ObjectId {
 	
 	private final String superapp = "2023b.shir.zur";

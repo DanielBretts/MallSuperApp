@@ -33,7 +33,7 @@ public class MiniAppCommandEntity {
 	private Map<String,UserId> invokedBy;
 	@Convert(converter = ConverterOfMapToJson.class)
 	@Lob
-	private Map<String,List<String>> commandAttributes;
+	private Map<String,Map<String,String>> commandAttributes;
 	
 	
 	public MiniAppCommandEntity() {
@@ -103,12 +103,12 @@ public class MiniAppCommandEntity {
 	}
 
 
-	public Map<String, List<String>> getCommandAttributes() {
+	public Map<String, Map<String,String>> getCommandAttributes() {
 		return commandAttributes;
 	}
 
 
-	public void setCommandAttributes(Map<String, List<String>> commandAttributes) {
+	public void setCommandAttributes(Map<String, Map<String,String>> commandAttributes) {
 		this.commandAttributes = commandAttributes;
 	}
 	

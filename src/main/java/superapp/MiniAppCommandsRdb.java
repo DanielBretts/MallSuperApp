@@ -37,7 +37,7 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary command) {
-		command.getCommandId().setInternalCommandID(UUID.randomUUID() + "");
+		command.getCommandId().setInternalCommandID(UUID.randomUUID().toString());
 		command.getCommandId().setSuperapp(this.superapp);
 		MiniAppCommandEntity entity = this.toEntity(command);
 		entity = this.miniAppCommandsCrud.save(entity);
