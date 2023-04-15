@@ -66,6 +66,7 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 		entity.setMiniApp(command.getCommandId().getMiniApp());
 		entity.setCommandId(command.getCommandId().getInternalCommandID());
 		if (command.getTargetObject() != null) {
+			command.getTargetObject().get("objectId").setSuperapp(this.superapp);
 			entity.setTargetObject(command.getTargetObject());
 		}else {
 			entity.setTargetObject(new HashMap<>());
