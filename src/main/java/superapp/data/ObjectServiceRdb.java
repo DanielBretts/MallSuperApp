@@ -1,4 +1,4 @@
-package superapp;
+package superapp.data;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectService;
-import superapp.data.ObjectEntity;
+import superapp.boundaries.ObjectBoundary;
+import superapp.exceptions.ObjectNotFoundException;
+import superapp.exceptions.UserNotFoundException;
 
 
 @Service

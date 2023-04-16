@@ -11,8 +11,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import superapp.ConverterOfMapToJson;
-import superapp.UserId;
+import superapp.utils.ConverterOfMapToJson;
 
 
 @Entity

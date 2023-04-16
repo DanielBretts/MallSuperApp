@@ -1,4 +1,4 @@
-package superapp;
+package superapp.utils;
 
 import java.util.Map;
 

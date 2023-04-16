@@ -1,7 +1,11 @@
-package superapp;
+package superapp.boundaries;
 
 import java.util.Date;
 import java.util.Map;
+
+import superapp.data.Location;
+import superapp.data.ObjectId;
+import superapp.data.UserId;
 
 public class ObjectBoundary{
 	

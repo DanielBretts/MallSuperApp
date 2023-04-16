@@ -2,7 +2,7 @@ package superapp.logic;
 
 import java.util.List;
 
-import superapp.MiniAppCommandBoundary;
+import superapp.boundaries.MiniAppCommandBoundary;
 
 public interface MiniAppCommandsService {
 	

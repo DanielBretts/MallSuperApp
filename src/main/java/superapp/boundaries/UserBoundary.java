@@ -1,4 +1,6 @@
-package superapp;
+package superapp.boundaries;
+
+import superapp.data.UserId;
 
 public class UserBoundary {
 	String email;

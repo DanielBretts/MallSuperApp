@@ -1,4 +1,4 @@
-package superapp;
+package superapp.data;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import superapp.logic.UserCrud;
 import superapp.logic.UsersService;
-import superapp.data.UserRole;
-import superapp.data.UserEntity;
+import superapp.boundaries.UserBoundary;
+import superapp.exceptions.UserNotFoundException;
 
 @Service
 public class UsersRdb implements UsersService{

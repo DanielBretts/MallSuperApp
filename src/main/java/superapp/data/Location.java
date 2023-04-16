@@ -1,4 +1,4 @@
-package superapp;
+package superapp.data;
 
 public class Location {
 

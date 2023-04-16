@@ -1,4 +1,4 @@
-package superapp;
+package superapp.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import superapp.data.MiniAppCommandEntity;
+import superapp.boundaries.MiniAppCommandBoundary;
 import superapp.logic.MiniAppCommandsCrud;
 import superapp.logic.MiniAppCommandsService;
 

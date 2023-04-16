@@ -1,8 +1,12 @@
-package superapp;
+package superapp.boundaries;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import superapp.data.CommandID;
+import superapp.data.ObjectId;
+import superapp.data.UserId;
 
 public class MiniAppCommandBoundary {
 	private CommandID commandId;

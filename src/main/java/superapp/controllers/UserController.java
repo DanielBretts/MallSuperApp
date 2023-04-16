@@ -1,4 +1,4 @@
-package superapp;
+package superapp.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import superapp.boundaries.NewUserBoundary;
+import superapp.boundaries.UserBoundary;
+import superapp.data.UserId;
 import superapp.logic.UsersService;
 
 @RestController

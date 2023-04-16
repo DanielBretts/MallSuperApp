@@ -2,7 +2,7 @@ package superapp.logic;
 
 import java.util.List;
 
-import superapp.UserBoundary;
+import superapp.boundaries.UserBoundary;
 
 public interface UsersService {
 	
