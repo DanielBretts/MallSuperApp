@@ -58,12 +58,11 @@ public class UsersRdb implements UsersService{
 		UserEntity entity = this.userCrud
 				.findById(userSuperApp+userEmail)
 				.orElseThrow(()->new UserNotFoundException("could not find user with mail " + userEmail));
-			
-		if (update.getEmail() != null) {
-			entity.setEmail(update.getEmail());
-		}
 		if(update.getRole() != null) {
 			entity.setRole(update.getRole().toString());
+		}
+		else {
+			entity.setRole(defaultRole.toString());
 		}
 		if(update.getAvatar() != null) {
 			entity.setAvatar(update.getAvatar());

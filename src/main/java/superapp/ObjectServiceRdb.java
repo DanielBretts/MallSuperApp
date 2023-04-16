@@ -33,7 +33,7 @@ public class ObjectServiceRdb implements ObjectService{
 
 	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
-		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getId()));
+		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getId()).setSuperapp(superapp));
 		ob.setType(entity.getType());
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
@@ -97,7 +97,6 @@ public class ObjectServiceRdb implements ObjectService{
 		entity = this.objectCrud.save(entity);
 		return (ObjectBoundary) this.toBoundary(entity);
 	}
-
 
 	@Override
 	@Transactional
