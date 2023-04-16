@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import superapp.logic.UserCrud;
 import superapp.logic.UsersService;
 import superapp.data.UserRole;
@@ -58,12 +59,7 @@ public class UsersRdb implements UsersService{
 		UserEntity entity = this.userCrud
 				.findById(userSuperApp+userEmail)
 				.orElseThrow(()->new UserNotFoundException("could not find user with mail " + userEmail));
-		if(update.getRole() != null) {
-			entity.setRole(update.getRole().toString());
-		}
-		else {
-			entity.setRole(defaultRole.toString());
-		}
+		entity.setRole(toEntityAsEnum(update.getRole()));
 		if(update.getAvatar() != null) {
 			entity.setAvatar(update.getAvatar());
 		}
@@ -103,7 +99,7 @@ public class UsersRdb implements UsersService{
 		UserBoundary ub = new UserBoundary();		
 		ub.setAvatar(entity.getAvatar());
 		ub.setEmail(entity.getEmail());
-		ub.setRole(entity.getRole());
+		ub.setRole(entity.getRole().toString());
 		ub.setUsername(entity.getUsername());
 		ub.setUserId(new UserId(entity.getEmail()));
 		ub.getUserId().setSuperapp(superapp);
@@ -118,11 +114,7 @@ public class UsersRdb implements UsersService{
 		}else {
 			ue.setAvatar(boundary.getAvatar());			
 		}
-		if(boundary.getRole() == null) {
-			ue.setRole(defaultRole.toString());
-		}else {
-			ue.setRole(boundary.getRole().toString());
-		}
+		ue.setRole(toEntityAsEnum(boundary.getRole()));
 		if(boundary.getUsername() == null) {
 			ue.setUsername(null);
 		}else {
@@ -140,6 +132,14 @@ public class UsersRdb implements UsersService{
 			ue.setId(boundary.getUserId().getSuperapp() + boundary.getUserId().getEmail()); 
 		}
 		return ue;
+	}
+	
+	private UserRole toEntityAsEnum (String value) {
+		if (value != null) {
+			return UserRole.valueOf(value);
+		}else {
+			return this.defaultRole;
+		}
 	}
 		
 }

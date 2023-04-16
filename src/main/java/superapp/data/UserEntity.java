@@ -1,6 +1,8 @@
 package superapp.data;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -11,7 +13,8 @@ public class UserEntity {
 	String id;
 	String email;
 	String username;
-	String role; 
+	@Enumerated(EnumType.STRING)
+	UserRole role;
 	String avatar;
 	
 	public String getId() {
@@ -32,10 +35,11 @@ public class UserEntity {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getRole() {
+	
+	public UserRole getRole() {
 		return role;
 	}
-	public void setRole(String role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 	public String getAvatar() {
