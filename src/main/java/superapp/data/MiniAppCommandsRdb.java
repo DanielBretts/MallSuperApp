@@ -69,6 +69,7 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 		/*
 		 * 	The result for entity.setId()
 		 * 	id = superapp_miniApp_internalCommandID
+		 * 
 		 */
 		String id = command.getCommandId().getSuperapp() + "_" + 
 					command.getCommandId().getMiniApp()  + "_" + 
