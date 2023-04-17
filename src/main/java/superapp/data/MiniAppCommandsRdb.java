@@ -48,7 +48,7 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 		boundary.setCommand(entity.getCommand());
 		boundary.setCommandId(new CommandID(entity.getMiniApp()));
 		boundary.getCommandId().setSuperapp(this.superapp);
-		boundary.getCommandId().setInternalCommandID(entity.getCommandId());
+		boundary.getCommandId().setInternalCommandID(entity.getId());
 		boundary.setInvocationTimeStamp(entity.getInvocationTimeStamp());
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		boundary.setInvokedBy(entity.getInvokedBy());
@@ -65,7 +65,19 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 			entity.setInvokedBy(command.getInvokedBy());
 		}
 		entity.setMiniApp(command.getCommandId().getMiniApp());
-		entity.setCommandId(command.getCommandId().getInternalCommandID());
+		
+		/*
+		 * 	The result for entity.setId()
+		 * 	id = superapp_miniApp_internalCommandID
+		 */
+		String id = command.getCommandId().getSuperapp() + "_" + 
+					command.getCommandId().getMiniApp()  + "_" + 
+					command.getCommandId().getInternalCommandID();
+		
+		entity.setId(id);
+		
+		entity.setInternalCommandId(command.getCommandId().getInternalCommandID());
+		
 		if (command.getTargetObject() != null) {
 			command.getTargetObject().get("objectId").setSuperapp(this.superapp);
 			entity.setTargetObject(command.getTargetObject());

@@ -18,7 +18,8 @@ import superapp.utils.ConverterOfMapToJson;
 @Table(name = "MINIAPP_COMMANDS")
 public class MiniAppCommandEntity {
 	@Id
-	private String commandId;
+	private String id;
+	private String internalCommandId;
 	private String miniApp;
 	private String command;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -41,13 +42,21 @@ public class MiniAppCommandEntity {
 	}
 
 
-	public String getCommandId() {
-		return commandId;
+	public String getId() {
+		return id;
 	}
 
 
-	public void setCommandId(String commandId) {
-		this.commandId = commandId;
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getInternalCommandId() {
+		return internalCommandId;
+	}
+
+	public void setInternalCommandId(String internalCommandId) {
+		this.internalCommandId = internalCommandId;
 	}
 
 
