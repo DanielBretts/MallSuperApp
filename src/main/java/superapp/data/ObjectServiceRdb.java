@@ -35,7 +35,7 @@ public class ObjectServiceRdb implements ObjectService{
 
 	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
-		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getId()).setSuperapp(superapp));
+		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getInternalObjectId()).setSuperapp(superapp));
 		ob.setType(entity.getType());
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
@@ -51,8 +51,8 @@ public class ObjectServiceRdb implements ObjectService{
 	private ObjectEntity toEntity(ObjectBoundary object) throws UserNotFoundException {
 		ObjectEntity entity = new ObjectEntity();
 		
-		entity.setId(object.getObjectId().getInternalObjectId());
-		
+		entity.setId(superapp + object.getObjectId().getInternalObjectId());
+		entity.setInternalObjectId(object.getObjectId().getInternalObjectId());
 		if (object.getType() != null) {
 			entity.setType(object.getType());
 		}else {
@@ -61,12 +61,12 @@ public class ObjectServiceRdb implements ObjectService{
 		if (object.getAlias() != null) {
 			entity.setAlias(object.getAlias());
 		}else {
-			object.setAlias(null);
+			entity.setAlias(null);
 		}
 		if (object.getActive() != null) {
 			entity.setActive(object.getActive());
 		}else {
-			object.setActive(true);
+			entity.setActive(true);
 		}		
 		if (object.getLocation() != null) {
 			entity.setLat(object.getLocation().getLat());
@@ -97,15 +97,15 @@ public class ObjectServiceRdb implements ObjectService{
 		ObjectEntity entity = (ObjectEntity) toEntity(object);
 		entity.setCreationTimestamp(new Date());
 		entity = this.objectCrud.save(entity);
-		return (ObjectBoundary) this.toBoundary(entity);
+		return (ObjectBoundary) toBoundary(entity);
 	}
 
 	@Override
 	@Transactional
 	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectEntity existing = this.objectCrud
-				.findById(id)
-				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + id));
+				.findById(superApp+id)
+				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + (superApp+id)));
 		if(ob.getType() != null) {
 			existing.setType(ob.getType());
 		}
@@ -125,11 +125,12 @@ public class ObjectServiceRdb implements ObjectService{
 		existing = this.objectCrud.save(existing);
 		return (ObjectBoundary) this.toBoundary(existing);
 	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
 	    return this.objectCrud
-	    		.findById(id)
+	    		.findById(superApp+id)
 				.map(this::toBoundary);
 	}
 	

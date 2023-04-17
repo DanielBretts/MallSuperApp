@@ -19,6 +19,7 @@ import superapp.utils.ConverterOfMapToJson;
 public class ObjectEntity {
 	@Id
 	private String id;
+	private String internalObjectId;
 	private String type;
 	private String alias;
 	private boolean active;
@@ -42,6 +43,14 @@ public class ObjectEntity {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getInternalObjectId() {
+		return internalObjectId;
+	}
+
+	public void setInternalObjectId(String internalObjectId) {
+		this.internalObjectId = internalObjectId;
 	}
 
 	public String getType() {
