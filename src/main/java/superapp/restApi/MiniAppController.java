@@ -1,4 +1,4 @@
-package superapp.controllers;
+package superapp.restApi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import superapp.boundaries.MiniAppCommandBoundary;
 import superapp.data.CommandID;
 import superapp.logic.MiniAppCommandsService;
 import superapp.logic.UsersService;
+import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 @RestController
 public class MiniAppController {

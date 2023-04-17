@@ -1,9 +1,8 @@
-package superapp.boundaries;
+package superapp.restApi.boundaries;
 
 import superapp.data.UserId;
 
 public class UserBoundary {
-	String email;
 	String role; 
 	String username;
 	String avatar; 
@@ -13,21 +12,12 @@ public class UserBoundary {
 	
 	}
 
-	public UserBoundary(String email, String role, String username, String avatar, UserId userId) {
+	public UserBoundary(String role, String username, String avatar, UserId userId) {
 		super();
-		this.email = email;
 		this.role = role;
 		this.username = username;
 		this.avatar = avatar;
 		this.userId = userId;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public String getRole() {
@@ -64,7 +54,7 @@ public class UserBoundary {
 
 	@Override
 	public String toString() {
-		return "UserBoundary [email=" + email + ", role=" + role + ", username=" + username + ", avatar=" + avatar
+		return "UserBoundary [role=" + role + ", username=" + username + ", avatar=" + avatar
 				+ ", userId=" + userId + "]";
 	}
 	

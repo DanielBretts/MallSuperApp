@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import superapp.logic.UserCrud;
 import superapp.logic.UsersService;
-import superapp.boundaries.UserBoundary;
-import superapp.exceptions.UserNotFoundException;
+import superapp.restApi.boundaries.UserBoundary;
+import superapp.data.exceptions.UserNotFoundException;
 
 @Service
 public class UsersRdb implements UsersService{
@@ -98,7 +98,6 @@ public class UsersRdb implements UsersService{
 	public UserBoundary toBoundary(UserEntity entity) {
 		UserBoundary ub = new UserBoundary();		
 		ub.setAvatar(entity.getAvatar());
-		ub.setEmail(entity.getEmail());
 		ub.setRole(entity.getRole().toString());
 		ub.setUsername(entity.getUsername());
 		ub.setUserId(new UserId(entity.getEmail()));
@@ -120,10 +119,10 @@ public class UsersRdb implements UsersService{
 		}else {
 			ue.setUsername(boundary.getUsername());
 		}
-		if(boundary.getEmail() == null) {
+		if(boundary.getUserId().getEmail() == null) {
 			ue.setEmail(boundary.getUsername() + "@email.com");
 		}else {
-			ue.setEmail(boundary.getEmail());
+			ue.setEmail(boundary.getUserId().getEmail());
 		}	
 		if (boundary.getUserId().getSuperapp() == null) {
 			ue.setId(this.superapp + ue.getEmail());

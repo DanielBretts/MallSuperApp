@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectService;
-import superapp.boundaries.ObjectBoundary;
-import superapp.exceptions.ObjectNotFoundException;
-import superapp.exceptions.UserNotFoundException;
+import superapp.restApi.boundaries.ObjectBoundary;
+import superapp.data.exceptions.ObjectNotFoundException;
+import superapp.data.exceptions.UserNotFoundException;
 
 
 @Service
@@ -43,8 +44,11 @@ public class ObjectServiceRdb implements ObjectService{
 		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
 		UserId userId =  new UserId();
 		userId.setSuperapp(superapp);
-		userId.setEmail(entity.getCreatedBy());
-		ob.setCreatedBy(userId);
+		if(entity.getCreatedBy() != null)
+				userId.setEmail(entity.getCreatedBy().get("userId").getEmail());				
+		Map<String,UserId> userMap = new HashMap<>();
+		userMap.put("userId", userId);
+		ob.setCreatedBy(userMap);
 		ob.setObjectDetails(entity.getObjectDetails());
 		return ob;
 	}

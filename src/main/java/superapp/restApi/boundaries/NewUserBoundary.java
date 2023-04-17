@@ -1,4 +1,4 @@
-package superapp.boundaries;
+package superapp.restApi.boundaries;
 
 import superapp.data.UserId;
 
@@ -8,7 +8,6 @@ public class NewUserBoundary{
 	private String avatar;
 	private String role;
 	private String email;
-	private UserBoundary userBoundary;
 	
 	public NewUserBoundary() {
 	}
@@ -20,7 +19,6 @@ public class NewUserBoundary{
 		this.avatar = avatar;
 		this.email = email;
 		this.role = role;
-		this.userBoundary = new UserBoundary(email,role,username,avatar,new UserId(email));
 	}
 
 
@@ -51,16 +49,6 @@ public class NewUserBoundary{
 
 	public void setRole(String role) {
 		this.role = role;
-	}
-
-
-	public UserBoundary getUserBoundary() {
-		return userBoundary;
-	}
-
-
-	public void setUserBoundary(UserBoundary userBoundary) {
-		this.userBoundary = userBoundary;
 	}
 
 

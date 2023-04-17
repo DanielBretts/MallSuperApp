@@ -1,4 +1,4 @@
-package superapp.controllers;
+package superapp.restApi;
 
 import java.util.List;
 
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import superapp.boundaries.MiniAppCommandBoundary;
-import superapp.boundaries.UserBoundary;
 import superapp.logic.*;
+import superapp.restApi.boundaries.MiniAppCommandBoundary;
+import superapp.restApi.boundaries.UserBoundary;
 
 @RestController
 public class AdminUserController {

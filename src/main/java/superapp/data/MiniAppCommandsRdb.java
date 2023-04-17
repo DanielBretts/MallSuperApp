@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import superapp.boundaries.MiniAppCommandBoundary;
 import superapp.logic.MiniAppCommandsCrud;
 import superapp.logic.MiniAppCommandsService;
+import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 @Service
 public class MiniAppCommandsRdb implements MiniAppCommandsService {
@@ -49,7 +49,7 @@ public class MiniAppCommandsRdb implements MiniAppCommandsService {
 		boundary.setCommandId(new CommandID(entity.getMiniApp()));
 		boundary.getCommandId().setSuperapp(this.superapp);
 		boundary.getCommandId().setInternalCommandID(entity.getId());
-		boundary.setInvocationTimeStamp(entity.getInvocationTimeStamp());
+		boundary.setInvocationTimestamp(entity.getInvocationTimeStamp());
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		boundary.setInvokedBy(entity.getInvokedBy());
 		boundary.setTargetObject(entity.getTargetObject());

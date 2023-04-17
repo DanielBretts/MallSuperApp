@@ -1,4 +1,4 @@
-package superapp.controllers;
+package superapp.restApi;
 
 import java.util.Optional;
 
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import superapp.boundaries.ObjectBoundary;
 import superapp.logic.ObjectService;
+import superapp.restApi.boundaries.ObjectBoundary;
 
 @RestController
 public class ObjectController {

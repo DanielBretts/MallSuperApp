@@ -1,4 +1,4 @@
-package superapp.boundaries;
+package superapp.restApi.boundaries;
 
 import java.util.Date;
 import java.util.Map;
@@ -15,7 +15,7 @@ public class ObjectBoundary{
 	private Boolean active;
 	private Date creationTimestamp;
 	private Location location;
-	private UserId createdBy;
+	private Map<String, UserId> createdBy;
 	private Map<String, Object> objectDetails;
 	
 	
@@ -23,7 +23,7 @@ public class ObjectBoundary{
 	}
 
 	public ObjectBoundary(ObjectId objectId, String type, String alias, Boolean active,
-			Location location, UserId createdBy, Map<String, Object> objectDetails) {
+			Location location, Map<String, UserId> createdBy, Map<String, Object> objectDetails) {
 		super();
 		this.objectId = objectId;
 		this.type = type;
@@ -95,16 +95,13 @@ public class ObjectBoundary{
 		this.location = location;
 	}
 
-
-	public UserId getCreatedBy() {
+	public Map<String, UserId> getCreatedBy() {
 		return createdBy;
 	}
 
-
-	public void setCreatedBy(UserId createdBy) {
+	public void setCreatedBy(Map<String, UserId> createdBy) {
 		this.createdBy = createdBy;
 	}
-
 
 	public Map<String, Object> getObjectDetails() {
 		return objectDetails;

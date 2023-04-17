@@ -27,7 +27,9 @@ public class ObjectEntity {
 	private Date creationTimestamp;
 	private Double lat;
 	private Double lng;
-	private String createdBy;
+	@Convert(converter = ConverterOfMapToJson.class)
+	@Lob
+	private Map<String, UserId> createdBy;
 	
 	@Convert(converter = ConverterOfMapToJson.class)
 	@Lob
@@ -101,12 +103,18 @@ public class ObjectEntity {
 		this.lng = lng;
 	}
 
-	public String getCreatedBy() {
+
+
+	public Map<String, UserId> getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(UserId createdBy) {
-		this.createdBy = createdBy.getEmail();
+	public void setCreatedBy(Map<String, UserId> createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public Map<String, Object> getObjectDetails() {

@@ -3,7 +3,7 @@ package superapp.logic;
 import java.util.List;
 import java.util.Optional;
 
-import superapp.boundaries.ObjectBoundary;
+import superapp.restApi.boundaries.ObjectBoundary;
 
 public interface ObjectService {
 	
