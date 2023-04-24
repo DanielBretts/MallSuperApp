@@ -36,36 +36,37 @@ public class ObjectServiceRdb implements ObjectService{
 
 	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
-		ob.setObjectId(new ObjectId().setInternalObjectId(entity.getInternalObjectId()).setSuperapp(superapp));
+		String a = entity.getId();
+		String[] parts = a.split("_");
+		String part1 = parts[0]; // supper app name
+		String part2 = parts[1]; // internal object id
+		ob.setObjectId(new ObjectId().setInternalObjectId(part2).setSuperapp(part1));
 		ob.setType(entity.getType());
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
 		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
-		UserId userId =  new UserId();
-		userId.setSuperapp(superapp);
-		if(entity.getCreatedBy() != null)
-				userId.setEmail(entity.getCreatedBy().get("userId").getEmail());				
-		Map<String,UserId> userMap = new HashMap<>();
-		userMap.put("userId", userId);
-		ob.setCreatedBy(userMap);
+		CreatedBy createdBy_temp = new CreatedBy();
+		createdBy_temp.setUserId(new UserId());
+		createdBy_temp.getUserId().setEmail(entity.getCreatedBy_email());
+		createdBy_temp.getUserId().setSuperapp(superapp);
+		ob.setCreatedBy(createdBy_temp);				
 		ob.setObjectDetails(entity.getObjectDetails());
 		return ob;
 	}
-	private ObjectEntity toEntity(ObjectBoundary object) throws UserNotFoundException {
+	private ObjectEntity toEntity(ObjectBoundary object) throws ObjectNotFoundException,UserNotFoundException {
 		ObjectEntity entity = new ObjectEntity();
 		
-		entity.setId(superapp + object.getObjectId().getInternalObjectId());
-		entity.setInternalObjectId(object.getObjectId().getInternalObjectId());
+		entity.setId(superapp +'_'+ object.getObjectId().getInternalObjectId());
 		if (object.getType() != null) {
 			entity.setType(object.getType());
 		}else {
-			entity.setType(null);
+			throw new ObjectNotFoundException("Type can not be null");
 		}
 		if (object.getAlias() != null) {
 			entity.setAlias(object.getAlias());
 		}else {
-			entity.setAlias(null);
+			throw new ObjectNotFoundException("Alias can not be null");
 		}
 		if (object.getActive() != null) {
 			entity.setActive(object.getActive());
@@ -80,7 +81,8 @@ public class ObjectServiceRdb implements ObjectService{
 			entity.setLng((double) 0);
 		}
 		if(object.getCreatedBy() != null) {
-			entity.setCreatedBy(object.getCreatedBy());
+			entity.setCreatedBy_email(object.getCreatedBy().getUserId().getEmail());
+			entity.setCreatedBy_superApp(superapp);
 		}else {
 			throw new UserNotFoundException("The user this action was created by is not a valid user");
 		}
@@ -108,7 +110,7 @@ public class ObjectServiceRdb implements ObjectService{
 	@Transactional
 	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectEntity existing = this.objectCrud
-				.findById(superApp+id)
+				.findById(superApp+'_'+id)
 				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + (superApp+id)));
 		if(ob.getType() != null) {
 			existing.setType(ob.getType());
@@ -134,7 +136,7 @@ public class ObjectServiceRdb implements ObjectService{
 	@Transactional(readOnly = true)
 	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
 	    return this.objectCrud
-	    		.findById(superApp+id)
+	    		.findById(superApp+'_'+id)
 				.map(this::toBoundary);
 	}
 	
