@@ -20,7 +20,7 @@ import superapp.data.exceptions.UserNotFoundException;
 
 
 @Service
-public class ObjectServiceRdb implements ObjectService{
+public class ObjectServiceDb implements ObjectService{
 	private ObjectCrud objectCrud;
 	private String superapp;
 

@@ -4,33 +4,23 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import superapp.utils.ConverterOfMapToJson;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
 
-@Entity
-@Table(name = "SuperAppObjectEntity")
+@Document(collection = "SuperAppObject")
 public class ObjectEntity {
 	@Id
 	private String id;
 	private String type;
 	private String alias;
 	private boolean active;
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationTimestamp;
 	private Double lat;
 	private Double lng;
 	private String createdBy_email;
 	private String createdBy_superApp;
-	
-	@Convert(converter = ConverterOfMapToJson.class)
-	@Lob
+
 	private Map<String, Object> objectDetails;
 
 	public ObjectEntity() {

@@ -1,19 +1,14 @@
 package superapp.data;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
-@Entity
-@Table(name = "Users")
+@Document(collection = "Users")
 public class UserEntity {
 	@Id
 	String id;
 	String email;
 	String username;
-	@Enumerated(EnumType.STRING)
 	UserRole role;
 	String avatar;
 	

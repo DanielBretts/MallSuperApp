@@ -1,9 +1,9 @@
 package superapp.logic;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 
 import superapp.data.ObjectEntity;
 
-public interface ObjectCrud extends CrudRepository<ObjectEntity, String>{
+public interface ObjectCrud extends ListCrudRepository<ObjectEntity, String>{
 
 }

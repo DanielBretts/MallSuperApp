@@ -15,7 +15,7 @@ import superapp.restApi.boundaries.UserBoundary;
 import superapp.data.exceptions.UserNotFoundException;
 
 @Service
-public class UsersRdb implements UsersService{
+public class UsersDb implements UsersService{
 	
 	private UserCrud userCrud;
 	private UserRole defaultRole;

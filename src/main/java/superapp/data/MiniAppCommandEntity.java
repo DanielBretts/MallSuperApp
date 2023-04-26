@@ -2,36 +2,21 @@ package superapp.data;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import superapp.utils.ConverterOfMapToJson;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
-@Entity
-@Table(name = "MINIAPP_COMMANDS")
+@Document(collection = "MiniApp")
 public class MiniAppCommandEntity {
 	@Id
 	private String id;
 	private String internalCommandId;
 	private String miniApp;
 	private String command;
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date invocationTimeStamp;
-	@Convert(converter = ConverterOfMapToJson.class)
-	@Lob
 	private Map<String,ObjectId> targetObject;
-	@Convert(converter = ConverterOfMapToJson.class)
-	@Lob
 	private Map<String,UserId> invokedBy;
-	@Convert(converter = ConverterOfMapToJson.class)
-	@Lob
 	private Map<String,Object> commandAttributes;
 	
 	

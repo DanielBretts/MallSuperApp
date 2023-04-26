@@ -1,12 +1,10 @@
 package superapp.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +16,9 @@ import superapp.logic.MiniAppCommandsCrud;
 import superapp.logic.MiniAppCommandsService;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
+
 @Service
-public class MiniAppCommandsRdb implements MiniAppCommandsService {
+public class MiniAppCommandsDb implements MiniAppCommandsService {
 	
 	private MiniAppCommandsCrud miniAppCommandsCrud;
 	private String superapp;
