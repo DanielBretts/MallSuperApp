@@ -6,7 +6,6 @@ import java.util.Map;
 import superapp.data.CreatedBy;
 import superapp.data.Location;
 import superapp.data.ObjectId;
-import superapp.data.UserId;
 
 public class ObjectBoundary{
 	
