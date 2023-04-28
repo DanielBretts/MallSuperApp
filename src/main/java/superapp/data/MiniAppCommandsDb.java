@@ -10,24 +10,24 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import superapp.data.exceptions.MiniAppCommandException;
 import superapp.logic.MiniAppCommandsCrud;
 import superapp.logic.MiniAppCommandsService;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
-
 @Service
 public class MiniAppCommandsDb implements MiniAppCommandsService {
-	
+
 	private MiniAppCommandsCrud miniAppCommandsCrud;
 	private String superapp;
-	
+	private char delimeter = '_';
+
 	@Autowired
 	public void setMiniAppCommandsCrud(MiniAppCommandsCrud miniAppCommandsCrud) {
 		this.miniAppCommandsCrud = miniAppCommandsCrud;
 	}
-	
+
 	@Value("${spring.application.name:2023b.shir.zur}")
 	public void setSuperapp(String name) {
 		this.superapp = name;
@@ -57,43 +57,45 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 
 	private MiniAppCommandEntity toEntity(MiniAppCommandBoundary command) {
 		MiniAppCommandEntity entity = new MiniAppCommandEntity();
-		entity.setCommand(command.getCommand());
+		if (command.getCommand() == null) {
+			throw new MiniAppCommandException("Command can not be empty");
+		} else {
+			entity.setCommand(command.getCommand());
+		}
 		entity.setInvocationTimeStamp(new Date());
-		if(command.getInvokedBy() != null) {
-			command.getInvokedBy().get("userId").setSuperapp(this.superapp);
+		if (command.getInvokedBy() == null || command.getInvokedBy().getUserId().getEmail() == null) {
+			throw new MiniAppCommandException("InvokedBy can not be empty");
+		} else {
+			command.getInvokedBy().getUserId().setSuperapp(this.superapp);
 			entity.setInvokedBy(command.getInvokedBy());
 		}
 		entity.setMiniApp(command.getCommandId().getMiniApp());
-		
+
 		/*
-		 * 	The result for entity.setId()
-		 * 	id = superapp_miniApp_internalCommandID
+		 * The result for entity.setId() id = superapp_miniApp_internalCommandID
 		 * 
 		 */
-		String id = command.getCommandId().getSuperapp() + "_" + 
-					command.getCommandId().getMiniApp()  + "_" + 
-					command.getCommandId().getInternalCommandID();
-		
+		String id = command.getCommandId().getSuperapp() + delimeter + command.getCommandId().getMiniApp() + delimeter
+				+ command.getCommandId().getInternalCommandID();
+
 		entity.setId(id);
-		
 		entity.setInternalCommandId(command.getCommandId().getInternalCommandID());
-		
-		if (command.getTargetObject() != null) {
-			command.getTargetObject().get("objectId").setSuperapp(this.superapp);
+		if (command.getTargetObject() == null
+				|| command.getTargetObject().getObjectId().getInternalObjectId() == null) {
+			throw new MiniAppCommandException("TargetObject can not be empty");
+		} else {
+			command.getTargetObject().getObjectId().setSuperapp(this.superapp);
 			entity.setTargetObject(command.getTargetObject());
-		}else {
-			entity.setTargetObject(new HashMap<>());
 		}
 		if (command.getCommandAttributes() != null) {
 			entity.setCommandAttributes(command.getCommandAttributes());
-		}else {
+		} else {
 			entity.setCommandAttributes(new HashMap<>());
 		}
 		return entity;
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllCommands() {
 		Iterable<MiniAppCommandEntity> iterable = this.miniAppCommandsCrud.findAll();
 		Iterator<MiniAppCommandEntity> iterator = iterable.iterator();
@@ -104,26 +106,24 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 		}
 		return list;
 	}
-	
+
 	@Override
-	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
-		
+
 		Iterable<MiniAppCommandEntity> iterable = this.miniAppCommandsCrud.findAll();
 		Iterator<MiniAppCommandEntity> iterator = iterable.iterator();
 		List<MiniAppCommandBoundary> list = new ArrayList<>();
 		while (iterator.hasNext()) {
 			MiniAppCommandBoundary boundary = toBoundary(iterator.next());
-			if(boundary.getCommandId().getMiniApp().equals(miniAppName))		
+			if (boundary.getCommandId().getMiniApp().equals(miniAppName))
 				list.add(boundary);
 		}
 		return list;
 	}
-	
 
 	@Override
 	public void deleteAllCommands() {
-		this.miniAppCommandsCrud.deleteAll();		
+		this.miniAppCommandsCrud.deleteAll();
 	}
 
 }

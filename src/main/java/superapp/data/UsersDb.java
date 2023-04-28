@@ -3,15 +3,16 @@ package superapp.data;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import superapp.logic.UserCrud;
 import superapp.logic.UsersService;
 import superapp.restApi.boundaries.UserBoundary;
+import superapp.data.exceptions.UserParamException;
 import superapp.data.exceptions.UserNotFoundException;
 
 @Service
@@ -20,6 +21,7 @@ public class UsersDb implements UsersService{
 	private UserCrud userCrud;
 	private UserRole defaultRole;
 	private String superapp;
+	private char delimeter = '_'; 
 	
 	@Autowired
 	public void setUserCrud(UserCrud userCrud) {
@@ -40,44 +42,44 @@ public class UsersDb implements UsersService{
 	public UserBoundary createUser(UserBoundary user) {
 		UserEntity entity = (UserEntity) this.toEntity(user);
 		if (entity.getAvatar() == null) {
-			entity.setAvatar(user.getUsername().substring(0,2));
+			throw new UserParamException("Avatar can not be empty");
 		}
 		entity = this.userCrud.save(entity);
 		return (UserBoundary) toBoundary(entity);
 	}
-
+	
 	@Override
-	public UserBoundary login(String userSuperApp, String userEmail) {
-		UserEntity existing = this.userCrud
-				.findById(userSuperApp + userEmail)
-				.orElseThrow(()->new UserNotFoundException("Could not find user by this id: " + userSuperApp + userEmail));
-		return toBoundary(existing);
+	public Optional<UserBoundary> login(String userSuperApp, String userEmail)  {
+		return this.userCrud
+			.findById(userSuperApp+delimeter+userEmail)
+			.map(this::toBoundary);
 	}
 
 	@Override
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
-		UserEntity entity = this.userCrud
-				.findById(userSuperApp+userEmail)
-				.orElseThrow(()->new UserNotFoundException("could not find user with mail " + userEmail));
-		entity.setRole(toEntityAsEnum(update.getRole()));
-		if(update.getAvatar() != null) {
-			entity.setAvatar(update.getAvatar());
-		}
-		if(update.getUsername() != null) {
-			entity.setUsername(update.getUsername());
-		}
-		UserId updatedUserId = update.getUserId();
-		if(updatedUserId != null) {
-			entity.setId(updatedUserId.getSuperapp()+updatedUserId.getEmail());
-		}else {
-			//entity.setId(updatedUserId.getSuperapp()+updatedUserId.getEmail());
-		}
-		entity = this.userCrud.save(entity);
-		return this.toBoundary(entity);
+		System.err.println(update.toString());
+			UserEntity entity = this.userCrud
+					.findById(userSuperApp+delimeter+userEmail)
+					.orElseThrow(()->new UserNotFoundException("could not find URL with path /" + userSuperApp + "/" + userEmail));
+			entity.setRole(toEntityAsEnum(update.getRole()));
+			if(update.getAvatar() != null) {
+				entity.setAvatar(update.getAvatar());
+			}
+			if(update.getUsername() != null) {
+				entity.setUsername(update.getUsername());
+			}
+			UserId updatedUserId = update.getUserId();
+			if(updatedUserId != null && updatedUserId.getEmail() != null) {
+				System.err.println(superapp);
+				entity.setId(this.superapp+delimeter+userEmail);
+			}else {
+				throw new UserNotFoundException("User id field is not valid");
+			}
+			entity = this.userCrud.save(entity);
+			return this.toBoundary(entity);
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers() {
 		Iterable<UserEntity> iterable = this.userCrud.findAll();
 		Iterator<UserEntity> iterator = iterable.iterator();
@@ -90,7 +92,6 @@ public class UsersDb implements UsersService{
 	}
 
 	@Override
-	@Transactional
 	public void deleteAllUsers() {
 		userCrud.deleteAll();
 	}
@@ -100,12 +101,22 @@ public class UsersDb implements UsersService{
 		ub.setAvatar(entity.getAvatar());
 		ub.setRole(entity.getRole().toString());
 		ub.setUsername(entity.getUsername());
-		ub.setUserId(new UserId(entity.getEmail()));
+		ub.setUserId(new UserId(getEmailFromId(entity.getId())));
 		ub.getUserId().setSuperapp(superapp);
 		return ub;
 	}
+	
+	public String getEmailFromId(String originalString) {
+		//String originalString = "superappName_email";
+		int index = originalString.indexOf(delimeter);
+		if (index != -1) { // Check if the delimiter is found
+		   return originalString.substring(index + 1);
+		    //newString is now "email"
+		}
+		return null;
+	}
 
-	public UserEntity toEntity(UserBoundary boundary) {	
+	public UserEntity toEntity(UserBoundary boundary){	
 		UserEntity ue = new UserEntity();
 	
 		if(boundary.getAvatar() == null) {
@@ -115,20 +126,14 @@ public class UsersDb implements UsersService{
 		}
 		ue.setRole(toEntityAsEnum(boundary.getRole()));
 		if(boundary.getUsername() == null) {
-			ue.setUsername(null);
+			throw new UserParamException("Username can not be empty");
 		}else {
 			ue.setUsername(boundary.getUsername());
 		}
-		if(boundary.getUserId().getEmail() == null) {
-			ue.setEmail(boundary.getUsername() + "@email.com");
+		if(boundary.getUserId() == null || boundary.getUserId().getEmail() == null) {
+			throw new UserParamException("User id field is not valid");
 		}else {
-			ue.setEmail(boundary.getUserId().getEmail());
-		}	
-		if (boundary.getUserId().getSuperapp() == null) {
-			ue.setId(this.superapp + ue.getEmail());
-		}
-		else {
-			ue.setId(boundary.getUserId().getSuperapp() + boundary.getUserId().getEmail()); 
+			ue.setId(this.superapp + delimeter + boundary.getUserId().getEmail());
 		}
 		return ue;
 	}

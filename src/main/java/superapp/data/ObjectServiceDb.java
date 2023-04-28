@@ -1,17 +1,13 @@
 package superapp.data;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectService;
 import superapp.restApi.boundaries.ObjectBoundary;
@@ -96,7 +92,6 @@ public class ObjectServiceDb implements ObjectService{
 	}
 
 	@Override
-	@Transactional//(readOnly = false)
 	public ObjectBoundary creatObject(ObjectBoundary object) {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
 		object.getObjectId().setSuperapp(superapp);
@@ -107,7 +102,6 @@ public class ObjectServiceDb implements ObjectService{
 	}
 
 	@Override
-	@Transactional
 	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectEntity existing = this.objectCrud
 				.findById(superApp+'_'+id)
@@ -133,7 +127,6 @@ public class ObjectServiceDb implements ObjectService{
 	}
 	
 	@Override
-	@Transactional(readOnly = true)
 	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
 	    return this.objectCrud
 	    		.findById(superApp+'_'+id)
@@ -141,16 +134,21 @@ public class ObjectServiceDb implements ObjectService{
 	}
 	
 	@Override
-	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects() {
-		Iterable<ObjectEntity> iterable = this.objectCrud.findAll();
-		Iterator<ObjectEntity> iterator = iterable.iterator();
-		List<ObjectBoundary> rv = new ArrayList<>();
-		while (iterator.hasNext()) {
-			ObjectBoundary objectBoundary = (ObjectBoundary) toBoundary(iterator.next());
-			rv.add(objectBoundary);
-		}
-		return rv;
+		return this.objectCrud.findAll()
+				.stream() // Stream<ObjectEntity>
+//				.peek(System.err::println) // Stream<ObjectEntity>
+				.map(this::toBoundary) // Stream<ObjectBound>
+//				.peek(System.err::println) // Stream<ObjectBound>
+				.toList(); //List<Message>
+//		Iterable<ObjectEntity> iterable = this.objectCrud.findAll();
+//		Iterator<ObjectEntity> iterator = iterable.iterator();
+//		List<ObjectBoundary> rv = new ArrayList<>();
+//		while (iterator.hasNext()) {
+//			ObjectBoundary objectBoundary = (ObjectBoundary) toBoundary(iterator.next());
+//			rv.add(objectBoundary);
+//		}
+//		return rv;
 	}
 
 	@Override
