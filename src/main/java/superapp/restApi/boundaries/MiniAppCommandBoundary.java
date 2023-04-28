@@ -1,27 +1,36 @@
 package superapp.restApi.boundaries;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import superapp.data.CommandID;
-import superapp.data.ObjectId;
-import superapp.data.UserId;
 
 public class MiniAppCommandBoundary {
 	private CommandID commandId;
 	private String command;
 	private Date invocationTimestamp;
-	private Map<String,ObjectId> targetObject;
-	private Map<String,UserId> invokedBy;
+	private TargetObjectBoundary targetObject;
+	private InvokedBy invokedBy;
 	private Map<String,Object> commandAttributes;
 	
 	public MiniAppCommandBoundary() {
 		
 	}
 
-	public MiniAppCommandBoundary(CommandID commandId, String command, Map<String,ObjectId> targetObject,
-			Map<String,UserId> invokedBy, Map<String, Object> commandAttributes) {
+	//constructor without commandId
+	public MiniAppCommandBoundary(String command, TargetObjectBoundary targetObject,
+			InvokedBy invokedBy, Map<String, Object> commandAttributes) {
+		super();
+		this.command = command;
+		this.targetObject = targetObject;
+		this.invocationTimestamp = new Date();
+		this.invokedBy = invokedBy;
+		this.commandAttributes = commandAttributes;
+	}
+	
+	
+	public MiniAppCommandBoundary(CommandID commandId, String command, TargetObjectBoundary targetObject,
+			InvokedBy invokedBy, Map<String, Object> commandAttributes) {
 		super();
 		this.commandId = commandId;
 		this.command = command;
@@ -57,23 +66,21 @@ public class MiniAppCommandBoundary {
 		this.invocationTimestamp = invocationTimeStamp;
 	}
 
-	public Map<String, ObjectId> getTargetObject() {
+	public TargetObjectBoundary getTargetObject() {
 		return targetObject;
 	}
 
-	public void setTargetObject(Map<String, ObjectId> targetObject) {
+	public void setTargetObject(TargetObjectBoundary targetObject) {
 		this.targetObject = targetObject;
 	}
 
-	public Map<String, UserId> getInvokedBy() {
+	public InvokedBy getInvokedBy() {
 		return invokedBy;
 	}
 
-	public void setInvokedBy(Map<String, UserId> invokedBy) {
+	public void setInvokedBy(InvokedBy invokedBy) {
 		this.invokedBy = invokedBy;
 	}
-
-	
 
 	public Map<String, Object> getCommandAttributes() {
 		return commandAttributes;
@@ -83,6 +90,10 @@ public class MiniAppCommandBoundary {
 		this.commandAttributes = commandAttributes;
 	}
 
-	
-	
+	@Override
+	public String toString() {
+		return "MiniAppCommandBoundary [commandId=" + commandId + ", command=" + command + ", invocationTimestamp="
+				+ invocationTimestamp + ", targetObject=" + targetObject + ", invokedBy=" + invokedBy
+				+ ", commandAttributes=" + commandAttributes + "]";
+	}	
 }

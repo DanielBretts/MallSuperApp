@@ -1,5 +1,7 @@
 package superapp.restApi;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +44,7 @@ public class UserController {
 	@RequestMapping(path = { "/superapp/users/login/{superapp}/{email}" },
 			method = { RequestMethod.GET },
 			produces = {MediaType.APPLICATION_JSON_VALUE })
-	public UserBoundary getUserBoundaryByEmail(@PathVariable("superapp") String superapp,
+	public Optional<UserBoundary> getUserBoundaryByEmail(@PathVariable("superapp") String superapp,
 			@PathVariable("email") String email) {
 		/*
 		 * Need to look for an UserId by SuperApp & Email
