@@ -19,6 +19,7 @@ import superapp.data.exceptions.UserNotFoundException;
 public class ObjectServiceDb implements ObjectService{
 	private ObjectCrud objectCrud;
 	private String superapp;
+	private String delimeter = "_"; 
 
 
 	@Autowired
@@ -33,7 +34,7 @@ public class ObjectServiceDb implements ObjectService{
 	private ObjectBoundary toBoundary(ObjectEntity entity) {
 		ObjectBoundary ob = new ObjectBoundary();
 		String a = entity.getId();
-		String[] parts = a.split("_");
+		String[] parts = a.split(delimeter);
 		String part1 = parts[0]; // supper app name
 		String part2 = parts[1]; // internal object id
 		ob.setObjectId(new ObjectId().setInternalObjectId(part2).setSuperapp(part1));
@@ -53,7 +54,7 @@ public class ObjectServiceDb implements ObjectService{
 	private ObjectEntity toEntity(ObjectBoundary object) throws ObjectNotFoundException,UserNotFoundException {
 		ObjectEntity entity = new ObjectEntity();
 		
-		entity.setId(superapp +'_'+ object.getObjectId().getInternalObjectId());
+		entity.setId(superapp +delimeter+ object.getObjectId().getInternalObjectId());
 		if (object.getType() != null) {
 			entity.setType(object.getType());
 		}else {
@@ -104,7 +105,7 @@ public class ObjectServiceDb implements ObjectService{
 	@Override
 	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectEntity existing = this.objectCrud
-				.findById(superApp+'_'+id)
+				.findById(superApp+delimeter+id)
 				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + (superApp+id)));
 		if(ob.getType() != null) {
 			existing.setType(ob.getType());
@@ -129,7 +130,7 @@ public class ObjectServiceDb implements ObjectService{
 	@Override
 	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id) {
 	    return this.objectCrud
-	    		.findById(superApp+'_'+id)
+	    		.findById(superApp+delimeter+id)
 				.map(this::toBoundary);
 	}
 	
@@ -137,18 +138,8 @@ public class ObjectServiceDb implements ObjectService{
 	public List<ObjectBoundary> getAllObjects() {
 		return this.objectCrud.findAll()
 				.stream() // Stream<ObjectEntity>
-//				.peek(System.err::println) // Stream<ObjectEntity>
 				.map(this::toBoundary) // Stream<ObjectBound>
-//				.peek(System.err::println) // Stream<ObjectBound>
 				.toList(); //List<Message>
-//		Iterable<ObjectEntity> iterable = this.objectCrud.findAll();
-//		Iterator<ObjectEntity> iterator = iterable.iterator();
-//		List<ObjectBoundary> rv = new ArrayList<>();
-//		while (iterator.hasNext()) {
-//			ObjectBoundary objectBoundary = (ObjectBoundary) toBoundary(iterator.next());
-//			rv.add(objectBoundary);
-//		}
-//		return rv;
 	}
 
 	@Override
