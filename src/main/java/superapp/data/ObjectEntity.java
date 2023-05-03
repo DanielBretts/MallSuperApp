@@ -2,9 +2,12 @@ package superapp.data;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import org.springframework.data.annotation.Id;
 
 
@@ -22,6 +25,8 @@ public class ObjectEntity {
 	private String createdBy_superApp;
 
 	private Map<String, Object> objectDetails;
+	@DBRef
+	private List<ObjectEntity> relatedObjects;
 
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
