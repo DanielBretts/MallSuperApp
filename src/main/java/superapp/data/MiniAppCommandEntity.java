@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import superapp.restApi.boundaries.InvokedBy;
+import superapp.restApi.boundaries.TargetObjectBoundary;
+
 import org.springframework.data.annotation.Id;
 
 @Document(collection = "MiniApp")
@@ -15,17 +19,27 @@ public class MiniAppCommandEntity {
 	private String miniApp;
 	private String command;
 	private Date invocationTimeStamp;
-	private Map<String,ObjectId> targetObject;
-	private Map<String,UserId> invokedBy;
+	private TargetObjectBoundary targetObject;
+	private InvokedBy invokedBy;
 	private Map<String,Object> commandAttributes;
 	
-	
 	public MiniAppCommandEntity() {
-		this.targetObject = new HashMap<>();
-		this.invokedBy = new HashMap<>();
-		this.commandAttributes = new HashMap<>();
+		commandAttributes = new HashMap<>();
 	}
-
+	
+	public MiniAppCommandEntity(String id, String internalCommandId, String miniApp, String command,
+			Date invocationTimeStamp, TargetObjectBoundary targetObject, InvokedBy invokedBy,
+			Map<String, Object> commandAttributes) {
+		super();
+		this.id = id;
+		this.internalCommandId = internalCommandId;
+		this.miniApp = miniApp;
+		this.command = command;
+		this.invocationTimeStamp = invocationTimeStamp;
+		this.targetObject = targetObject;
+		this.invokedBy = invokedBy;
+		this.commandAttributes = commandAttributes;
+	}
 
 	public String getId() {
 		return id;
@@ -74,26 +88,21 @@ public class MiniAppCommandEntity {
 		this.invocationTimeStamp = invocationTimeStamp;
 	}
 
-
-	public Map<String, ObjectId> getTargetObject() {
+	public TargetObjectBoundary getTargetObject() {
 		return targetObject;
 	}
 
-
-	public void setTargetObject(Map<String, ObjectId> targetObject) {
+	public void setTargetObject(TargetObjectBoundary targetObject) {
 		this.targetObject = targetObject;
 	}
 
-
-	public Map<String, UserId> getInvokedBy() {
+	public InvokedBy getInvokedBy() {
 		return invokedBy;
 	}
 
-
-	public void setInvokedBy(Map<String, UserId> invokedBy) {
+	public void setInvokedBy(InvokedBy invokedBy) {
 		this.invokedBy = invokedBy;
 	}
-
 
 	public Map<String, Object> getCommandAttributes() {
 		return commandAttributes;
@@ -104,7 +113,6 @@ public class MiniAppCommandEntity {
 		this.commandAttributes = commandAttributes;
 	}
 	
-	
-	
+
 	
 }

@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 public class UserEntity {
 	@Id
 	String id;
-	String email;
 	String username;
 	UserRole role;
 	String avatar;
@@ -24,13 +23,6 @@ public class UserEntity {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
 	public UserRole getRole() {
 		return role;
 	}
@@ -42,6 +34,10 @@ public class UserEntity {
 	}
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+	@Override
+	public String toString() {
+		return "UserEntity [id=" + id + ", username=" + username + ", role=" + role + ", avatar=" + avatar + "]";
 	}
 	
 	

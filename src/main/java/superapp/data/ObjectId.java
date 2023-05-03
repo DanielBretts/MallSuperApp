@@ -7,6 +7,10 @@ public class ObjectId {
 	public ObjectId() {
 		super();
 	}
+	
+	public ObjectId(String internalObjectId) {
+		this.internalObjectId = internalObjectId;
+	}
 
 	public String getInternalObjectId() {
 		return internalObjectId;

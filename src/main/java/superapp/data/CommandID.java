@@ -7,7 +7,7 @@ import jakarta.annotation.PostConstruct;
 public class CommandID {
 	
 	private String superapp;
-	private String miniApp;
+	private String miniapp;
 	private String internalCommandID;
 
 	public CommandID() {
@@ -16,7 +16,7 @@ public class CommandID {
 
 	public CommandID(String miniApp) {
 		super();
-		this.miniApp = miniApp;
+		this.miniapp = miniApp;
 	}
 	
 	@PostConstruct
@@ -25,11 +25,11 @@ public class CommandID {
 	}
 
 	public String getMiniApp() {
-		return miniApp;
+		return miniapp;
 	}
 
 	public void setMiniApp(String miniApp) {
-		this.miniApp = miniApp;
+		this.miniapp = miniApp;
 	}
 
 	public String getInternalCommandID() {
