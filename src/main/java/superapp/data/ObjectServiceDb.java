@@ -8,15 +8,17 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectService;
+import superapp.logic.ObjectServiceWithBindingCapabilities;
 import superapp.restApi.boundaries.ObjectBoundary;
 import superapp.data.exceptions.ObjectNotFoundException;
 import superapp.data.exceptions.UserNotFoundException;
-
+import java.util.ArrayList;
 
 @Service
-public class ObjectServiceDb implements ObjectService{
+public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	private ObjectCrud objectCrud;
 	private String superapp;
 	private String delimeter = "_"; 
@@ -145,6 +147,52 @@ public class ObjectServiceDb implements ObjectService{
 	@Override
 	public void deleteAllObjects() {
 		this.objectCrud.deleteAll();
+	}
+	@Override
+	public void bind(String InternalObjectIdOrigin, String InternalObjectIdChildren) {
+		ObjectEntity origin = 
+				  this.objectCrud
+					.findById(InternalObjectIdOrigin)
+					.orElseThrow(()->new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
+
+		ObjectEntity children= 
+				this.objectCrud
+				.findById(InternalObjectIdChildren)
+				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
+		
+		origin.addChildren(children);
+				
+		this.objectCrud.save(origin);
+		
+	}
+	@Override
+	public List<ObjectBoundary> getAllChildren(String InternalObjectIdOrigin) {
+		ObjectEntity origin = 
+				  this.objectCrud
+					.findById(InternalObjectIdOrigin)
+					.orElseThrow(()->new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
+
+		List<ObjectEntity> relatedObjects = origin
+			.getRelatedObjects();
+		
+		List<ObjectBoundary> rv = new ArrayList<>();
+		for (ObjectEntity entity : relatedObjects) {
+			rv.add(this.toBoundary(entity));
+		}
+		return rv;
+	}
+	@Override
+	public Optional<ObjectBoundary> getOrigin(String InternalObjectIdChildren) {
+		ObjectEntity children= 
+				this.objectCrud
+				.findById(InternalObjectIdChildren)
+				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
+		
+		Optional<ObjectEntity> originOptional = this.objectCrud
+			.findAllByChildrenContains(children);
+		
+		return originOptional
+				.map(this::toBoundary);
 	}
 
 

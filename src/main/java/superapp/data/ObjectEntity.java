@@ -1,5 +1,6 @@
 package superapp.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ public class ObjectEntity {
 
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
+		this.relatedObjects = new ArrayList<>();
 	}
 
 	public String getId() {
@@ -114,6 +116,20 @@ public class ObjectEntity {
 
 	public void setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
+	}
+	
+	
+
+	public List<ObjectEntity> getRelatedObjects() {
+		return relatedObjects;
+	}
+
+	public void setRelatedObjects(List<ObjectEntity> relatedObjects) {
+		this.relatedObjects = relatedObjects;
+	}
+	
+	public void addChildren(ObjectEntity related) {
+				this.relatedObjects.add(related);
 	}
 
 	@Override
