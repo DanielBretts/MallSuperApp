@@ -1,0 +1,103 @@
+package superapp;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.web.client.RestTemplate;
+
+import superapp.data.ResponseIdBoundary;
+import superapp.data.CreatedBy;
+import superapp.data.Location;
+import superapp.data.UserId;
+import superapp.restApi.boundaries.ObjectBoundary;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+public class SupperAppObjectOperationTest {
+
+	private int port;
+	private String baseUrl;
+	private RestTemplate restTemplate;
+	
+	@LocalServerPort
+	public void setPort(int port) {
+		this.port = port;
+		this.baseUrl = "http://localhost:" + this.port;
+		this.restTemplate = new RestTemplate();
+	}
+	
+	@AfterEach
+	public void teardown() {
+		this.restTemplate
+			.delete(this.baseUrl + "/superapp/admin/objects");
+	}
+	
+	@Test
+	public void testSuccessfulGetParent() {
+		// GIVEN the server is up
+		// AND the database contains 4 objects, containing
+		String o1 = null, o2 = null;
+		
+		ObjectBoundary o1Boundary = new ObjectBoundary();
+		o1Boundary.setAlias("Nissan");
+		o1Boundary.setType("abc");
+		o1Boundary.setActive(false);
+		o1Boundary.setLocation(new Location().setLat(10.123).setLng(5.26));
+		UserId userId1 =  new UserId("nissan@gmail.com");
+		CreatedBy createdBy1 =  new CreatedBy();
+		createdBy1.setUserId(userId1);
+		o1Boundary.setCreatedBy(createdBy1);
+				
+		o1Boundary.setObjectId(
+				this.restTemplate
+				.postForObject(this.baseUrl+"/superapp/objects", o1Boundary, ObjectBoundary.class)
+				.getObjectId());
+				
+		ObjectBoundary o2Boundary = new ObjectBoundary();
+		o2Boundary.setAlias("Yamin");
+		o2Boundary.setType("efg");
+		o2Boundary.setActive(true);
+		o2Boundary.setLocation(new Location().setLat(0.03).setLng(3.26));
+		UserId userId2 =  new UserId("nissan@gmail.com");
+		CreatedBy createdBy2 =  new CreatedBy();
+		createdBy2.setUserId(userId2);
+		o2Boundary.setCreatedBy(createdBy2);
+				
+		o2Boundary.setObjectId(
+				this.restTemplate
+				.postForObject(this.baseUrl+"/superapp/objects", o2Boundary, ObjectBoundary.class)
+				.getObjectId());
+				
+		for (int i = 0; i < 2; i++) {
+			ObjectBoundary ob = new ObjectBoundary();
+			ob.setAlias(i+"a");
+			ob.setType(i+"b");
+			UserId userId =  new UserId(i+"@gmail.com");
+			CreatedBy createdBy =  new CreatedBy();
+			createdBy.setUserId(userId);
+			ob.setCreatedBy(createdBy);
+					
+			ob.setObjectId(
+					this.restTemplate
+					.postForObject(this.baseUrl+"/superapp/objects", ob, ObjectBoundary.class)
+					.getObjectId());
+		}
+		
+		o1 = o1Boundary.getObjectId().getInternalObjectId();
+		o2 = o2Boundary.getObjectId().getInternalObjectId();
+				
+		// WHEN I PUT /hello/o1/responses with {"responseId":"o2"}
+		this.restTemplate
+			.put(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/children"
+					, new ResponseIdBoundary(o2),"2023b.shir.zur" ,o1);
+				
+		// THEN the database is updated with relation between o1 and o2 as its response
+		ObjectBoundary actualOrigin = this.restTemplate
+			.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/parents", ObjectBoundary.class, o2);
+			assertThat(actualOrigin.getObjectId().getInternalObjectId())
+			.isEqualTo(o1);
+	}
+}

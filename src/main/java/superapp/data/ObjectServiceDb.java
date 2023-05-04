@@ -189,7 +189,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		
 		Optional<ObjectEntity> originOptional = this.objectCrud
-			.findAllByChildrenContains(children);
+			.findAllByRelatedObjectsContains(children);
 		
 		return originOptional
 				.map(this::toBoundary);
