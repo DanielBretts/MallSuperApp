@@ -152,12 +152,12 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	public void bind(String InternalObjectIdOrigin, String InternalObjectIdChildren) {
 		ObjectEntity origin = 
 				  this.objectCrud
-					.findById(InternalObjectIdOrigin)
+					.findById(superapp+delimeter+InternalObjectIdOrigin)
 					.orElseThrow(()->new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
 
 		ObjectEntity children= 
 				this.objectCrud
-				.findById(InternalObjectIdChildren)
+				.findById(superapp+delimeter+InternalObjectIdChildren)
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		
 		origin.addChildren(children);
@@ -169,7 +169,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	public List<ObjectBoundary> getAllChildren(String InternalObjectIdOrigin) {
 		ObjectEntity origin = 
 				  this.objectCrud
-					.findById(InternalObjectIdOrigin)
+					.findById(superapp+delimeter+InternalObjectIdOrigin)
 					.orElseThrow(()->new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
 
 		List<ObjectEntity> relatedObjects = origin
@@ -185,7 +185,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	public Optional<ObjectBoundary> getOrigin(String InternalObjectIdChildren) {
 		ObjectEntity children= 
 				this.objectCrud
-				.findById(InternalObjectIdChildren)
+				.findById(superapp+delimeter+InternalObjectIdChildren)
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		
 		Optional<ObjectEntity> originOptional = this.objectCrud

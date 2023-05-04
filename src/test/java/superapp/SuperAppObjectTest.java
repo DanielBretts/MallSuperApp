@@ -89,7 +89,6 @@ public class SuperAppObjectTest {
 						newObjectBoundary.getLocation().getLng(),
 						newObjectBoundary.getCreatedBy().getUserId().getEmail());
 	}
-	
 	@Test
     public void testSuccessfulPutOfObject() {
 //		// GIVEN the server is up
@@ -146,8 +145,6 @@ public class SuperAppObjectTest {
 		assertThat(objectBoundary1).isNotNull().extracting("ObjectId.internalObjectId", "type", "alias").containsExactly(objectBoundary.getObjectId().getInternalObjectId(), objectBoundary.getType(), objectBoundary.getAlias());
 		
 	}
-	
-	
 	@Test
 	public void testSuccessfulGetAllObject() {
 		// GIVEN the server is up
