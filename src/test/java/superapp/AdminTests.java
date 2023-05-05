@@ -11,8 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
-
-import jakarta.security.auth.message.MessagePolicy.Target;
 import superapp.data.CreatedBy;
 import superapp.data.Location;
 import superapp.data.ObjectId;

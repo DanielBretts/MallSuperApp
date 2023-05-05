@@ -8,8 +8,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import jakarta.validation.constraints.Email;
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectServiceWithBindingCapabilities;
 import superapp.restApi.boundaries.ObjectBoundary;
