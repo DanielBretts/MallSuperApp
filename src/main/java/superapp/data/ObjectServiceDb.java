@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import jakarta.validation.constraints.Email;
 import superapp.logic.ObjectCrud;
-import superapp.logic.ObjectService;
 import superapp.logic.ObjectServiceWithBindingCapabilities;
 import superapp.restApi.boundaries.ObjectBoundary;
 import superapp.data.exceptions.ObjectNotFoundException;
@@ -54,24 +54,27 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 		return ob;
 	}
 	private ObjectEntity toEntity(ObjectBoundary object) throws ObjectNotFoundException,UserNotFoundException {
+		if(object == null) {
+			throw new ObjectNotFoundException("Object can not be null");
+		}
 		ObjectEntity entity = new ObjectEntity();
 		
 		entity.setId(superapp +delimeter+ object.getObjectId().getInternalObjectId());
-		if (object.getType() != null) {
+		if (object.getType() != null && !object.getType().replaceAll(" ","").isEmpty()) {
 			entity.setType(object.getType());
 		}else {
-			throw new ObjectNotFoundException("Type can not be null");
+			throw new ObjectNotFoundException("Type can not be null or empty string");
 		}
-		if (object.getAlias() != null) {
+		if (object.getAlias() != null && !object.getAlias().replaceAll(" ","").isEmpty()) {
 			entity.setAlias(object.getAlias());
 		}else {
-			throw new ObjectNotFoundException("Alias can not be null");
+			throw new ObjectNotFoundException("Alias can not be null or empty string");
 		}
 		if (object.getActive() != null) {
 			entity.setActive(object.getActive());
 		}else {
 			entity.setActive(true);
-		}		
+		}
 		if (object.getLocation() != null) {
 			entity.setLat(object.getLocation().getLat());
 			entity.setLng(object.getLocation().getLng());
@@ -80,12 +83,21 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 			entity.setLng((double) 0);
 		}
 		if(object.getCreatedBy() != null) {
-			entity.setCreatedBy_email(object.getCreatedBy().getUserId().getEmail());
-			entity.setCreatedBy_superApp(superapp);
+			String email;
+			if(object.getCreatedBy().getUserId() != null) {
+				email = object.getCreatedBy().getUserId().getEmail();
+			}else {
+				throw new UserNotFoundException("UserId can not be null");
+			}
+			if(email != null && !email.replaceAll(" ", "").isEmpty()) {
+				entity.setCreatedBy_email(object.getCreatedBy().getUserId().getEmail());
+				entity.setCreatedBy_superApp(superapp);
+			}else {
+				throw new UserNotFoundException("Email can not be null or empty string");
+			}
 		}else {
 			throw new UserNotFoundException("The user this action was created by is not a valid user");
 		}
-		
 		if (object.getObjectDetails() != null) {
 			entity.setObjectDetails(object.getObjectDetails());
 		}else {
@@ -172,11 +184,11 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 					.findById(superapp+delimeter+InternalObjectIdOrigin)
 					.orElseThrow(()->new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
 
-		List<ObjectEntity> relatedObjects = origin
-			.getRelatedObjects();
+		List<ObjectEntity> ChildrenObjects = origin
+			.getChildrenObjects();
 		
 		List<ObjectBoundary> rv = new ArrayList<>();
-		for (ObjectEntity entity : relatedObjects) {
+		for (ObjectEntity entity : ChildrenObjects) {
 			rv.add(this.toBoundary(entity));
 		}
 		return rv;
@@ -189,7 +201,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		
 		Optional<ObjectEntity> originOptional = this.objectCrud
-			.findAllByRelatedObjectsContains(children);
+			.findAllByChildrenObjectsContains(children);
 		
 		return originOptional
 				.map(this::toBoundary);

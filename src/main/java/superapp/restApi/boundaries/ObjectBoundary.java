@@ -2,7 +2,6 @@ package superapp.restApi.boundaries;
 
 import java.util.Date;
 import java.util.Map;
-
 import superapp.data.CreatedBy;
 import superapp.data.Location;
 import superapp.data.ObjectId;
@@ -120,11 +119,4 @@ public class ObjectBoundary{
 				+ ", creationTimestamp=" + creationTimestamp + ", location=" + location + ", createdBy=" + createdBy
 				+ ", objectDetails=" + objectDetails + "]";
 	}
-
-	
-	
-
-	
-	
-
 }

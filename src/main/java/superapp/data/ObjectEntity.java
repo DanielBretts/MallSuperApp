@@ -24,14 +24,13 @@ public class ObjectEntity {
 	private Double lng;
 	private String createdBy_email;
 	private String createdBy_superApp;
-
 	private Map<String, Object> objectDetails;
 	@DBRef
-	private List<ObjectEntity> relatedObjects;
+	private List<ObjectEntity> childrenObjects;
 
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
-		this.relatedObjects = new ArrayList<>();
+		this.childrenObjects = new ArrayList<>();
 	}
 
 	public String getId() {
@@ -117,19 +116,17 @@ public class ObjectEntity {
 	public void setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
 	}
-	
-	
 
-	public List<ObjectEntity> getRelatedObjects() {
-		return relatedObjects;
+	public List<ObjectEntity> getChildrenObjects() {
+		return childrenObjects;
 	}
 
-	public void setRelatedObjects(List<ObjectEntity> relatedObjects) {
-		this.relatedObjects = relatedObjects;
+	public void setChildrenObjects(List<ObjectEntity> childrenObjects) {
+		this.childrenObjects = childrenObjects;
 	}
 	
-	public void addChildren(ObjectEntity related) {
-				this.relatedObjects.add(related);
+	public void addChildren(ObjectEntity children) {
+				this.childrenObjects.add(children);
 	}
 
 	@Override
@@ -137,12 +134,7 @@ public class ObjectEntity {
 		return "ObjectEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
 				+ ", creationTimestamp=" + creationTimestamp + ", lat=" + lat + ", lng=" + lng + ", createdBy_email="
 				+ createdBy_email + ", createdBy_superApp=" + createdBy_superApp + ", objectDetails=" + objectDetails
-				+ "]";
+				+ ", childrenObjects=" + childrenObjects + "]";
 	}
-
 	
-
-	
-	
-
 }

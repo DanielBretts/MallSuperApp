@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import superapp.data.ResponseIdBoundary;
+import superapp.data.SuperAppObjectIdBoundary;
 import superapp.data.exceptions.ObjectNotFoundException;
 import superapp.logic.ObjectServiceWithBindingCapabilities;
 import superapp.restApi.boundaries.ObjectBoundary;
@@ -33,9 +32,9 @@ public class ObjectOperationController {
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public void BindAnExistingObjectToChildren (
 			@PathVariable("InternalObjectId") String originId, 
-			@RequestBody ResponseIdBoundary responseIdBoundary) {
+			@RequestBody SuperAppObjectIdBoundary superAppObjectIdBoundary) {
 		this.objects
-			.bind(originId, responseIdBoundary.getResponseId());
+			.bind(originId, superAppObjectIdBoundary.getInternalObjectId());
 		
 	}
 	

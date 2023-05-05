@@ -8,7 +8,7 @@ import superapp.data.ObjectEntity;
 
 public interface ObjectCrud extends ListCrudRepository<ObjectEntity, String>{
 	
-	public Optional<ObjectEntity> findAllByRelatedObjectsContains(ObjectEntity theRelatedObjects);
+	public Optional<ObjectEntity> findAllByChildrenObjectsContains(ObjectEntity theChildrenObjects);
 	
 	
 }
