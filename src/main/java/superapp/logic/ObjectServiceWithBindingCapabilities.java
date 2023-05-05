@@ -1,5 +1,6 @@
 package superapp.logic;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,6 @@ public interface ObjectServiceWithBindingCapabilities extends ObjectService{
 	
 	public List<ObjectBoundary> getAllChildren(String InternalObjectIdOrigin);
 	
-	public Optional<ObjectBoundary> getOrigin(String InternalObjectIdChildren);
+	public Optional<ArrayList<ObjectBoundary>> getOrigin(String InternalObjectIdChildren);
 
 }

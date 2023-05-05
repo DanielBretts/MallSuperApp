@@ -1,6 +1,7 @@
 package superapp.restApi;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,12 +53,12 @@ public class ObjectOperationController {
 	@RequestMapping(method = {RequestMethod.GET},
 			path = "/superapp/objects/{superapp}/{InternalObjectId}/parents",
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ObjectBoundary GetAnArrayWithObjectParent(
-			@PathVariable("InternalObjectId") String responseId) {
-		Optional<ObjectBoundary> rv = this.objects
-			.getOrigin(responseId);
+	public ObjectBoundary [] GetAnArrayWithObjectParent(
+			@PathVariable("InternalObjectId") String childrenId) {
+		Optional<ArrayList<ObjectBoundary>> rv = this.objects
+			.getOrigin(childrenId);
 		
-		return rv.orElseThrow(()->new ObjectNotFoundException("could not find origin for Object with id: " + responseId));
+		return rv.map(list -> list.toArray(new ObjectBoundary[0]))
+				.orElseThrow(() -> new ObjectNotFoundException("could not find origin for Object with id: " + childrenId));
 	}
-
 }

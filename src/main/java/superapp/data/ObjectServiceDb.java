@@ -192,17 +192,22 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 		return rv;
 	}
 	@Override
-	public Optional<ObjectBoundary> getOrigin(String InternalObjectIdChildren) {
+	public Optional<ArrayList<ObjectBoundary>> getOrigin(String InternalObjectIdChildren) {
 		ObjectEntity children= 
 				this.objectCrud
 				.findById(superapp+delimeter+InternalObjectIdChildren)
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		
-		Optional<ObjectEntity> originOptional = this.objectCrud
+		Optional<ArrayList<ObjectEntity>> originOptional = this.objectCrud
 			.findAllByChildrenObjectsContains(children);
-		
-		return originOptional
-				.map(this::toBoundary);
+	    return originOptional
+	            .map(list -> {
+	                ArrayList<ObjectBoundary> resultList = new ArrayList<>();
+	                for (ObjectEntity entity : list) {
+	                    resultList.add(toBoundary(entity));
+	                }
+	                return resultList;
+	            });
 	}
 
 

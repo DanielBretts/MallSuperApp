@@ -237,7 +237,7 @@ public class SuperAppObjectOperationTest {
 				
 		// THEN the database is updated with relation between o1 and o2 as its response
 		ObjectBoundary actualOrigin = this.restTemplate
-			.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/parents", ObjectBoundary.class,superapp,o2);
+			.getForObject(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/parents", ObjectBoundary[].class,superapp,o2)[0];
 			assertThat(actualOrigin.getObjectId().getInternalObjectId())
 			.isEqualTo(o1);
 	}
