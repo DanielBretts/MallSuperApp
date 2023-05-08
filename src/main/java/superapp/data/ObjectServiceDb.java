@@ -105,7 +105,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	}
 
 	@Override
-	public ObjectBoundary creatObject(ObjectBoundary object) {
+	public ObjectBoundary createObject(ObjectBoundary object) {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
 		object.getObjectId().setSuperapp(superapp);
 		ObjectEntity entity = (ObjectEntity) toEntity(object);
