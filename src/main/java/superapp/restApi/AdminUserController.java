@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import superapp.logic.*;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
+import superapp.restApi.boundaries.ObjectBoundary;
 import superapp.restApi.boundaries.UserBoundary;
 
 @RestController
@@ -55,6 +56,12 @@ public class AdminUserController {
 			MediaType.APPLICATION_JSON_VALUE })
 	public List<UserBoundary> getAllUsers() {
 		return usersService.getAllUsers();
+	}
+	
+	@RequestMapping(path = { "/superapp/admin/objects" }, method = { RequestMethod.GET }, produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public List<ObjectBoundary> getAllObjects() {
+		return objectService.getAllObjects();
 	}
 	
 	@RequestMapping(path = { "/superapp/admin/miniapp" }, method = { RequestMethod.GET }, produces = {

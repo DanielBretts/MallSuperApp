@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import superapp.data.CommandID;
 import superapp.logic.MiniAppCommandsService;
-import superapp.logic.UsersService;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 @RestController

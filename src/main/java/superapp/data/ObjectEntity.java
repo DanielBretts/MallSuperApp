@@ -1,10 +1,14 @@
 package superapp.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import org.springframework.data.annotation.Id;
 
 
@@ -20,11 +24,13 @@ public class ObjectEntity {
 	private Double lng;
 	private String createdBy_email;
 	private String createdBy_superApp;
-
 	private Map<String, Object> objectDetails;
+	@DBRef
+	private List<ObjectEntity> childrenObjects;
 
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
+		this.childrenObjects = new ArrayList<>();
 	}
 
 	public String getId() {
@@ -111,17 +117,24 @@ public class ObjectEntity {
 		this.objectDetails = objectDetails;
 	}
 
+	public List<ObjectEntity> getChildrenObjects() {
+		return childrenObjects;
+	}
+
+	public void setChildrenObjects(List<ObjectEntity> childrenObjects) {
+		this.childrenObjects = childrenObjects;
+	}
+	
+	public void addChildren(ObjectEntity children) {
+				this.childrenObjects.add(children);
+	}
+
 	@Override
 	public String toString() {
 		return "ObjectEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
 				+ ", creationTimestamp=" + creationTimestamp + ", lat=" + lat + ", lng=" + lng + ", createdBy_email="
 				+ createdBy_email + ", createdBy_superApp=" + createdBy_superApp + ", objectDetails=" + objectDetails
-				+ "]";
+				+ ", childrenObjects=" + childrenObjects + "]";
 	}
-
 	
-
-	
-	
-
 }
