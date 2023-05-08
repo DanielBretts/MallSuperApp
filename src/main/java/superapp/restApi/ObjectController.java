@@ -29,7 +29,7 @@ public class ObjectController {
 			produces = {MediaType.APPLICATION_JSON_VALUE},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
 			public ObjectBoundary createObjectBoundary (@RequestBody ObjectBoundary ob) {
-				return this.objectService.creatObject(ob);
+				return this.objectService.createObject(ob);
 	}
 	
 	@RequestMapping( // Update an object

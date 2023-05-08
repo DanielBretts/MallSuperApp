@@ -105,7 +105,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	}
 
 	@Override
-	public ObjectBoundary creatObject(ObjectBoundary object) {
+	public ObjectBoundary createObject(ObjectBoundary object) {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
 		object.getObjectId().setSuperapp(superapp);
 		ObjectEntity entity = (ObjectEntity) toEntity(object);
@@ -164,12 +164,13 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 				  this.objectCrud
 					.findById(superapp+delimeter+InternalObjectIdOrigin)
 					.orElseThrow(()->new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
-
+		
 		ObjectEntity children= 
 				this.objectCrud
 				.findById(superapp+delimeter+InternalObjectIdChildren)
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
-		
+		if(origin.getId() == children.getId())
+			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 		origin.addChildren(children);
 				
 		this.objectCrud.save(origin);

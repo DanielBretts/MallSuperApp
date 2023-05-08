@@ -1,7 +1,5 @@
 package superapp.restApi.boundaries;
 
-import superapp.data.UserId;
-
 public class NewUserBoundary{
 	
 	private String username;

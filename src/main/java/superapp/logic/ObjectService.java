@@ -7,7 +7,7 @@ import superapp.restApi.boundaries.ObjectBoundary;
 
 public interface ObjectService {
 	
-	public ObjectBoundary creatObject(ObjectBoundary object);
+	public ObjectBoundary createObject(ObjectBoundary object);
 
 	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob);
 
