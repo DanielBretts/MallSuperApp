@@ -28,7 +28,7 @@ public class AdminTests {
 	private int port;
 	private String baseUrl;
 	private RestTemplate restTemplate;
-
+	private String superapp = "2023b.shir.zur";
 	@LocalServerPort
 	public void setPort(int port) {
 		this.port = port;
@@ -116,9 +116,9 @@ public class AdminTests {
 		MiniAppCommandBoundary comm1 = new MiniAppCommandBoundary();
 		Map<String, Object> commandAttributes1 = new HashMap<>();
 		comm1.setCommand("test");
-		TargetObjectBoundary target1 = new TargetObjectBoundary(new ObjectId("123"));
+		TargetObjectBoundary target1 = new TargetObjectBoundary(new ObjectId("123",this.superapp));
 		comm1.setTargetObject(target1);
-		InvokedBy invokedBy1 = new InvokedBy(new UserId("daniel@mail.com"));
+		InvokedBy invokedBy1 = new InvokedBy(new UserId("daniel@mail.com",this.superapp));
 		comm1.setInvokedBy(invokedBy1);
 		comm1.setCommandAttributes(commandAttributes1);
 		this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/BDIKA", comm1, MiniAppCommandBoundary.class);
@@ -126,9 +126,9 @@ public class AdminTests {
 		MiniAppCommandBoundary comm2 = new MiniAppCommandBoundary();
 		Map<String, Object> commandAttributes2 = new HashMap<>();
 		comm2.setCommand("testing");
-		TargetObjectBoundary target2 = new TargetObjectBoundary(new ObjectId("345"));
+		TargetObjectBoundary target2 = new TargetObjectBoundary(new ObjectId("345",this.superapp));
 		comm2.setTargetObject(target2);
-		InvokedBy invokedBy2 = new InvokedBy(new UserId("nissan@mail.com"));
+		InvokedBy invokedBy2 = new InvokedBy(new UserId("nissan@mail.com",this.superapp));
 		comm2.setInvokedBy(invokedBy2);
 		comm2.setCommandAttributes(commandAttributes2);
 		this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/ODBDIKA", comm2,
@@ -172,9 +172,9 @@ public class AdminTests {
 		MiniAppCommandBoundary comm1 = new MiniAppCommandBoundary();
 		Map<String, Object> commandAttributes1 = new HashMap<>();
 		comm1.setCommand("test");
-		TargetObjectBoundary target1 = new TargetObjectBoundary(new ObjectId("123"));
+		TargetObjectBoundary target1 = new TargetObjectBoundary(new ObjectId("123",this.superapp));
 		comm1.setTargetObject(target1);
-		InvokedBy invokedBy1 = new InvokedBy(new UserId("daniel@mail.com"));
+		InvokedBy invokedBy1 = new InvokedBy(new UserId("daniel@mail.com",this.superapp));
 		comm1.setInvokedBy(invokedBy1);
 		comm1.setCommandAttributes(commandAttributes1);
 		this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/BDIKA", comm1, MiniAppCommandBoundary.class);
@@ -182,9 +182,9 @@ public class AdminTests {
 		MiniAppCommandBoundary comm2 = new MiniAppCommandBoundary();
 		Map<String, Object> commandAttributes2 = new HashMap<>();
 		comm2.setCommand("testing");
-		TargetObjectBoundary target2 = new TargetObjectBoundary(new ObjectId("345"));
+		TargetObjectBoundary target2 = new TargetObjectBoundary(new ObjectId("345",this.superapp));
 		comm2.setTargetObject(target2);
-		InvokedBy invokedBy2 = new InvokedBy(new UserId("nissan@mail.com"));
+		InvokedBy invokedBy2 = new InvokedBy(new UserId("nissan@mail.com",this.superapp));
 		comm2.setInvokedBy(invokedBy2);
 		comm2.setCommandAttributes(commandAttributes2);
 		this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/ODBDIKA", comm2,
@@ -211,9 +211,9 @@ public class AdminTests {
 		MiniAppCommandBoundary comm1 = new MiniAppCommandBoundary();
 		Map<String, Object> commandAttributes1 = new HashMap<>();
 		comm1.setCommand("test");
-		TargetObjectBoundary target1 = new TargetObjectBoundary(new ObjectId("123"));
+		TargetObjectBoundary target1 = new TargetObjectBoundary(new ObjectId("123",this.superapp));
 		comm1.setTargetObject(target1);
-		InvokedBy invokedBy1 = new InvokedBy(new UserId("daniel@mail.com"));
+		InvokedBy invokedBy1 = new InvokedBy(new UserId("daniel@mail.com",this.superapp));
 		comm1.setInvokedBy(invokedBy1);
 		comm1.setCommandAttributes(commandAttributes1);
 		this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/BDIKA", comm1, MiniAppCommandBoundary.class);
@@ -221,9 +221,9 @@ public class AdminTests {
 		MiniAppCommandBoundary comm2 = new MiniAppCommandBoundary();
 		Map<String, Object> commandAttributes2 = new HashMap<>();
 		comm2.setCommand("testing");
-		TargetObjectBoundary target2 = new TargetObjectBoundary(new ObjectId("345"));
+		TargetObjectBoundary target2 = new TargetObjectBoundary(new ObjectId("345",this.superapp));
 		comm2.setTargetObject(target2);
-		InvokedBy invokedBy2 = new InvokedBy(new UserId("nissan@mail.com"));
+		InvokedBy invokedBy2 = new InvokedBy(new UserId("nissan@mail.com",this.superapp));
 		comm2.setInvokedBy(invokedBy2);
 		comm2.setCommandAttributes(commandAttributes2);
 		this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/ODBDIKA", comm2,

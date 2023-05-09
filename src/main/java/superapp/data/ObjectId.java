@@ -12,6 +12,12 @@ public class ObjectId {
 		this.internalObjectId = internalObjectId;
 	}
 
+	public ObjectId(String superapp, String internalObjectId) {
+		super();
+		this.superapp = superapp;
+		this.internalObjectId = internalObjectId;
+	}
+
 	public String getInternalObjectId() {
 		return internalObjectId;
 	}

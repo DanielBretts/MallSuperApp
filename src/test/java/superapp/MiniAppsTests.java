@@ -25,6 +25,7 @@ public class MiniAppsTests {
 	private int port;
 	private String baseUrl;
 	private RestTemplate restTemplate;
+	private String superapp = "2023b.shir.zur";
 
 	@LocalServerPort
 	public void setPort(int port) {
@@ -67,7 +68,7 @@ public class MiniAppsTests {
 		Map<String, Object> commandAttributes = new HashMap<>();
 		commandAttributes.put("daniel", "hello");
 		MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary("test",
-				new TargetObjectBoundary(new ObjectId("123")), new InvokedBy(new UserId("daniel@mail.com")),
+				new TargetObjectBoundary(new ObjectId("123",this.superapp)), new InvokedBy(new UserId("daniel@mail.com",this.superapp)),
 				commandAttributes);
 		CommandID commandID = this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/test",
 				miniAppCommandBoundary, MiniAppCommandBoundary.class).getCommandId();
