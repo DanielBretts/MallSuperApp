@@ -158,6 +158,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	public void deleteAllObjects() {
 		this.objectCrud.deleteAll();
 	}
+	
 	@Override
 	public void bind(String InternalObjectIdOrigin, String InternalObjectIdChildren) {
 		ObjectEntity origin = 
@@ -169,7 +170,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 				this.objectCrud
 				.findById(superapp+delimeter+InternalObjectIdChildren)
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
-		if(origin.getId() == children.getId())
+		if(origin.getId().equals(children.getId()))
 			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 		origin.addChildren(children);
 				
