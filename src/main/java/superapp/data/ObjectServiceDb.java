@@ -171,6 +171,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 				.orElseThrow(()->new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		if(origin.getId() == children.getId())
 			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
+		
 		origin.addChildren(children);
 				
 		this.objectCrud.save(origin);
