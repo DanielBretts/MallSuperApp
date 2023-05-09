@@ -36,7 +36,13 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary command) {
 		command.getCommandId().setInternalCommandID(UUID.randomUUID().toString());
-		command.getCommandId().setSuperapp(this.superapp);
+		if(command.getTargetObject().getObjectId().getSuperapp() != null)
+			command.getCommandId().setSuperapp(this.superapp);
+		else throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
+		if(command.getInvokedBy().getUserId().getSuperapp() != null)
+			command.getCommandId().setSuperapp(this.superapp);
+		else throw new MiniAppCommandException("Superapp inside userId can not be empty!");
+
 		MiniAppCommandEntity entity = this.toEntity(command);
 		entity = this.miniAppCommandsCrud.save(entity);
 		return (MiniAppCommandBoundary) toBoundary(entity);
