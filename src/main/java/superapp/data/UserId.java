@@ -2,6 +2,13 @@ package superapp.data;
 
 public class UserId {
 	
+	public UserId(String superapp, String email) {
+		super();
+		this.superapp = superapp;
+		this.email = email;
+	}
+
+
 	private String superapp;
 	private String email;
 	
