@@ -1,6 +1,5 @@
 package superapp.restApi;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,45 +19,38 @@ import superapp.restApi.boundaries.ObjectBoundary;
 @RestController
 public class ObjectOperationController {
 	private ObjectServiceWithBindingCapabilities objects;
-	
-	
-	@Autowired	
+
+	@Autowired
 	public ObjectOperationController(ObjectServiceWithBindingCapabilities objects) {
 		super();
 		this.objects = objects;
 	}
-	
-	@RequestMapping(method = {RequestMethod.PUT},
-			path = "/superapp/objects/{superapp}/{InternalObjectId}/children",
-			consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public void BindAnExistingObjectToChildren (
-			@PathVariable("InternalObjectId") String originId, 
+
+	@RequestMapping(method = {
+			RequestMethod.PUT }, path = "/superapp/objects/{superapp}/{InternalObjectId}/children", consumes = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public void BindAnExistingObjectToChildren(@PathVariable("InternalObjectId") String originId,
 			@RequestBody SuperAppObjectIdBoundary superAppObjectIdBoundary) {
-		this.objects
-			.bind(originId, superAppObjectIdBoundary.getInternalObjectId());
-		
+		this.objects.bind(originId, superAppObjectIdBoundary.getInternalObjectId());
+
 	}
-	
-	@RequestMapping(method = {RequestMethod.GET},
-			path = "/superapp/objects/{superapp}/{InternalObjectId}/children",
-			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ObjectBoundary[] getAllChildren (
-			@PathVariable("InternalObjectId") String originId) {
-		List<ObjectBoundary> rv = this.objects
-			.getAllChildren(originId);
-		
+
+	@RequestMapping(method = {
+			RequestMethod.GET }, path = "/superapp/objects/{superapp}/{InternalObjectId}/children", produces = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public ObjectBoundary[] getAllChildren(@PathVariable("InternalObjectId") String originId) {
+		List<ObjectBoundary> rv = this.objects.getAllChildren(originId);
+
 		return rv.toArray(new ObjectBoundary[0]);
 	}
-	
-	@RequestMapping(method = {RequestMethod.GET},
-			path = "/superapp/objects/{superapp}/{InternalObjectId}/parents",
-			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public ObjectBoundary [] GetAnArrayWithObjectParent(
-			@PathVariable("InternalObjectId") String childrenId) {
-		Optional<ArrayList<ObjectBoundary>> rv = this.objects
-			.getOrigin(childrenId);
-		
-		return rv.map(list -> list.toArray(new ObjectBoundary[0]))
-				.orElseThrow(() -> new ObjectNotFoundException("could not find origin for Object with id: " + childrenId));
+
+	@RequestMapping(method = {
+			RequestMethod.GET }, path = "/superapp/objects/{superapp}/{InternalObjectId}/parents", produces = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public ObjectBoundary[] GetAnArrayWithObjectParent(@PathVariable("InternalObjectId") String childrenId) {
+		Optional<ArrayList<ObjectBoundary>> rv = this.objects.getOrigin(childrenId);
+
+		return rv.map(list -> list.toArray(new ObjectBoundary[0])).orElseThrow(
+				() -> new ObjectNotFoundException("could not find origin for Object with id: " + childrenId));
 	}
 }

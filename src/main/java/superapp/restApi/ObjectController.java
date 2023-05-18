@@ -17,46 +17,41 @@ import superapp.restApi.boundaries.ObjectBoundary;
 @RestController
 public class ObjectController {
 	private ObjectService objectService;
-	
+
 	@Autowired
-	public ObjectController (ObjectService objectService) {
-		this.objectService = objectService;		
+	public ObjectController(ObjectService objectService) {
+		this.objectService = objectService;
 	}
-	
+
 	@RequestMapping( // Create an object
-			path = {"/superapp/objects"},
-			method = {RequestMethod.POST},
-			produces = {MediaType.APPLICATION_JSON_VALUE},
-			consumes = {MediaType.APPLICATION_JSON_VALUE})
-			public ObjectBoundary createObjectBoundary (@RequestBody ObjectBoundary ob) {
-				return this.objectService.createObject(ob);
+			path = { "/superapp/objects" }, method = { RequestMethod.POST }, produces = {
+					MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
+	public ObjectBoundary createObjectBoundary(@RequestBody ObjectBoundary ob) {
+		return this.objectService.createObject(ob);
 	}
-	
+
 	@RequestMapping( // Update an object
-			path = {"/superapp/objects/{superApp}/{id}"},
-			method = {RequestMethod.PUT},
-			consumes = {MediaType.APPLICATION_JSON_VALUE})
-			public void update (@PathVariable ("superApp") String superApp , @PathVariable ("id") String id,
-					@RequestBody ObjectBoundary ob) {
-				objectService.updatObject(superApp, id, ob);
+			path = { "/superapp/objects/{superApp}/{id}" }, method = { RequestMethod.PUT }, consumes = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public void update(@PathVariable("superApp") String superApp, @PathVariable("id") String id,
+			@RequestBody ObjectBoundary ob) {
+		objectService.updatObject(superApp, id, ob);
 	}
-	
+
 	@RequestMapping( // Retrieve object
-			path = {"/superapp/objects/{superApp}/{id}"},
-			method = {RequestMethod.GET},
-			produces = {MediaType.APPLICATION_JSON_VALUE})
-			@ResponseBody
-			public Optional<ObjectBoundary> getObjectById(@PathVariable ("superApp") String superApp
-					,@PathVariable("id") String id){
-				return this.objectService.getSpecificObject(superApp , id);
-			}
-	
+			path = { "/superapp/objects/{superApp}/{id}" }, method = { RequestMethod.GET }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
+	@ResponseBody
+	public Optional<ObjectBoundary> getObjectById(@PathVariable("superApp") String superApp,
+			@PathVariable("id") String id) {
+		return this.objectService.getSpecificObject(superApp, id);
+	}
+
 	@RequestMapping( // Get All objects
-			path = {"/superapp/objects"},
-			method = {RequestMethod.GET},
-			produces = {MediaType.APPLICATION_JSON_VALUE})
-			public ObjectBoundary[] getObjects () {
-				return objectService.getAllObjects().toArray(new ObjectBoundary[0]);
-			}
-	
+			path = { "/superapp/objects" }, method = { RequestMethod.GET }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public ObjectBoundary[] getObjects() {
+		return objectService.getAllObjects().toArray(new ObjectBoundary[0]);
+	}
+
 }

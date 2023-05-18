@@ -19,7 +19,7 @@ import superapp.restApi.boundaries.UserBoundary;
 public class UserController {
 
 	private UsersService usersService;
-	
+
 	@Autowired
 	public void setUsersService(UsersService usersService) {
 		this.usersService = usersService;
@@ -28,42 +28,29 @@ public class UserController {
 	/*
 	 * Create a new user
 	 */
-	@RequestMapping(
-			path = { "/superapp/users" },
-			method = { RequestMethod.POST },
-			produces = {MediaType.APPLICATION_JSON_VALUE },
-			consumes = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(path = { "/superapp/users" }, method = { RequestMethod.POST }, produces = {
+			MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public UserBoundary createUserBoundary(@RequestBody NewUserBoundary nub) {
-		UserBoundary ub = new UserBoundary(nub.getRole(),nub.getUsername(),nub.getAvatar(),new UserId(nub.getEmail()));
+		UserBoundary ub = new UserBoundary(nub.getRole(), nub.getUsername(), nub.getAvatar(),
+				new UserId(nub.getEmail()));
 		return usersService.createUser(ub);
 	}
 
 	/*
 	 * Login valid user and retrieve user details
 	 */
-	@RequestMapping(path = { "/superapp/users/login/{superapp}/{email}" },
-			method = { RequestMethod.GET },
-			produces = {MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(path = { "/superapp/users/login/{superapp}/{email}" }, method = { RequestMethod.GET }, produces = {
+			MediaType.APPLICATION_JSON_VALUE })
 	public Optional<UserBoundary> getUserBoundaryByEmail(@PathVariable("superapp") String superapp,
 			@PathVariable("email") String email) {
-		/*
-		 * Need to look for an UserId by SuperApp & Email
-		 * 
-		 * According to this UserId get object UserBoundary
-		 */
 		return this.usersService.login(superapp, email);
 	}
 
 	@RequestMapping( // Update the details
-			path = { "/superapp/users/{superapp}/{userEmail}" },
-			method = { RequestMethod.PUT }, 
-			consumes = {MediaType.APPLICATION_JSON_VALUE })
+			path = { "/superapp/users/{superapp}/{userEmail}" }, method = { RequestMethod.PUT }, consumes = {
+					MediaType.APPLICATION_JSON_VALUE })
 	public void update(@PathVariable("superapp") String superapp, @PathVariable("userEmail") String email,
 			@RequestBody UserBoundary update) {
-		/*
-		 * Need to find the old UserBoundary and PUT the new details.
-		 * userBounady.update(update);
-		 */
 		this.usersService.updateUser(superapp, email, update);
 	}
 
