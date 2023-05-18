@@ -17,35 +17,23 @@ import superapp.restApi.boundaries.MiniAppCommandBoundary;
 @RestController
 public class MiniAppController {
 
-	private MiniAppWithASyncSupport miniAppWithASyncSupport;
+	private MiniAppWithASyncSupport miniAppCommandsService;
 
 	@Autowired
-	public void setMiniAppCommandsService(MiniAppWithASyncSupport miniAppWithASyncSupport) {
-		this.miniAppWithASyncSupport = miniAppWithASyncSupport;
-	}	
-	
-	/*
-	 *  Invoke a MiniApp command
-	 */
-	@RequestMapping( 
-	path = {"/superapp/miniapp/{miniAppName}"},
-	method = {RequestMethod.POST},
-	produces = {MediaType.APPLICATION_JSON_VALUE},
-	consumes = {MediaType.APPLICATION_JSON_VALUE})
-	public Object invokeCommand (@PathVariable("miniAppName") String miniAppName ,@RequestBody MiniAppCommandBoundary miniApp
-			,@RequestParam(name = "async", required = false, defaultValue = "false") String async) {
-		miniApp.setCommandId(new CommandId(miniAppName));
-		return miniAppWithASyncSupport.handleLater(miniApp,Boolean.parseBoolean(async));
-	public void setMiniAppCommandsService(MiniAppCommandsService miniAppCommandsService) {
+	public void setMiniAppCommandsService(MiniAppWithASyncSupport miniAppCommandsService) {
 		this.miniAppCommandsService = miniAppCommandsService;
 	}
 
+	/*
+	 * Invoke a MiniApp command
+	 */
 	@RequestMapping(path = { "/superapp/miniapp/{miniAppName}" }, method = { RequestMethod.POST }, produces = {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public Object invokeCommand(@PathVariable("miniAppName") String miniAppName,
-			@RequestBody MiniAppCommandBoundary miniApp) {
+			@RequestBody MiniAppCommandBoundary miniApp,
+			@RequestParam(name = "async", required = false, defaultValue = "false") String async) {
 		miniApp.setCommandId(new CommandId(miniAppName));
-		return miniAppCommandsService.invokeCommand(miniApp);
+		return miniAppCommandsService.handleLater(miniApp, Boolean.parseBoolean(async));
 	}
 
 }
