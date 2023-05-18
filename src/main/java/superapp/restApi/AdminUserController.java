@@ -18,12 +18,12 @@ import superapp.restApi.boundaries.UserBoundary;
 @RestController
 public class AdminUserController {
 
-	private UsersService usersService;
+	private UsersQueries usersService;
 	private ObjectQueries objectService;
 	private MiniAppCommandsService miniAppCommandsService;
 
 	@Autowired
-	public void setUsersService(UsersService usersService) {
+	public void setUsersService(UsersQueries usersService) {
 		this.usersService = usersService;
 	}
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import superapp.data.CommandID;
+import superapp.data.CommandId;
 import superapp.logic.MiniAppCommandsService;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
@@ -26,7 +26,7 @@ public class MiniAppController {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public Object invokeCommand(@PathVariable("miniAppName") String miniAppName,
 			@RequestBody MiniAppCommandBoundary miniApp) {
-		miniApp.setCommandId(new CommandID(miniAppName));
+		miniApp.setCommandId(new CommandId(miniAppName));
 		return miniAppCommandsService.invokeCommand(miniApp);
 	}
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import superapp.data.UserId;
+import superapp.logic.UsersQueries;
 import superapp.logic.UsersService;
 import superapp.restApi.boundaries.NewUserBoundary;
 import superapp.restApi.boundaries.UserBoundary;
@@ -18,10 +19,10 @@ import superapp.restApi.boundaries.UserBoundary;
 @RestController
 public class UserController {
 
-	private UsersService usersService;
+	private UsersQueries usersService;
 
 	@Autowired
-	public void setUsersService(UsersService usersService) {
+	public void setUsersService(UsersQueries usersService) {
 		this.usersService = usersService;
 	}
 

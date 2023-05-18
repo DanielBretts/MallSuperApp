@@ -35,7 +35,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary command) {
-		command.getCommandId().setInternalCommandID(UUID.randomUUID().toString());
+		command.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 		if(command.getTargetObject().getObjectId().getSuperapp() != null)
 			command.getCommandId().setSuperapp(this.superapp);
 		else throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
@@ -51,9 +51,9 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 	private MiniAppCommandBoundary toBoundary(MiniAppCommandEntity entity) {
 		MiniAppCommandBoundary boundary = new MiniAppCommandBoundary();
 		boundary.setCommand(entity.getCommand());
-		boundary.setCommandId(new CommandID(entity.getMiniApp()));
+		boundary.setCommandId(new CommandId(entity.getMiniApp()));
 		boundary.getCommandId().setSuperapp(this.superapp);
-		boundary.getCommandId().setInternalCommandID(entity.getId());
+		boundary.getCommandId().setInternalCommandId(entity.getId());
 		boundary.setInvocationTimestamp(entity.getInvocationTimeStamp());
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		boundary.setInvokedBy(entity.getInvokedBy());
@@ -82,10 +82,10 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 		 * 
 		 */
 		String id = command.getCommandId().getSuperapp() + delimeter + command.getCommandId().getMiniApp() + delimeter
-				+ command.getCommandId().getInternalCommandID();
+				+ command.getCommandId().getInternalCommandId();
 
 		entity.setId(id);
-		entity.setInternalCommandId(command.getCommandId().getInternalCommandID());
+		entity.setInternalCommandId(command.getCommandId().getInternalCommandId());
 		if (command.getTargetObject() == null
 				|| command.getTargetObject().getObjectId().getInternalObjectId() == null) {
 			throw new MiniAppCommandException("TargetObject can not be empty");
