@@ -6,6 +6,7 @@ import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 public interface MiniAppCommandsService {
 	
+	@Deprecated
 	public Object invokeCommand(MiniAppCommandBoundary command);
 	
 	public List<MiniAppCommandBoundary> getAllCommands();

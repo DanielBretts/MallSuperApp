@@ -70,7 +70,11 @@ public class MiniAppsTests {
 		MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary("test",
 				new TargetObjectBoundary(new ObjectId("123",this.superapp)), new InvokedBy(new UserId("daniel@mail.com",this.superapp)),
 				commandAttributes);
+<<<<<<< HEAD
+		CommandId commandID = this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/test",
+=======
 		CommandId commandId = this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/test",
+>>>>>>> branch 'master' of https://DanielBretts@bitbucket.org/mallsuperapp/2023b.shir.zur2.git
 				miniAppCommandBoundary, MiniAppCommandBoundary.class).getCommandId();
 		miniAppCommandBoundary.setCommandId(commandId);
 
@@ -79,6 +83,10 @@ public class MiniAppsTests {
 				.getForObject(this.baseUrl + "/superapp/admin/miniapp/test", MiniAppCommandBoundary[].class)[0];
 		assertThat(miniAppCommandFromDb).isNotNull()
 				.extracting("commandId.superapp", "commandId.miniapp", "commandId.internalCommandID")
+<<<<<<< HEAD
+				.containsExactly(commandID.getSuperapp(), commandID.getMiniApp(), commandID.getInternalCommandId());
+=======
 				.containsExactly(commandId.getSuperapp(), commandId.getMiniApp(), commandId.getInternalCommandId());
+>>>>>>> branch 'master' of https://DanielBretts@bitbucket.org/mallsuperapp/2023b.shir.zur2.git
 	}
 }
