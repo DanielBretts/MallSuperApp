@@ -19,7 +19,7 @@ import superapp.restApi.boundaries.UserBoundary;
 public class AdminUserController {
 
 	private UsersService usersService;
-	private ObjectService objectService;
+	private ObjectQueries objectService;
 	private MiniAppCommandsService miniAppCommandsService;
 
 	@Autowired
@@ -28,7 +28,7 @@ public class AdminUserController {
 	}
 
 	@Autowired
-	public void setObjectService(ObjectService objectService) {
+	public void setObjectService(ObjectQueries objectService) {
 		this.objectService = objectService;
 	}
 

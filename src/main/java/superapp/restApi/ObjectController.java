@@ -12,15 +12,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import superapp.logic.ObjectQueries;
 import superapp.logic.ObjectService;
 import superapp.restApi.boundaries.ObjectBoundary;
 
 @RestController
 public class ObjectController {
-	private ObjectService objectService;
+	private ObjectQueries objectService;
 
 	@Autowired
-	public ObjectController(ObjectService objectService) {
+	public ObjectController(ObjectQueries objectService) {
 		this.objectService = objectService;
 	}
 
@@ -38,7 +39,7 @@ public class ObjectController {
 			@RequestBody ObjectBoundary ob,
 			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		objectService.updatObject(superApp, id, ob);
+		objectService.updateObject(superApp, id, ob);
 	}
 
 	@RequestMapping( // Retrieve object
