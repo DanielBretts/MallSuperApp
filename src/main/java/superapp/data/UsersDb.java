@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import superapp.logic.UserCrud;
+import superapp.logic.UsersQueries;
 import superapp.logic.UsersService;
 import superapp.restApi.boundaries.UserBoundary;
 import superapp.data.exceptions.UserParamException;
 import superapp.data.exceptions.UserNotFoundException;
 
 @Service
-public class UsersDb implements UsersService{
+public class UsersDb implements UsersQueries{
 	
 	private UserCrud userCrud;
 	private UserRole defaultRole;
@@ -79,6 +80,7 @@ public class UsersDb implements UsersService{
 			return this.toBoundary(entity);
 	}
 
+	@Deprecated
 	@Override
 	public List<UserBoundary> getAllUsers() {
 		Iterable<UserEntity> iterable = this.userCrud.findAll();
@@ -91,6 +93,7 @@ public class UsersDb implements UsersService{
 		return list;
 	}
 
+	@Deprecated
 	@Override
 	public void deleteAllUsers() {
 		userCrud.deleteAll();
@@ -144,6 +147,18 @@ public class UsersDb implements UsersService{
 		}else {
 			return this.defaultRole;
 		}
+	}
+
+	@Override
+	public void deleteUsersByEmail(String superapp, String email) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<UserBoundary> getUsersByEmail(String superapp, String email, int size, int page) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 		
 }

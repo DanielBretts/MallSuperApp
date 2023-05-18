@@ -217,10 +217,27 @@ public class ObjectServiceDb implements ObjectQueries{
 	                return resultList;
 	            });
 	}
+
 	@Override
-	public ObjectBoundary handleLater(ObjectBoundary boundary) {
+	public void updateObjectByEmail(String superApp, String id, ObjectBoundary ob, String userSuperapp, String email) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public Optional<ObjectBoundary> getMessageBySpecificEmail(String superApp, String id, String userSuperapp,
+			String email) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+	@Override
+	public List<ObjectBoundary> getAllObjectsByEmail(String userSuperapp, String email, int size, int page) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public void deleteObjectsByEmail(String superapp, String email) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
