@@ -4,17 +4,17 @@ import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.annotation.PostConstruct;
 
-public class CommandID {
+public class CommandId {
 	
 	private String superapp;
 	private String miniapp;
 	private String internalCommandID;
 
-	public CommandID() {
+	public CommandId() {
 
 	}
 
-	public CommandID(String miniApp) {
+	public CommandId(String miniApp) {
 		super();
 		this.miniapp = miniApp;
 	}
@@ -32,11 +32,11 @@ public class CommandID {
 		this.miniapp = miniApp;
 	}
 
-	public String getInternalCommandID() {
+	public String getInternalCommandId() {
 		return internalCommandID;
 	}
 
-	public void setInternalCommandID(String internalCommandID) {
+	public void setInternalCommandId(String internalCommandID) {
 		this.internalCommandID = internalCommandID;
 	}
 

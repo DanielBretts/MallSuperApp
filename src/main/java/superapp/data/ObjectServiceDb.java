@@ -7,18 +7,24 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import superapp.logic.ObjectCrud;
-import superapp.logic.ObjectServiceWithBindingCapabilities;
+import superapp.logic.ObjectQueries;
 import superapp.restApi.boundaries.ObjectBoundary;
 import superapp.data.exceptions.ObjectNotFoundException;
 import superapp.data.exceptions.UserNotFoundException;
 import java.util.ArrayList;
 
 @Service
-public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
+public class ObjectServiceDb implements ObjectQueries{
 	private ObjectCrud objectCrud;
 	private String superapp;
+	private ObjectMapper jackson;
+	private JmsTemplate jmsTemplate;
 	private String delimeter = "_"; 
 
 
@@ -115,7 +121,7 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	}
 
 	@Override
-	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob) {
+	public ObjectBoundary updateObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectEntity existing = this.objectCrud
 				.findById(superApp+delimeter+id)
 				.orElseThrow(()->new ObjectNotFoundException("could not find object for update by id: " + (superApp+id)));
@@ -210,6 +216,11 @@ public class ObjectServiceDb implements ObjectServiceWithBindingCapabilities{
 	                }
 	                return resultList;
 	            });
+	}
+	@Override
+	public ObjectBoundary handleLater(ObjectBoundary boundary) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

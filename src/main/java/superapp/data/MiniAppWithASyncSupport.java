@@ -5,6 +5,6 @@ import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 public interface MiniAppWithASyncSupport extends MiniAppCommandsService {
 	
-	public MiniAppCommandBoundary handleLater(MiniAppCommandBoundary massage);
+	public MiniAppCommandBoundary handleLater(MiniAppCommandBoundary miniAppCommandBoundary,boolean isAsync);
 
 }

@@ -9,23 +9,38 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import superapp.data.exceptions.MiniAppCommandException;
 import superapp.logic.MiniAppCommandsCrud;
-import superapp.logic.MiniAppCommandsService;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 @Service
-public class MiniAppCommandsDb implements MiniAppCommandsService {
+public class MiniAppCommandsDb implements MiniAppWithASyncSupport {
 
 	private MiniAppCommandsCrud miniAppCommandsCrud;
 	private String superapp;
 	private char delimeter = '_';
+	private ObjectMapper jackson;
+	private JmsTemplate jmsTemplate;
 
 	@Autowired
 	public void setMiniAppCommandsCrud(MiniAppCommandsCrud miniAppCommandsCrud) {
 		this.miniAppCommandsCrud = miniAppCommandsCrud;
+	}
+	
+	@PostConstruct
+	public void setup() {
+		this.jackson = new ObjectMapper();
+	}
+	
+	@Autowired
+	public void setJmsTemplate(JmsTemplate jmsTemplate) {
+		this.jmsTemplate = jmsTemplate;
 	}
 
 	@Value("${spring.application.name:2023b.shir.zur}")
@@ -35,7 +50,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary command) {
-		command.getCommandId().setInternalCommandID(UUID.randomUUID().toString());
+		command.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 		if(command.getTargetObject().getObjectId().getSuperapp() != null)
 			command.getCommandId().setSuperapp(this.superapp);
 		else throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
@@ -51,9 +66,9 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 	private MiniAppCommandBoundary toBoundary(MiniAppCommandEntity entity) {
 		MiniAppCommandBoundary boundary = new MiniAppCommandBoundary();
 		boundary.setCommand(entity.getCommand());
-		boundary.setCommandId(new CommandID(entity.getMiniApp()));
+		boundary.setCommandId(new CommandId(entity.getMiniApp()));
 		boundary.getCommandId().setSuperapp(this.superapp);
-		boundary.getCommandId().setInternalCommandID(entity.getId());
+		boundary.getCommandId().setInternalCommandId(entity.getId());
 		boundary.setInvocationTimestamp(entity.getInvocationTimeStamp());
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		boundary.setInvokedBy(entity.getInvokedBy());
@@ -82,10 +97,10 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 		 * 
 		 */
 		String id = command.getCommandId().getSuperapp() + delimeter + command.getCommandId().getMiniApp() + delimeter
-				+ command.getCommandId().getInternalCommandID();
+				+ command.getCommandId().getInternalCommandId();
 
 		entity.setId(id);
-		entity.setInternalCommandId(command.getCommandId().getInternalCommandID());
+		entity.setInternalCommandId(command.getCommandId().getInternalCommandId());
 		if (command.getTargetObject() == null
 				|| command.getTargetObject().getObjectId().getInternalObjectId() == null) {
 			throw new MiniAppCommandException("TargetObject can not be empty");
@@ -130,6 +145,53 @@ public class MiniAppCommandsDb implements MiniAppCommandsService {
 	@Override
 	public void deleteAllCommands() {
 		this.miniAppCommandsCrud.deleteAll();
+	}
+
+	@Override
+	public MiniAppCommandBoundary handleLater(MiniAppCommandBoundary miniAppCommandBoundary,boolean isAsync) {
+		miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+		if(miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
+			miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
+		else throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
+		if(miniAppCommandBoundary.getInvokedBy().getUserId().getSuperapp() != null)
+			miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
+		else throw new MiniAppCommandException("Superapp inside userId can not be empty!");
+		if(isAsync) {
+			try {
+				String json = this.jackson.writeValueAsString(miniAppCommandBoundary); 
+				this.jmsTemplate
+				.convertAndSend("handleLaterCommand", json);
+				return miniAppCommandBoundary;
+			}catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}else {
+			MiniAppCommandEntity entity = this.toEntity(miniAppCommandBoundary);
+			entity = this.miniAppCommandsCrud.save(entity);
+			return (MiniAppCommandBoundary) toBoundary(entity);			
+		}
+		
+	}
+	
+	@JmsListener(destination = "handleLaterCommand")
+	public void listenToMyMom (String json) {
+		try {
+			System.err.println("*** received: " + json);
+			MiniAppCommandBoundary miniAppCommandBoundary = this.jackson
+					.readValue(json, MiniAppCommandBoundary.class);
+			if (miniAppCommandBoundary.getCommandId().getInternalCommandId() == null) {
+				miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+			}
+			if (miniAppCommandBoundary.getInvocationTimestamp() == null) {
+				miniAppCommandBoundary.setInvocationTimestamp(new Date());
+			}
+			
+			MiniAppCommandEntity entity = this.toEntity(miniAppCommandBoundary);
+			entity = this.miniAppCommandsCrud.save(entity);
+			System.err.println("*** saved: " + this.toBoundary(entity));
+		}catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 	}
 
 }

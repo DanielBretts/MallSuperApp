@@ -3,10 +3,10 @@ package superapp.restApi.boundaries;
 import java.util.Date;
 import java.util.Map;
 
-import superapp.data.CommandID;
+import superapp.data.CommandId;
 
 public class MiniAppCommandBoundary {
-	private CommandID commandId;
+	private CommandId commandId;
 	private String command;
 	private Date invocationTimestamp;
 	private TargetObjectBoundary targetObject;
@@ -29,7 +29,7 @@ public class MiniAppCommandBoundary {
 	}
 	
 	
-	public MiniAppCommandBoundary(CommandID commandId, String command, TargetObjectBoundary targetObject,
+	public MiniAppCommandBoundary(CommandId commandId, String command, TargetObjectBoundary targetObject,
 			InvokedBy invokedBy, Map<String, Object> commandAttributes) {
 		super();
 		this.commandId = commandId;
@@ -42,11 +42,11 @@ public class MiniAppCommandBoundary {
 	
 
 
-	public CommandID getCommandId() {
+	public CommandId getCommandId() {
 		return commandId;
 	}
 
-	public void setCommandId(CommandID commandId) {
+	public void setCommandId(CommandId commandId) {
 		this.commandId = commandId;
 	}
 
