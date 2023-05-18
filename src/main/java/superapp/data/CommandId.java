@@ -8,7 +8,6 @@ public class CommandId {
 	
 	private String superapp;
 	private String miniapp;
-<<<<<<< HEAD
 	private String internalCommandID;
 
 	public CommandId() {
@@ -39,7 +38,6 @@ public class CommandId {
 
 	public void setInternalCommandId(String internalCommandID) {
 		this.internalCommandID = internalCommandID;
-=======
 	private String internalCommandId;
 
 	public CommandId() {
@@ -70,7 +68,6 @@ public class CommandId {
 
 	public void setInternalCommandId(String internalCommandId) {
 		this.internalCommandId = internalCommandId;
->>>>>>> branch 'master' of https://DanielBretts@bitbucket.org/mallsuperapp/2023b.shir.zur2.git
 	}
 
 	public String getSuperapp() {
