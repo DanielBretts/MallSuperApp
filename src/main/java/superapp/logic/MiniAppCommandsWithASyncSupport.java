@@ -1,9 +1,8 @@
-package superapp.data;
+package superapp.logic;
 
-import superapp.logic.MiniAppCommandsService;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
-public interface MiniAppWithASyncSupport extends MiniAppCommandsService {
+public interface MiniAppCommandsWithASyncSupport extends MiniAppCommandsService {
 	
 	public MiniAppCommandBoundary handleLater(MiniAppCommandBoundary miniAppCommandBoundary,boolean isAsync);
 

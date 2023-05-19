@@ -20,7 +20,7 @@ public class AdminUserController {
 
 	private UsersQueries usersService;
 	private ObjectQueries objectService;
-	private MiniAppCommandsService miniAppCommandsService;
+	private MiniAppCommandsQueries miniAppCommandsService;
 
 	@Autowired
 	public void setUsersService(UsersQueries usersService) {
@@ -33,7 +33,7 @@ public class AdminUserController {
 	}
 
 	@Autowired
-	public void setMiniAppCommandsService(MiniAppCommandsService miniAppCommandsService) {
+	public void setMiniAppCommandsService(MiniAppCommandsQueries miniAppCommandsService) {
 		this.miniAppCommandsService = miniAppCommandsService;
 	}
 
