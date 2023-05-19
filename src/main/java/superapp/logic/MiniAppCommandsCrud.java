@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import superapp.data.MiniAppCommandEntity;
 
-public interface MiniAppCommandsCrud extends ListCrudRepository<MiniAppCommandEntity, String> {
+public interface MiniAppCommandsCrud
+		extends ListCrudRepository<MiniAppCommandEntity, String>, PagingAndSortingRepository<MiniAppCommandEntity, String> {
 
-	public List<MiniAppCommandEntity> findAllByEmail(@Param("invokedBy.userId.superapp") String superapp, @Param("invokedBy.userId.email") String email,
-			Pageable pageable);
+	public List<MiniAppCommandEntity> findAllByInvokedByUserIdEmail(@Param("email") String email, Pageable pageable);
 
 }

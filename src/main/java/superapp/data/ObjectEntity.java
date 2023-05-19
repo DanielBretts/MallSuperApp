@@ -22,8 +22,8 @@ public class ObjectEntity {
 	private Date creationTimestamp;
 	private Double lat;
 	private Double lng;
-	private String createdBy_email;
-	private String createdBy_superApp;
+	private String email;
+	private String superapp;
 	private Map<String, Object> objectDetails;
 	@DBRef
 	private List<ObjectEntity> childrenObjects;
@@ -89,20 +89,20 @@ public class ObjectEntity {
 		this.lng = lng;
 	}
 
-	public String getCreatedBy_email() {
-		return createdBy_email;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setCreatedBy_email(String createdBy_email) {
-		this.createdBy_email = createdBy_email;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public String getCreatedBy_superApp() {
-		return createdBy_superApp;
+	public String getSuperapp() {
+		return this.superapp;
 	}
 
-	public void setCreatedBy_superApp(String createdBy_superApp) {
-		this.createdBy_superApp = createdBy_superApp;
+	public void setSuperapp(String superapp) {
+		this.superapp = superapp;
 	}
 
 	public void setActive(boolean active) {
@@ -132,8 +132,8 @@ public class ObjectEntity {
 	@Override
 	public String toString() {
 		return "ObjectEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
-				+ ", creationTimestamp=" + creationTimestamp + ", lat=" + lat + ", lng=" + lng + ", createdBy_email="
-				+ createdBy_email + ", createdBy_superApp=" + createdBy_superApp + ", objectDetails=" + objectDetails
+				+ ", creationTimestamp=" + creationTimestamp + ", lat=" + lat + ", lng=" + lng + ", email="
+				+ email + ", superApp=" + superapp + ", objectDetails=" + objectDetails
 				+ ", childrenObjects=" + childrenObjects + "]";
 	}
 	

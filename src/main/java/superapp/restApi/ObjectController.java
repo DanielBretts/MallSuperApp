@@ -36,10 +36,9 @@ public class ObjectController {
 			path = { "/superapp/objects/{superApp}/{id}" }, method = { RequestMethod.PUT }, consumes = {
 					MediaType.APPLICATION_JSON_VALUE })
 	public void update(@PathVariable("superApp") String superApp, @PathVariable("id") String id,
-			@RequestBody ObjectBoundary ob,
-			@RequestParam(name = "userSuperapp", required = true) String superapp,
+			@RequestBody ObjectBoundary ob, @RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		objectService.updateObject(superApp, id, ob);
+		objectService.updateObjectByEmail(superApp, id, ob, userSuperapp, email);
 	}
 
 	@RequestMapping( // Retrieve object
@@ -47,10 +46,9 @@ public class ObjectController {
 					MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
 	public Optional<ObjectBoundary> getObjectById(@PathVariable("superApp") String superApp,
-			@PathVariable("id") String id,
-			@RequestParam(name = "userSuperapp", required = true) String superapp,
+			@PathVariable("id") String id, @RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		return this.objectService.getSpecificObject(superApp, id);
+		return this.objectService.getObjectBySpecificEmail(superApp, id, superapp, email);
 	}
 
 	@RequestMapping( // Get All objects
@@ -60,7 +58,7 @@ public class ObjectController {
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
-		return objectService.getAllObjects().toArray(new ObjectBoundary[0]);
+		return objectService.getAllObjectsByEmail(superapp, email, size, page).toArray(new ObjectBoundary[0]);
 	}
 
 }
