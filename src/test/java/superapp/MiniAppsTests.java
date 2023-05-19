@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
-import superapp.data.CommandID;
+import superapp.data.CommandId;
 import superapp.data.ObjectId;
 import superapp.data.UserId;
 import superapp.restApi.boundaries.InvokedBy;
@@ -68,17 +68,19 @@ public class MiniAppsTests {
 		Map<String, Object> commandAttributes = new HashMap<>();
 		commandAttributes.put("daniel", "hello");
 		MiniAppCommandBoundary miniAppCommandBoundary = new MiniAppCommandBoundary("test",
-				new TargetObjectBoundary(new ObjectId("123",this.superapp)), new InvokedBy(new UserId("daniel@mail.com",this.superapp)),
-				commandAttributes);
-		CommandID commandID = this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/test",
+				new TargetObjectBoundary(new ObjectId("123", this.superapp)),
+				new InvokedBy(new UserId("daniel@mail.com", this.superapp)), commandAttributes);
+
+		CommandId commandId = this.restTemplate.postForObject(this.baseUrl + "/superapp/miniapp/test",
 				miniAppCommandBoundary, MiniAppCommandBoundary.class).getCommandId();
-		miniAppCommandBoundary.setCommandId(commandID);
+		miniAppCommandBoundary.setCommandId(commandId);
 
 		// THEN the miniappCommand is stored to the database
 		MiniAppCommandBoundary miniAppCommandFromDb = this.restTemplate
 				.getForObject(this.baseUrl + "/superapp/admin/miniapp/test", MiniAppCommandBoundary[].class)[0];
 		assertThat(miniAppCommandFromDb).isNotNull()
 				.extracting("commandId.superapp", "commandId.miniapp", "commandId.internalCommandID")
-				.containsExactly(commandID.getSuperapp(), commandID.getMiniApp(), commandID.getInternalCommandID());
+
+				.containsExactly(commandId.getSuperapp(), commandId.getMiniApp(), commandId.getInternalCommandId());
 	}
 }

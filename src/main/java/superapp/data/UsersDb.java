@@ -7,32 +7,35 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import superapp.logic.UserCrud;
+import superapp.logic.UsersQueries;
 import superapp.logic.UsersService;
 import superapp.restApi.boundaries.UserBoundary;
 import superapp.data.exceptions.UserParamException;
 import superapp.data.exceptions.UserNotFoundException;
 
 @Service
-public class UsersDb implements UsersService{
-	
+public class UsersDb implements UsersQueries {
+
 	private UserCrud userCrud;
 	private UserRole defaultRole;
 	private String superapp;
-	private char delimeter = '_'; 
-	
+	private char delimeter = '_';
+
 	@Autowired
 	public void setUserCrud(UserCrud userCrud) {
 		this.userCrud = userCrud;
 	}
-	
+
 	@Value("${mallApp.default.role:MINIAPP_USER}")
 	public void setDefaultRole(UserRole defaultRole) {
 		this.defaultRole = defaultRole;
 	}
-	
+
 	@Value("${spring.application.name:2023b.shir.zur}")
 	public void setSuperapp(String name) {
 		this.superapp = name;
@@ -47,38 +50,36 @@ public class UsersDb implements UsersService{
 		entity = this.userCrud.save(entity);
 		return (UserBoundary) toBoundary(entity);
 	}
-	
+
 	@Override
-	public Optional<UserBoundary> login(String userSuperApp, String userEmail)  {
-		return this.userCrud
-			.findById(userSuperApp+delimeter+userEmail)
-			.map(this::toBoundary);
+	public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
+		return this.userCrud.findById(userSuperApp + delimeter + userEmail).map(this::toBoundary);
 	}
 
 	@Override
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 		System.err.println(update.toString());
-			UserEntity entity = this.userCrud
-					.findById(userSuperApp+delimeter+userEmail)
-					.orElseThrow(()->new UserNotFoundException("could not find URL with path /" + userSuperApp + "/" + userEmail));
-			entity.setRole(toEntityAsEnum(update.getRole()));
-			if(update.getAvatar() != null) {
-				entity.setAvatar(update.getAvatar());
-			}
-			if(update.getUsername() != null) {
-				entity.setUsername(update.getUsername());
-			}
-			UserId updatedUserId = update.getUserId();
-			if(updatedUserId != null && updatedUserId.getEmail() != null) {
-				System.err.println(superapp);
-				entity.setId(this.superapp+delimeter+userEmail);
-			}else {
-				throw new UserNotFoundException("User id field is not valid");
-			}
-			entity = this.userCrud.save(entity);
-			return this.toBoundary(entity);
+		UserEntity entity = this.userCrud.findById(userSuperApp + delimeter + userEmail).orElseThrow(
+				() -> new UserNotFoundException("could not find URL with path /" + userSuperApp + "/" + userEmail));
+		entity.setRole(toEntityAsEnum(update.getRole()));
+		if (update.getAvatar() != null) {
+			entity.setAvatar(update.getAvatar());
+		}
+		if (update.getUsername() != null) {
+			entity.setUsername(update.getUsername());
+		}
+		UserId updatedUserId = update.getUserId();
+		if (updatedUserId != null && updatedUserId.getEmail() != null) {
+			System.err.println(superapp);
+			entity.setId(this.superapp + delimeter + userEmail);
+		} else {
+			throw new UserNotFoundException("User id field is not valid");
+		}
+		entity = this.userCrud.save(entity);
+		return this.toBoundary(entity);
 	}
 
+	@Deprecated
 	@Override
 	public List<UserBoundary> getAllUsers() {
 		Iterable<UserEntity> iterable = this.userCrud.findAll();
@@ -91,13 +92,14 @@ public class UsersDb implements UsersService{
 		return list;
 	}
 
+	@Deprecated
 	@Override
 	public void deleteAllUsers() {
 		userCrud.deleteAll();
 	}
 
 	public UserBoundary toBoundary(UserEntity entity) {
-		UserBoundary ub = new UserBoundary();		
+		UserBoundary ub = new UserBoundary();
 		ub.setAvatar(entity.getAvatar());
 		ub.setRole(entity.getRole().toString());
 		ub.setUsername(entity.getUsername());
@@ -105,45 +107,57 @@ public class UsersDb implements UsersService{
 		ub.getUserId().setSuperapp(superapp);
 		return ub;
 	}
-	
+
 	public String getEmailFromId(String originalString) {
-		//String originalString = "superappName_email";
+		// String originalString = "superappName_email";
 		int index = originalString.indexOf(delimeter);
 		if (index != -1) { // Check if the delimiter is found
-		   return originalString.substring(index + 1);
-		    //newString is now "email"
+			return originalString.substring(index + 1);
+			// newString is now "email"
 		}
 		return null;
 	}
 
-	public UserEntity toEntity(UserBoundary boundary){	
+	public UserEntity toEntity(UserBoundary boundary) {
 		UserEntity ue = new UserEntity();
-	
-		if(boundary.getAvatar() == null) {
+
+		if (boundary.getAvatar() == null) {
 			ue.setAvatar(null);
-		}else {
-			ue.setAvatar(boundary.getAvatar());			
+		} else {
+			ue.setAvatar(boundary.getAvatar());
 		}
 		ue.setRole(toEntityAsEnum(boundary.getRole()));
-		if(boundary.getUsername() == null) {
+		if (boundary.getUsername() == null) {
 			throw new UserParamException("Username can not be empty");
-		}else {
+		} else {
 			ue.setUsername(boundary.getUsername());
 		}
-		if(boundary.getUserId() == null || boundary.getUserId().getEmail() == null) {
+		if (boundary.getUserId() == null || boundary.getUserId().getEmail() == null) {
 			throw new UserParamException("User id field is not valid");
-		}else {
+		} else {
 			ue.setId(this.superapp + delimeter + boundary.getUserId().getEmail());
 		}
 		return ue;
 	}
-	
-	private UserRole toEntityAsEnum (String value) {
+
+	private UserRole toEntityAsEnum(String value) {
 		if (value != null) {
 			return UserRole.valueOf(value);
-		}else {
+		} else {
 			return this.defaultRole;
 		}
 	}
-		
+
+	@Override
+	public void deleteUsersByEmail(String superapp, String email) {
+		this.userCrud.deleteByEmail(superapp, email);
+
+	}
+
+	@Override
+	public List<UserBoundary> getUsersByEmail(String superapp, String email, int size, int page) {
+		return this.userCrud.findAllBySuperappAndEmail(superapp, email, PageRequest.of(page, size, Direction.ASC, "id"))
+				.stream().map(this::toBoundary).toList();
+	}
+
 }

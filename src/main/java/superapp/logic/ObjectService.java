@@ -9,12 +9,16 @@ public interface ObjectService {
 	
 	public ObjectBoundary createObject(ObjectBoundary object);
 
-	public ObjectBoundary updatObject(String superApp, String id, ObjectBoundary ob);
+	@Deprecated
+	public ObjectBoundary updateObject(String superApp, String id, ObjectBoundary ob);
 
+	@Deprecated
 	public Optional<ObjectBoundary> getSpecificObject(String superApp, String id);
 
+	@Deprecated
 	public List<ObjectBoundary> getAllObjects();
 	
+	@Deprecated
 	public void deleteAllObjects();
 	
 }
