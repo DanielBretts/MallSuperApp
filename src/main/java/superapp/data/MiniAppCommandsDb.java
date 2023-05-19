@@ -150,6 +150,7 @@ public class MiniAppCommandsDb implements MiniAppWithASyncSupport {
 	@Override
 	public MiniAppCommandBoundary handleLater(MiniAppCommandBoundary miniAppCommandBoundary,boolean isAsync) {
 		miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
+		miniAppCommandBoundary.setInvocationTimestamp(new Date());
 		if(miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
 			miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
 		else throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
@@ -170,22 +171,14 @@ public class MiniAppCommandsDb implements MiniAppWithASyncSupport {
 			entity = this.miniAppCommandsCrud.save(entity);
 			return (MiniAppCommandBoundary) toBoundary(entity);			
 		}
-		
 	}
 	
 	@JmsListener(destination = "handleLaterCommand")
-	public void listenToMyMom (String json) {
+	public void listenToCommand (String json) {
 		try {
 			System.err.println("*** received: " + json);
 			MiniAppCommandBoundary miniAppCommandBoundary = this.jackson
 					.readValue(json, MiniAppCommandBoundary.class);
-			if (miniAppCommandBoundary.getCommandId().getInternalCommandId() == null) {
-				miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
-			}
-			if (miniAppCommandBoundary.getInvocationTimestamp() == null) {
-				miniAppCommandBoundary.setInvocationTimestamp(new Date());
-			}
-			
 			MiniAppCommandEntity entity = this.toEntity(miniAppCommandBoundary);
 			entity = this.miniAppCommandsCrud.save(entity);
 			System.err.println("*** saved: " + this.toBoundary(entity));
