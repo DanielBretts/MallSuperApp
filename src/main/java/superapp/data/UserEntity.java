@@ -11,14 +11,6 @@ public class UserEntity {
 	UserRole role;
 	String avatar;
 	
-	public String getSuperapp() {
-		return this.id.split("_")[0];
-	}
-	
-	public String getEmail() {
-		return this.id.split("_")[1];
-	}
-	
 	public String getId() {
 		return id;
 	}
