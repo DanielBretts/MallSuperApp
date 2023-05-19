@@ -37,7 +37,7 @@ public class ObjectController {
 					MediaType.APPLICATION_JSON_VALUE })
 	public void update(@PathVariable("superApp") String superApp, @PathVariable("id") String id,
 			@RequestBody ObjectBoundary ob,
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
 		objectService.updateObject(superApp, id, ob);
 	}
@@ -48,7 +48,7 @@ public class ObjectController {
 	@ResponseBody
 	public Optional<ObjectBoundary> getObjectById(@PathVariable("superApp") String superApp,
 			@PathVariable("id") String id,
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
 		return this.objectService.getSpecificObject(superApp, id);
 	}
@@ -56,7 +56,7 @@ public class ObjectController {
 	@RequestMapping( // Get All objects
 			path = { "/superapp/objects" }, method = { RequestMethod.GET }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public ObjectBoundary[] getObjects(@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+	public ObjectBoundary[] getObjects(@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
