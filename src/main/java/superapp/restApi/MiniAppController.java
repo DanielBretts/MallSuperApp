@@ -10,17 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import superapp.data.CommandId;
-import superapp.data.MiniAppWithASyncSupport;
-import superapp.logic.MiniAppCommandsService;
+import superapp.logic.MiniAppCommandsQueries;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 @RestController
 public class MiniAppController {
 
-	private MiniAppWithASyncSupport miniAppCommandsService;
+	private MiniAppCommandsQueries miniAppCommandsService;
 
 	@Autowired
-	public void setMiniAppCommandsService(MiniAppWithASyncSupport miniAppCommandsService) {
+	public void setMiniAppCommandsService(MiniAppCommandsQueries miniAppCommandsService) {
 		this.miniAppCommandsService = miniAppCommandsService;
 	}
 

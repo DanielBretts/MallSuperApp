@@ -20,7 +20,7 @@ public class AdminUserController {
 
 	private UsersQueries usersService;
 	private ObjectQueries objectService;
-	private MiniAppCommandsService miniAppCommandsService;
+	private MiniAppCommandsQueries miniAppCommandsService;
 
 	@Autowired
 	public void setUsersService(UsersQueries usersService) {
@@ -33,27 +33,27 @@ public class AdminUserController {
 	}
 
 	@Autowired
-	public void setMiniAppCommandsService(MiniAppCommandsService miniAppCommandsService) {
+	public void setMiniAppCommandsService(MiniAppCommandsQueries miniAppCommandsService) {
 		this.miniAppCommandsService = miniAppCommandsService;
 	}
 
 	@RequestMapping(path = { "/superapp/admin/users" }, method = { RequestMethod.DELETE })
 	public void deleteAllUsers(
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
 		this.usersService.deleteAllUsers();
 	}
 
 	@RequestMapping(path = { "/superapp/admin/objects" }, method = { RequestMethod.DELETE })
 	public void deleteAllObjects(
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
 		this.objectService.deleteAllObjects();
 	}
 
 	@RequestMapping(path = { "/superapp/admin/miniapp" }, method = { RequestMethod.DELETE })
 	public void deleteAllCommands(
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
 		this.miniAppCommandsService.deleteAllCommands();
 	}
@@ -67,7 +67,7 @@ public class AdminUserController {
 	@RequestMapping(path = { "/superapp/admin/objects" }, method = { RequestMethod.GET }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public List<ObjectBoundary> getAllObjects(
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
@@ -77,7 +77,7 @@ public class AdminUserController {
 	@RequestMapping(path = { "/superapp/admin/miniapp" }, method = { RequestMethod.GET }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public List<MiniAppCommandBoundary> getAllCommandsHistory(
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
@@ -87,7 +87,7 @@ public class AdminUserController {
 	@RequestMapping(path = { "/superapp/admin/miniapp/{miniAppName}" }, method = { RequestMethod.GET }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public List<MiniAppCommandBoundary> getMiniAppCommandHistory(@PathVariable String miniAppName,
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "2023b.shir.zur") String superapp,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
