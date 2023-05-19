@@ -38,40 +38,39 @@ public class AdminUserController {
 	}
 
 	@RequestMapping(path = { "/superapp/admin/users" }, method = { RequestMethod.DELETE })
-	public void deleteAllUsers(
-			@RequestParam(name = "userSuperapp", required = true) String superapp,
+	public void deleteAllUsers(@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		this.usersService.deleteAllUsers();
+		this.usersService.deleteUsersByEmail(superapp, email);
 	}
 
 	@RequestMapping(path = { "/superapp/admin/objects" }, method = { RequestMethod.DELETE })
-	public void deleteAllObjects(
-			@RequestParam(name = "userSuperapp", required = true) String superapp,
+	public void deleteAllObjects(@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		this.objectService.deleteAllObjects();
+		this.objectService.deleteObjectsByEmail(superapp, email);
 	}
 
 	@RequestMapping(path = { "/superapp/admin/miniapp" }, method = { RequestMethod.DELETE })
-	public void deleteAllCommands(
-			@RequestParam(name = "userSuperapp", required = true) String superapp,
+	public void deleteAllCommands(@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		this.miniAppCommandsService.deleteAllCommands();
+		this.miniAppCommandsService.deleteCommandsByEmail(superapp, email);
 	}
 
 	@RequestMapping(path = { "/superapp/admin/users" }, method = { RequestMethod.GET }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	public List<UserBoundary> getAllUsers() {
-		return usersService.getAllUsers();
+	public List<UserBoundary> getAllUsers(@RequestParam(name = "userSuperapp", required = true) String superapp,
+			@RequestParam(name = "userEmail", required = true) String email,
+			@RequestParam(name = "size", required = true) int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+		return usersService.getUsersByEmail(superapp,email,size,page);
 	}
 
 	@RequestMapping(path = { "/superapp/admin/objects" }, method = { RequestMethod.GET }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	public List<ObjectBoundary> getAllObjects(
-			@RequestParam(name = "userSuperapp", required = true) String superapp,
+	public List<ObjectBoundary> getAllObjects(@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
-		return objectService.getAllObjects();
+		return objectService.getAllObjectsByEmail(superapp, email, size, page);
 	}
 
 	@RequestMapping(path = { "/superapp/admin/miniapp" }, method = { RequestMethod.GET }, produces = {
@@ -81,7 +80,7 @@ public class AdminUserController {
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
-		return miniAppCommandsService.getAllCommands();
+		return miniAppCommandsService.getCommandsByEmail(superapp, email, size, page);
 	}
 
 	@RequestMapping(path = { "/superapp/admin/miniapp/{miniAppName}" }, method = { RequestMethod.GET }, produces = {
@@ -91,7 +90,7 @@ public class AdminUserController {
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
-		return miniAppCommandsService.getAllMiniAppCommands(miniAppName);
+		return miniAppCommandsService.getMiniAppCommandsByEmail(miniAppName, superapp, email, size, page);
 	}
 
 }

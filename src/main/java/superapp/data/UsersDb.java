@@ -150,13 +150,13 @@ public class UsersDb implements UsersQueries {
 
 	@Override
 	public void deleteUsersByEmail(String superapp, String email) {
-		this.userCrud.deleteByEmail(superapp, email);
-
+		this.userCrud.deleteById(superapp.concat(delimeter + email));
 	}
 
 	@Override
 	public List<UserBoundary> getUsersByEmail(String superapp, String email, int size, int page) {
-		return this.userCrud.findAllBySuperappAndEmail(superapp, email, PageRequest.of(page, size, Direction.ASC, "id"))
+		return this.userCrud
+				.findAllById(superapp.concat(delimeter + email), PageRequest.of(page, size, Direction.ASC, "id"))
 				.stream().map(this::toBoundary).toList();
 	}
 

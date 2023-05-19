@@ -25,8 +25,6 @@ import java.util.ArrayList;
 public class ObjectServiceDb implements ObjectQueries {
 	private ObjectCrud objectCrud;
 	private String superapp;
-	private ObjectMapper jackson;
-	private JmsTemplate jmsTemplate;
 	private String delimeter = "_";
 
 	@Autowired
@@ -43,7 +41,7 @@ public class ObjectServiceDb implements ObjectQueries {
 		ObjectBoundary ob = new ObjectBoundary();
 		String a = entity.getId();
 		String[] parts = a.split(delimeter);
-		String part1 = parts[0]; // supper app name
+		String part1 = parts[0]; // superapp name
 		String part2 = parts[1]; // internal object id
 		ob.setObjectId(new ObjectId().setInternalObjectId(part2).setSuperapp(part1));
 		ob.setType(entity.getType());
@@ -53,7 +51,7 @@ public class ObjectServiceDb implements ObjectQueries {
 		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
 		CreatedBy createdBy_temp = new CreatedBy();
 		createdBy_temp.setUserId(new UserId());
-		createdBy_temp.getUserId().setEmail(entity.getCreatedBy_email());
+		createdBy_temp.getUserId().setEmail(entity.getEmail());
 		createdBy_temp.getUserId().setSuperapp(superapp);
 		ob.setCreatedBy(createdBy_temp);
 		ob.setObjectDetails(entity.getObjectDetails());
@@ -97,8 +95,8 @@ public class ObjectServiceDb implements ObjectQueries {
 				throw new UserNotFoundException("UserId can not be null");
 			}
 			if (email != null && !email.replaceAll(" ", "").isEmpty()) {
-				entity.setCreatedBy_email(object.getCreatedBy().getUserId().getEmail());
-				entity.setCreatedBy_superApp(superapp);
+				entity.setEmail(object.getCreatedBy().getUserId().getEmail());
+				entity.setSuperapp(superapp);
 			} else {
 				throw new UserNotFoundException("Email can not be null or empty string");
 			}
@@ -214,8 +212,7 @@ public class ObjectServiceDb implements ObjectQueries {
 
 	@Override
 	public void updateObjectByEmail(String superApp, String id, ObjectBoundary ob, String userSuperapp, String email) {
-		this.objectCrud.updateObjectByEmail(userSuperapp, email);
-
+//		this.objectCrud.updateObjectByEmail(userSuperapp, email);
 	}
 
 	@Override

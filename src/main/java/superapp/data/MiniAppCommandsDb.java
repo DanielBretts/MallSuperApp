@@ -204,10 +204,9 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 	@Override
 	public List<MiniAppCommandBoundary> getCommandsByEmail(String superapp, String email, int size, int page) {
-		return this.miniAppCommandsCrud.findAllByEmail(superapp,email,PageRequest.of(page, size,Direction.DESC,"invocationTimestamp",
-				"commandId.internalCommandId")).stream()
-				.map(this::toBoundary)
-				.toList();
+		return this.miniAppCommandsCrud.findAllByInvokedByUserIdEmail(email,
+				PageRequest.of(page, size, Direction.DESC, "id"))
+				.stream().map(this::toBoundary).toList();
 	}
 
 	@Override
