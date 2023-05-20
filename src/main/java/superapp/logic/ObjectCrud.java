@@ -16,14 +16,12 @@ public interface ObjectCrud
 
 	public Optional<ArrayList<ObjectEntity>> findAllByChildrenObjectsContains(ObjectEntity theChildrenObjects);
 
-	public Optional<ObjectEntity> findByEmail(@Param("superapp") String email,
-			@Param("email") String superApp);
+//	public Optional<ObjectEntity> findById(@Param("superapp") String superApp,
+//			@Param("email") String email);
 
 	public List<ObjectEntity> findAllByEmail(@Param("superapp") String userSuperapp,
 			@Param("email") String email, Pageable pageable);
 
 	public void deleteByEmail(@Param("superapp") String superapp, @Param("email") String email);
 
-//	public void updateObjectByEmail(@Param("createdBy_superApp") String userSuperapp,
-//			@Param("created_by_email") String email);
 }

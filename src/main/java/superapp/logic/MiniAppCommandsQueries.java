@@ -6,10 +6,10 @@ import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 public interface MiniAppCommandsQueries extends MiniAppCommandsWithASyncSupport {
 
-	public List<MiniAppCommandBoundary> getCommandsByEmail(String superapp, String email, int size, int page);
+	public List<MiniAppCommandBoundary> getAllMiniAppsCommandsAdminOnly(String superapp, String email, int size, int page);
 
-	public List<MiniAppCommandBoundary> getMiniAppCommandsByEmail(String miniAppName, String superapp, String email,
-			int size, int page);
+	public List<MiniAppCommandBoundary> getSpecificMiniAppCommandsAdminOnly(String miniAppName, String superapp,
+			String email, int size, int page);
 	
-	public void deleteCommandsByEmail(String superapp, String email);
+	public void deleteAllCommandsAdminOnly(String superapp, String email);
 }

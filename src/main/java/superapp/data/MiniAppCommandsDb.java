@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -14,18 +13,20 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import superapp.data.exceptions.MiniAppCommandException;
+import superapp.data.exceptions.UserNotFoundException;
 import superapp.logic.MiniAppCommandsCrud;
 import superapp.logic.MiniAppCommandsQueries;
+import superapp.logic.UserCrud;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
 
 @Service
 public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 	private MiniAppCommandsCrud miniAppCommandsCrud;
+	private UserCrud userCrud;
 	private String superapp;
 	private char delimeter = '_';
 	private ObjectMapper jackson;
@@ -34,6 +35,10 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	@Autowired
 	public void setMiniAppCommandsCrud(MiniAppCommandsCrud miniAppCommandsCrud) {
 		this.miniAppCommandsCrud = miniAppCommandsCrud;
+	}
+	@Autowired
+	public void setUserCrud(UserCrud userCrud) {
+		this.userCrud = userCrud;
 	}
 
 	@PostConstruct
@@ -203,24 +208,46 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	}
 	
 
+
 	@Override
-	public List<MiniAppCommandBoundary> getCommandsByEmail(String superapp, String email, int size, int page) {
-		return this.miniAppCommandsCrud.findAllByInvokedByUserIdEmail(email,
-				PageRequest.of(page, size, Direction.DESC, "id"))
-				.stream().map(this::toBoundary).toList();
+	public List<MiniAppCommandBoundary> getSpecificMiniAppCommandsAdminOnly(String miniAppName, String superapp,
+			String email, int size, int page) {
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		if (userEntity.getRole() == UserRole.ADMIN)
+			return this.miniAppCommandsCrud
+					.findAllByMiniApp(miniAppName, PageRequest.of(page, size, Direction.DESC, "internalCommandId"))
+					.stream()
+					.map(this::toBoundary)
+					.toList();
+		else
+			throw new UserNotFoundException("This user does not have permission to do this");
 	}
 
 	@Override
-	public List<MiniAppCommandBoundary> getMiniAppCommandsByEmail(String miniAppName, String superapp, String email,
-			int size, int page) {
-		// TODO Auto-generated method stub
-		return null;
+	public void deleteAllCommandsAdminOnly(String superapp, String email) {
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email).orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		if (userEntity.getRole() == UserRole.ADMIN)
+			this.miniAppCommandsCrud.deleteAll();
+		else
+			throw new UserNotFoundException("This user does not have permission to do this");
 	}
-
 	@Override
-	public void deleteCommandsByEmail(String superapp, String email) {
-		// TODO Auto-generated method stub
-
+	public List<MiniAppCommandBoundary> getAllMiniAppsCommandsAdminOnly(String superapp, String email, int size,
+			int page) {
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		if (userEntity.getRole() == UserRole.ADMIN)
+			return this.miniAppCommandsCrud
+						.findAll(PageRequest.of(page, size, Direction.DESC, "miniApp","internalCommandId"))
+						.stream()
+						.map(this::toBoundary)
+						.toList();
+		else
+			throw new UserNotFoundException("This user does not have permission to do this");
 	}
 
 }

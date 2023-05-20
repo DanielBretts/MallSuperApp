@@ -9,13 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectQueries;
+import superapp.logic.UserCrud;
 import superapp.restApi.boundaries.ObjectBoundary;
 import superapp.data.exceptions.ObjectNotFoundException;
 import superapp.data.exceptions.UserNotFoundException;
@@ -24,6 +21,7 @@ import java.util.ArrayList;
 @Service
 public class ObjectServiceDb implements ObjectQueries {
 	private ObjectCrud objectCrud;
+	private UserCrud userCrud;
 	private String superapp;
 	private String delimeter = "_";
 
@@ -31,7 +29,10 @@ public class ObjectServiceDb implements ObjectQueries {
 	public void setObjectCrud(ObjectCrud objectCrud) {
 		this.objectCrud = objectCrud;
 	}
-
+	@Autowired
+	public void setUserCrud(UserCrud userCrud) {
+		this.userCrud = userCrud;
+	}
 	@Value("${spring.application.name:2023b.shir.zur}")
 	public void setSuperapp(String name) {
 		this.superapp = name;
@@ -49,11 +50,12 @@ public class ObjectServiceDb implements ObjectQueries {
 		ob.setActive(entity.getActive());
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
 		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
-		CreatedBy createdBy_temp = new CreatedBy();
-		createdBy_temp.setUserId(new UserId());
-		createdBy_temp.getUserId().setEmail(entity.getEmail());
-		createdBy_temp.getUserId().setSuperapp(superapp);
-		ob.setCreatedBy(createdBy_temp);
+		ob.setCreatedBy(entity.getCreatedBy());
+//		CreatedBy createdBy_temp = new CreatedBy();
+//		createdBy_temp.setUserId(new UserId());
+//		createdBy_temp.getUserId().setEmail(entity.getEmail());
+//		createdBy_temp.getUserId().setSuperapp(superapp);
+//		ob.setCreatedBy(createdBy_temp);
 		ob.setObjectDetails(entity.getObjectDetails());
 		return ob;
 	}
@@ -88,18 +90,29 @@ public class ObjectServiceDb implements ObjectQueries {
 			entity.setLng((double) 0);
 		}
 		if (object.getCreatedBy() != null) {
-			String email;
-			if (object.getCreatedBy().getUserId() != null) {
-				email = object.getCreatedBy().getUserId().getEmail();
-			} else {
-				throw new UserNotFoundException("UserId can not be null");
+			if(object.getCreatedBy().getUserId() != null) {
+				if(object.getCreatedBy().getUserId().getEmail() != null) {
+					entity.getCreatedBy().getUserId().setSuperapp(superapp);
+					entity.setCreatedBy(object.getCreatedBy());
+				}
+				else{
+					throw new UserNotFoundException("The email user this action was not a valid email");
+				}
+			}else {
+				throw new UserNotFoundException("The user this action was UserId is not a valid user");
 			}
-			if (email != null && !email.replaceAll(" ", "").isEmpty()) {
-				entity.setEmail(object.getCreatedBy().getUserId().getEmail());
-				entity.setSuperapp(superapp);
-			} else {
-				throw new UserNotFoundException("Email can not be null or empty string");
-			}
+//			String email;
+//			if (object.getCreatedBy().getUserId() != null) {
+//				email = object.getCreatedBy().getUserId().getEmail();
+//			} else {
+//				throw new UserNotFoundException("UserId can not be null");
+//			}
+//			if (email != null && !email.replaceAll(" ", "").isEmpty()) {
+//				entity.setEmail(object.getCreatedBy().getUserId().getEmail());
+//				entity.setSuperapp(superapp);
+//			} else {
+//				throw new UserNotFoundException("Email can not be null or empty string");
+//			}
 		} else {
 			throw new UserNotFoundException("The user this action was created by is not a valid user");
 		}
@@ -175,6 +188,7 @@ public class ObjectServiceDb implements ObjectQueries {
 				() -> new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		if (origin.getId().equals(children.getId()))
 			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
+		
 		origin.addChildren(children);
 
 		this.objectCrud.save(origin);
@@ -218,7 +232,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public Optional<ObjectBoundary> getObjectBySpecificEmail(String superApp, String id, String userSuperapp,
 			String email) {
-		return this.objectCrud.findByEmail(userSuperapp, email).map(this::toBoundary);
+		return this.objectCrud.findById(superApp.concat(delimeter).concat(id)).map(this::toBoundary);
 	}
 
 	@Override
@@ -228,11 +242,19 @@ public class ObjectServiceDb implements ObjectQueries {
 						PageRequest.of(page, size, Direction.DESC, "creationTimestamp", "id"))
 				.stream().map(this::toBoundary).toList();
 	}
-
 	@Override
-	public void deleteObjectsByEmail(String superapp, String email) {
-		this.objectCrud.deleteByEmail(superapp, email);
-
+	public void deleteAllObjectsAdminOnly(String superapp, String email) {
+		UserEntity userEntity =  this.userCrud
+				.findById(superapp + delimeter + email)
+				.orElseThrow(
+						() -> new UserNotFoundException("could not find User with superapp = " + superapp + " and email = " + email));
+		if(userEntity.getRole() == UserRole.ADMIN)
+			this.objectCrud.deleteAll();
+		else
+			throw new UserNotFoundException("This user does not have permission to do this");
+		
 	}
+
+	
 
 }
