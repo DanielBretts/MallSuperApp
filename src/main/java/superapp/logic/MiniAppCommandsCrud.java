@@ -12,7 +12,7 @@ public interface MiniAppCommandsCrud
 
 	public List<MiniAppCommandEntity> findAllByInvokedByUserIdEmail(@Param("email") String email, Pageable pageable);
 
-	public List<MiniAppCommandEntity> findAllByMiniAppName(@Param("miniApp") String miniApp, Pageable pageable);
+	public List<MiniAppCommandEntity> findAllByMiniApp(@Param("miniApp") String miniApp, Pageable pageable);
 
 
 }

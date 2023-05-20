@@ -216,7 +216,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.ADMIN)
 			return this.miniAppCommandsCrud
-					.findAllByMiniAppName(miniAppName, PageRequest.of(page, size, Direction.DESC, "internalCommandId"))
+					.findAllByMiniApp(miniAppName, PageRequest.of(page, size, Direction.DESC, "internalCommandId"))
 					.stream()
 					.map(this::toBoundary)
 					.toList();

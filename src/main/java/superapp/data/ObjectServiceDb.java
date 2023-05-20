@@ -232,7 +232,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public Optional<ObjectBoundary> getObjectBySpecificEmail(String superApp, String id, String userSuperapp,
 			String email) {
-		return this.objectCrud.findByEmail(userSuperapp, email).map(this::toBoundary);
+		return this.objectCrud.findById(superApp.concat(delimeter).concat(id)).map(this::toBoundary);
 	}
 
 	@Override
