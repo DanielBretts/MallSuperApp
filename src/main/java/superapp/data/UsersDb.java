@@ -13,6 +13,7 @@ import superapp.logic.UserCrud;
 import superapp.logic.UsersQueries;
 import superapp.restApi.boundaries.UserBoundary;
 import superapp.data.exceptions.UserParamException;
+import superapp.data.exceptions.ForbiddenException;
 import superapp.data.exceptions.UserNotFoundException;
 
 @Service
@@ -154,7 +155,7 @@ public class UsersDb implements UsersQueries {
 		if(userEntity.getRole() == UserRole.ADMIN)
 			this.userCrud.deleteAll();
 		else
-			throw new UserNotFoundException("This user does not have permission to do this");
+			throw new ForbiddenException("This user does not have permission to do this");
 	}
 
 	@Override
@@ -170,7 +171,7 @@ public class UsersDb implements UsersQueries {
 					.map(this::toBoundary)
 					.toList();
 		else
-			throw new UserNotFoundException("This user does not have permission to do this");
+			throw new ForbiddenException("This user does not have permission to do this");
 	}
 
 }

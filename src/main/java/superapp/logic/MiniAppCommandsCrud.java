@@ -14,5 +14,4 @@ public interface MiniAppCommandsCrud
 
 	public List<MiniAppCommandEntity> findAllByMiniApp(@Param("miniApp") String miniApp, Pageable pageable);
 
-
 }

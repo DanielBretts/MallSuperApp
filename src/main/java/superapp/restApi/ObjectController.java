@@ -33,22 +33,22 @@ public class ObjectController {
 	}
 
 	@RequestMapping( // Update an object
-			path = { "/superapp/objects/{superApp}/{id}" }, method = { RequestMethod.PUT }, consumes = {
+			path = { "/superapp/objects/{superApp}/{internalObjectId}" }, method = { RequestMethod.PUT }, consumes = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public void update(@PathVariable("superApp") String superApp, @PathVariable("id") String id,
+	public void update(@PathVariable("superApp") String superApp, @PathVariable("internalObjectId") String id,
 			@RequestBody ObjectBoundary ob, @RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		objectService.updateObjectByEmail(superApp, id, ob, userSuperapp, email);
+		objectService.updateObjectCheckingRole(superApp, id, ob, userSuperapp, email);
 	}
 
 	@RequestMapping( // Retrieve object
-			path = { "/superapp/objects/{superApp}/{id}" }, method = { RequestMethod.GET }, produces = {
+			path = { "/superapp/objects/{superApp}/{internalObjectId}" }, method = { RequestMethod.GET }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
 	public Optional<ObjectBoundary> getObjectById(@PathVariable("superApp") String superApp,
-			@PathVariable("id") String id, @RequestParam(name = "userSuperapp", required = true) String superapp,
+			@PathVariable("internalObjectId") String id, @RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
-		return this.objectService.getObjectBySpecificEmail(superApp, id, superapp, email);
+		return this.objectService.getObjectCheckingRole(superApp, id, superapp, email);
 	}
 
 	@RequestMapping( // Get All objects

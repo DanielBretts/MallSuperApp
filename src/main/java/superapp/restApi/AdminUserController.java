@@ -61,15 +61,6 @@ public class AdminUserController {
 		return usersService.getAllUsersAdminOnly(superapp,email,size,page);
 	}
 
-//	@RequestMapping(path = { "/superapp/admin/objects" }, method = { RequestMethod.GET }, produces = {
-//			MediaType.APPLICATION_JSON_VALUE })
-//	public List<ObjectBoundary> getAllObjects(@RequestParam(name = "userSuperapp", required = true) String superapp,
-//			@RequestParam(name = "userEmail", required = true) String email,
-//			@RequestParam(name = "size", required = true) int size,
-//			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
-//		return objectService.getAllObjectsByEmail(superapp, email, size, page);
-//	}
-
 	@RequestMapping(path = { "/superapp/admin/miniapp" }, method = { RequestMethod.GET }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public List<MiniAppCommandBoundary> getAllCommandsHistory(

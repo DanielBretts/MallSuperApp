@@ -15,6 +15,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import superapp.data.exceptions.ForbiddenException;
 import superapp.data.exceptions.MiniAppCommandException;
 import superapp.data.exceptions.UserNotFoundException;
 import superapp.logic.MiniAppCommandsCrud;
@@ -216,12 +217,12 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.ADMIN)
 			return this.miniAppCommandsCrud
-					.findAllByMiniApp(miniAppName, PageRequest.of(page, size, Direction.DESC, "internalCommandId"))
+					.findAllByMiniApp(miniAppName, PageRequest.of(page, size, Direction.DESC, "id"))
 					.stream()
 					.map(this::toBoundary)
 					.toList();
 		else
-			throw new UserNotFoundException("This user does not have permission to do this");
+			throw new ForbiddenException("This user does not have permission to do this");
 	}
 
 	@Override
@@ -231,7 +232,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 		if (userEntity.getRole() == UserRole.ADMIN)
 			this.miniAppCommandsCrud.deleteAll();
 		else
-			throw new UserNotFoundException("This user does not have permission to do this");
+			throw new ForbiddenException("This user does not have permission to do this");
 	}
 	@Override
 	public List<MiniAppCommandBoundary> getAllMiniAppsCommandsAdminOnly(String superapp, String email, int size,
@@ -246,7 +247,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 						.map(this::toBoundary)
 						.toList();
 		else
-			throw new UserNotFoundException("This user does not have permission to do this");
+			throw new ForbiddenException("This user does not have permission to do this");
 	}
 
 }

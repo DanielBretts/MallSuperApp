@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import org.springframework.data.annotation.Id;
 
-
 @Document(collection = "SuperAppObject")
 public class ObjectEntity {
 	@Id
@@ -23,8 +22,6 @@ public class ObjectEntity {
 	private Double lat;
 	private Double lng;
 	private CreatedBy createdBy;
-//	private String email;
-//	private String superapp;
 	private Map<String, Object> objectDetails;
 	@DBRef
 	private List<ObjectEntity> childrenObjects;
@@ -89,23 +86,6 @@ public class ObjectEntity {
 	public void setLng(Double lng) {
 		this.lng = lng;
 	}
-	
-
-//	public String getEmail() {
-//		return email;
-//	}
-//
-//	public void setEmail(String email) {
-//		this.email = email;
-//	}
-//
-//	public String getSuperapp() {
-//		return this.superapp;
-//	}
-//
-//	public void setSuperapp(String superapp) {
-//		this.superapp = superapp;
-//	}
 
 	public CreatedBy getCreatedBy() {
 		return createdBy;
@@ -134,17 +114,9 @@ public class ObjectEntity {
 	public void setChildrenObjects(List<ObjectEntity> childrenObjects) {
 		this.childrenObjects = childrenObjects;
 	}
-	
+
 	public void addChildren(ObjectEntity children) {
-				this.childrenObjects.add(children);
+		this.childrenObjects.add(children);
 	}
 
-//	@Override
-//	public String toString() {
-//		return "ObjectEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
-//				+ ", creationTimestamp=" + creationTimestamp + ", lat=" + lat + ", lng=" + lng + ", email="
-//				+ email + ", superApp=" + superapp + ", objectDetails=" + objectDetails
-//				+ ", childrenObjects=" + childrenObjects + "]";
-//	}
-	
 }
