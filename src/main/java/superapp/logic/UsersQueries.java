@@ -6,8 +6,8 @@ import superapp.restApi.boundaries.UserBoundary;
 
 public interface UsersQueries extends UsersService {
 
-	public void deleteUsersByEmail(String superapp, String email);
+	public void deleteAllUsersAdminOnly(String superapp, String email);
 	
-	public List<UserBoundary> getUsersByEmail(String superapp, String email, int size, int page);
+	public List<UserBoundary> getAllUsersAdminOnly(String superapp, String email, int size, int page);
 	
 }

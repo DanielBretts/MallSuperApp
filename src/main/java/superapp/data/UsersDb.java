@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-
 import superapp.logic.UserCrud;
 import superapp.logic.UsersQueries;
-import superapp.logic.UsersService;
 import superapp.restApi.boundaries.UserBoundary;
 import superapp.data.exceptions.UserParamException;
 import superapp.data.exceptions.UserNotFoundException;
@@ -149,15 +146,31 @@ public class UsersDb implements UsersQueries {
 	}
 
 	@Override
-	public void deleteUsersByEmail(String superapp, String email) {
-		this.userCrud.deleteById(superapp.concat(delimeter + email));
+	public void deleteAllUsersAdminOnly(String superapp, String email) {
+		UserEntity userEntity =  this.userCrud
+								.findById(superapp + delimeter + email)
+								.orElseThrow(
+									() -> new UserNotFoundException("could not find User with superapp = " + superapp + " and email = " + email));
+		if(userEntity.getRole() == UserRole.ADMIN)
+			this.userCrud.deleteAll();
+		else
+			throw new UserNotFoundException("This user does not have permission to do this");
 	}
 
 	@Override
-	public List<UserBoundary> getUsersByEmail(String superapp, String email, int size, int page) {
-		return this.userCrud
-				.findAllById(superapp.concat(delimeter + email), PageRequest.of(page, size, Direction.ASC, "id"))
-				.stream().map(this::toBoundary).toList();
+	public List<UserBoundary> getAllUsersAdminOnly(String superapp, String email, int size, int page) {
+		UserEntity userEntity =  this.userCrud
+				.findById(superapp + delimeter + email)
+				.orElseThrow(
+						() -> new UserNotFoundException("could not find User with superapp = " + superapp + " and email = " + email));
+		if(userEntity.getRole() == UserRole.ADMIN)
+			return this.userCrud
+					.findAll(PageRequest.of(page, size, Direction.DESC, "username"))
+					.stream()
+					.map(this::toBoundary)
+					.toList();
+		else
+			throw new UserNotFoundException("This user does not have permission to do this");
 	}
 
 }

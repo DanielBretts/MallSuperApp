@@ -14,5 +14,5 @@ public interface ObjectQueries extends ObjectServiceWithBindingCapabilities {
 
 	public List<ObjectBoundary> getAllObjectsByEmail(String userSuperapp, String email, int size, int page);
 
-	public void deleteObjectsByEmail(String superapp, String email);
+	public void deleteAllObjectsAdminOnly(String superapp, String email);
 }
