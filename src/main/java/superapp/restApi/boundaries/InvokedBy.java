@@ -27,6 +27,4 @@ public class InvokedBy {
 		return "InvokedBy [userId=" + userId + "]";
 	}
 
-
-
 }
