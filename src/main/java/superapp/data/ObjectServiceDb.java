@@ -248,20 +248,20 @@ public class ObjectServiceDb implements ObjectQueries {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
-		
+
 		ObjectEntity objectEntity = this.objectCrud.findById(superApp + delimeter + internalObjectId)
 				.orElseThrow(() -> new ObjectNotFoundException(
 						"could not find object for update by id: " + (superApp + internalObjectId)));
-		
+
 		if (objectEntity.getActive() == false) {
 			if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 				return Optional.of(toBoundary(objectEntity));
-			}else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 				throw new ObjectNotFoundException("Object is not found");
-			}else {
+			} else {
 				throw new ForbiddenException("This user does not have permission to do this");
 			}
-		}else {
+		} else {
 			return Optional.of(toBoundary(objectEntity));
 		}
 	}
