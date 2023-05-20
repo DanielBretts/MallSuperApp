@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.apache.activemq.artemis.core.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -169,6 +171,7 @@ public class ObjectServiceDb implements ObjectQueries {
 		this.objectCrud.deleteAll();
 	}
 
+	@Deprecated
 	@Override
 	public void bind(String InternalObjectIdOrigin, String InternalObjectIdChildren) {
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + InternalObjectIdOrigin).orElseThrow(
@@ -185,6 +188,7 @@ public class ObjectServiceDb implements ObjectQueries {
 
 	}
 
+	@Deprecated
 	@Override
 	public List<ObjectBoundary> getAllChildren(String InternalObjectIdOrigin) {
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + InternalObjectIdOrigin).orElseThrow(
@@ -248,30 +252,38 @@ public class ObjectServiceDb implements ObjectQueries {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
-		
+
 		ObjectEntity objectEntity = this.objectCrud.findById(superApp + delimeter + internalObjectId)
 				.orElseThrow(() -> new ObjectNotFoundException(
 						"could not find object for update by id: " + (superApp + internalObjectId)));
-		
+
 		if (objectEntity.getActive() == false) {
 			if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 				return Optional.of(toBoundary(objectEntity));
-			}else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 				throw new ObjectNotFoundException("Object is not found");
-			}else {
+			} else {
 				throw new ForbiddenException("This user does not have permission to do this");
 			}
-		}else {
-			return Optional.of(toBoundary(objectEntity));
 		}
+		return Optional.of(toBoundary(objectEntity));
 	}
 
 	@Override
 	public List<ObjectBoundary> getAllObjectsCheckingRole(String userSuperapp, String email, int size, int page) {
-		return this.objectCrud
-				.findAllByCreatedByUserIdEmail(userSuperapp, email,
-						PageRequest.of(page, size, Direction.DESC, "creationTimestamp", "id"))
-				.stream().map(this::toBoundary).toList();
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+
+		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findAll(PageRequest.of(page, size, Direction.DESC, "creationTimestamp", "id"))
+					.stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			return this.objectCrud
+					.findAllByActiveIsTrue(PageRequest.of(page, size, Direction.DESC, "creationTimestamp", "id"))
+					.stream().map(this::toBoundary).toList();
+		}
+		throw new ForbiddenException("This user does not have permission to do this");
 	}
 
 	@Override
@@ -284,6 +296,54 @@ public class ObjectServiceDb implements ObjectQueries {
 		else
 			throw new ForbiddenException("This user does not have permission to do this");
 
+	}
+
+	@Override
+	public void bindByPermission(String originId, SuperAppObjectIdBoundary superAppObjectIdBoundary,
+			String userSuperapp, String email) {
+		String id = superAppObjectIdBoundary.getInternalObjectId();
+		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
+				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
+
+		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
+				.orElseThrow(() -> new ObjectNotFoundException("could not find child Object by id: " + id));
+		if (origin.getId().equals(children.getId()))
+			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
+
+		origin.addChildren(children);
+
+		this.objectCrud.save(origin);
+
+	}
+
+	@Override
+	public List<ObjectBoundary> getAllChildrenByPermission(String superApp, String originId, String userSuperapp,
+			String email, int size, int page) {
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + userSuperapp + " and email = " + email));
+
+		ObjectEntity origin = this.objectCrud.findById(superApp + delimeter + originId)
+				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
+
+		List<ObjectEntity> children = origin.getChildrenObjects();
+		
+		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return children.stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			if(origin.getActive() == false)
+				throw new ObjectNotFoundException("Object not found");
+			else {
+				return this.objectCrud
+						.findAllByActiveIsTrue(PageRequest.of(page, size, Direction.DESC, "id"))
+						.stream().map(this::toBoundary).toList();
+			}
+		}
+
+		List<ObjectBoundary> rv = new ArrayList<>();
+		//TODO fix return value
+
+		return null;
 	}
 
 }
