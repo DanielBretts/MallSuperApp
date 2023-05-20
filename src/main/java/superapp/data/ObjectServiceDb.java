@@ -14,6 +14,7 @@ import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectQueries;
 import superapp.logic.UserCrud;
 import superapp.restApi.boundaries.ObjectBoundary;
+import superapp.data.exceptions.ForbiddenException;
 import superapp.data.exceptions.ObjectNotFoundException;
 import superapp.data.exceptions.UserNotFoundException;
 import java.util.ArrayList;
@@ -29,10 +30,12 @@ public class ObjectServiceDb implements ObjectQueries {
 	public void setObjectCrud(ObjectCrud objectCrud) {
 		this.objectCrud = objectCrud;
 	}
+
 	@Autowired
 	public void setUserCrud(UserCrud userCrud) {
 		this.userCrud = userCrud;
 	}
+
 	@Value("${spring.application.name:2023b.shir.zur}")
 	public void setSuperapp(String name) {
 		this.superapp = name;
@@ -90,29 +93,16 @@ public class ObjectServiceDb implements ObjectQueries {
 			entity.setLng((double) 0);
 		}
 		if (object.getCreatedBy() != null) {
-			if(object.getCreatedBy().getUserId() != null) {
-				if(object.getCreatedBy().getUserId().getEmail() != null) {
+			if (object.getCreatedBy().getUserId() != null) {
+				if (object.getCreatedBy().getUserId().getEmail() != null) {
 					entity.getCreatedBy().getUserId().setSuperapp(superapp);
 					entity.setCreatedBy(object.getCreatedBy());
-				}
-				else{
+				} else {
 					throw new UserNotFoundException("The email user this action was not a valid email");
 				}
-			}else {
+			} else {
 				throw new UserNotFoundException("The user this action was UserId is not a valid user");
 			}
-//			String email;
-//			if (object.getCreatedBy().getUserId() != null) {
-//				email = object.getCreatedBy().getUserId().getEmail();
-//			} else {
-//				throw new UserNotFoundException("UserId can not be null");
-//			}
-//			if (email != null && !email.replaceAll(" ", "").isEmpty()) {
-//				entity.setEmail(object.getCreatedBy().getUserId().getEmail());
-//				entity.setSuperapp(superapp);
-//			} else {
-//				throw new UserNotFoundException("Email can not be null or empty string");
-//			}
 		} else {
 			throw new UserNotFoundException("The user this action was created by is not a valid user");
 		}
@@ -188,7 +178,7 @@ public class ObjectServiceDb implements ObjectQueries {
 				() -> new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
 		if (origin.getId().equals(children.getId()))
 			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
-		
+
 		origin.addChildren(children);
 
 		this.objectCrud.save(origin);
@@ -225,13 +215,41 @@ public class ObjectServiceDb implements ObjectQueries {
 	}
 
 	@Override
-	public void updateObjectByEmail(String superApp, String id, ObjectBoundary ob, String userSuperapp, String email) {
-//		this.objectCrud.updateObjectByEmail(userSuperapp, email);
+	public void updateObjectCheckingRole(String superApp, String internalObjectId, ObjectBoundary ob,
+			String userSuperapp, String email) {
+		ObjectEntity existing = this.objectCrud.findById(superApp + delimeter + internalObjectId)
+				.orElseThrow(() -> new ObjectNotFoundException(
+						"could not find object for update by id: " + (superApp + internalObjectId)));
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			if (ob.getType() != null && !ob.getType().isEmpty()) {
+				existing.setType(ob.getType());
+			}
+			if (ob.getAlias() != null && !ob.getAlias().isEmpty()) {
+				existing.setAlias(ob.getAlias());
+			}
+			if (ob.getLocation() != null) {
+				existing.setLat(ob.getLocation().getLat());
+				existing.setLng(ob.getLocation().getLng());
+			}
+			if (ob.getObjectDetails() != null) {
+				existing.setObjectDetails(ob.getObjectDetails());
+			}
+			existing = this.objectCrud.save(existing);
+		} else
+			throw new ForbiddenException("This user does not have permission to do this");
 	}
 
 	@Override
-	public Optional<ObjectBoundary> getObjectBySpecificEmail(String superApp, String id, String userSuperapp,
+	public Optional<ObjectBoundary> getObjectCheckingRole(String superApp, String id, String userSuperapp,
 			String email) {
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		
+
 		return this.objectCrud.findById(superApp.concat(delimeter).concat(id)).map(this::toBoundary);
 	}
 
@@ -242,19 +260,17 @@ public class ObjectServiceDb implements ObjectQueries {
 						PageRequest.of(page, size, Direction.DESC, "creationTimestamp", "id"))
 				.stream().map(this::toBoundary).toList();
 	}
+
 	@Override
 	public void deleteAllObjectsAdminOnly(String superapp, String email) {
-		UserEntity userEntity =  this.userCrud
-				.findById(superapp + delimeter + email)
-				.orElseThrow(
-						() -> new UserNotFoundException("could not find User with superapp = " + superapp + " and email = " + email));
-		if(userEntity.getRole() == UserRole.ADMIN)
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		if (userEntity.getRole() == UserRole.ADMIN)
 			this.objectCrud.deleteAll();
 		else
-			throw new UserNotFoundException("This user does not have permission to do this");
-		
-	}
+			throw new ForbiddenException("This user does not have permission to do this");
 
-	
+	}
 
 }
