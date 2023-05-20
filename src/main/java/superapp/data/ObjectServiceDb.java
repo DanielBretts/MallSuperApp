@@ -248,6 +248,7 @@ public class ObjectServiceDb implements ObjectQueries {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
+		
 
 		return this.objectCrud.findById(superApp.concat(delimeter).concat(id)).map(this::toBoundary);
 	}
