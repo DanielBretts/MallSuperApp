@@ -95,8 +95,8 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (object.getCreatedBy() != null) {
 			if (object.getCreatedBy().getUserId() != null) {
 				if (object.getCreatedBy().getUserId().getEmail() != null) {
-					entity.getCreatedBy().getUserId().setSuperapp(superapp);
 					entity.setCreatedBy(object.getCreatedBy());
+					entity.getCreatedBy().getUserId().setSuperapp(superapp);
 				} else {
 					throw new UserNotFoundException("The email user this action was not a valid email");
 				}
