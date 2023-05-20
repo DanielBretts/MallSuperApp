@@ -12,7 +12,7 @@ public interface ObjectQueries extends ObjectServiceWithBindingCapabilities {
 	public Optional<ObjectBoundary> getObjectCheckingRole(String superApp, String id, String userSuperapp,
 			String email);
 
-	public List<ObjectBoundary> getAllObjectsByEmail(String userSuperapp, String email, int size, int page);
+	public List<ObjectBoundary> getAllObjectsCheckingRole(String userSuperapp, String email, int size, int page);
 
 	public void deleteAllObjectsAdminOnly(String superapp, String email);
 }

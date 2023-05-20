@@ -19,9 +19,9 @@ public interface ObjectCrud
 //	public Optional<ObjectEntity> findById(@Param("superapp") String superApp,
 //			@Param("email") String email);
 
-	public List<ObjectEntity> findAllByEmail(@Param("superapp") String userSuperapp,
+	public List<ObjectEntity> findAllByCreatedByUserIdEmail(@Param("superapp") String userSuperapp,
 			@Param("email") String email, Pageable pageable);
 
-	public void deleteByEmail(@Param("superapp") String superapp, @Param("email") String email);
+	public void deleteByCreatedByUserIdEmail(@Param("superapp") String superapp, @Param("email") String email);
 
 }

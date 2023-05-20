@@ -58,7 +58,7 @@ public class ObjectController {
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
-		return objectService.getAllObjectsByEmail(superapp, email, size, page).toArray(new ObjectBoundary[0]);
+		return objectService.getAllObjectsCheckingRole(superapp, email, size, page).toArray(new ObjectBoundary[0]);
 	}
 
 }
