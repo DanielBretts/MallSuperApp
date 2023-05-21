@@ -37,4 +37,6 @@ public interface ObjectCrud
 
 	public List<ObjectEntity> findAllByAlias(String alias, Pageable pageable);
 
+	public List<ObjectEntity> findAllByParentObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
+
 }

@@ -56,11 +56,6 @@ public class ObjectServiceDb implements ObjectQueries {
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
 		ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
 		ob.setCreatedBy(entity.getCreatedBy());
-//		CreatedBy createdBy_temp = new CreatedBy();
-//		createdBy_temp.setUserId(new UserId());
-//		createdBy_temp.getUserId().setEmail(entity.getEmail());
-//		createdBy_temp.getUserId().setSuperapp(superapp);
-//		ob.setCreatedBy(createdBy_temp);
 		ob.setObjectDetails(entity.getObjectDetails());
 		return ob;
 	}
@@ -311,8 +306,10 @@ public class ObjectServiceDb implements ObjectQueries {
 			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 
 		origin.addChildren(children);
+		children.addParent(origin);
 
 		this.objectCrud.save(origin);
+		this.objectCrud.save(children);
 
 	}
 
@@ -327,62 +324,55 @@ public class ObjectServiceDb implements ObjectQueries {
 				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
 
 		List<ObjectEntity> children = origin.getChildrenObjects();
-		
+
 		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 			return children.stream().map(this::toBoundary).toList();
 		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
-			if(origin.getActive() == false)
-				throw new ObjectNotFoundException("Object not found");
+			if (origin.getActive() == false)
+				throw new ObjectNotFoundException("Objects not found");
 			else {
 				return this.objectCrud
-						.findAllByActiveIsTrue(PageRequest.of(page, size, Direction.DESC, "id"))
+						.findAllByParentObjectsIsContainingAndActiveIsTrue(origin,
+								PageRequest.of(page, size, Direction.DESC, "id"))
 						.stream().map(this::toBoundary).toList();
+//						this.objectCrud.findAllByActiveIsTrue(PageRequest.of(page, size, Direction.DESC, "id")).stream()
+//						.map(this::toBoundary).toList();
 			}
 		}
-
-		List<ObjectBoundary> rv = new ArrayList<>();
-		//TODO fix return value
-
-		return null;
+		throw new ObjectNotFoundException("Objects not found");
 	}
 
 	@Override
-	public List<ObjectBoundary> getObjectsByType(String superapp, String email,String type, int size, int page) {
+	public List<ObjectBoundary> getObjectsByType(String superapp, String email, String type, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
-			return this.objectCrud.findAllByTypeAndActiveIsTrue(type,PageRequest.of(page, size, Direction.DESC, "type","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else if(userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findAllByType(type,PageRequest.of(page, size, Direction.DESC, "type","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else {
+			return this.objectCrud
+					.findAllByTypeAndActiveIsTrue(type, PageRequest.of(page, size, Direction.DESC, "type", "id"))
+					.stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findAllByType(type, PageRequest.of(page, size, Direction.DESC, "type", "id"))
+					.stream().map(this::toBoundary).toList();
+		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}
 	}
-	
+
 	@Override
-	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email,String alias, int size, int page) {
+	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email, String alias, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			System.out.println("here");
-			return this.objectCrud.findAllByAliasAndActiveIsTrue(alias,PageRequest.of(page, size, Direction.DESC, "alias","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else if(userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findAllByAlias(alias,PageRequest.of(page, size, Direction.DESC, "alias","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else {
+			return this.objectCrud
+					.findAllByAliasAndActiveIsTrue(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
+					.stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findAllByAlias(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
+					.stream().map(this::toBoundary).toList();
+		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}
 	}

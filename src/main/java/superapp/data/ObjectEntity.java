@@ -23,8 +23,12 @@ public class ObjectEntity {
 	private Double lng;
 	private CreatedBy createdBy;
 	private Map<String, Object> objectDetails;
+	
 	@DBRef
 	private List<ObjectEntity> childrenObjects;
+	
+	@DBRef
+	private List<ObjectEntity> parentObjects;
 
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
@@ -118,5 +122,16 @@ public class ObjectEntity {
 	public void addChildren(ObjectEntity children) {
 		this.childrenObjects.add(children);
 	}
+	
+	public List<ObjectEntity> getParentObjects() {
+		return parentObjects;
+	}
 
+	public void setParentObjects(List<ObjectEntity> parentObjects) {
+		this.parentObjects = parentObjects;
+	}
+	
+	public void addParent(ObjectEntity parent) {
+		this.parentObjects.add(parent);
+	}
 }
