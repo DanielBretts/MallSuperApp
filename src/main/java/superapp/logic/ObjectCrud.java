@@ -29,4 +29,12 @@ public interface ObjectCrud
 
 	public List<ObjectEntity> findAllByActiveIsTrue(Pageable pageable);
 
+	public List<ObjectEntity> findAllByTypeAndActiveIsTrue(String type,Pageable pageable);
+
+	public List<ObjectEntity> findAllByType(String type, Pageable pageable);
+
+	public List<ObjectEntity> findAllByAliasAndActiveIsTrue(String alias, Pageable pageable);
+
+	public List<ObjectEntity> findAllByAlias(String alias, Pageable pageable);
+
 }

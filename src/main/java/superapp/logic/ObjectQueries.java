@@ -23,4 +23,8 @@ public interface ObjectQueries extends ObjectServiceWithBindingCapabilities {
 
 	public List<ObjectBoundary> getAllChildrenByPermission(String superApp, String originId, String userSuperapp,
 			String email, int size, int page);
+
+	public List<ObjectBoundary> getObjectsByType(String superapp, String email, String type, int size, int page);
+
+	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email, String alias, int size, int page);
 }

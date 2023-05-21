@@ -346,4 +346,45 @@ public class ObjectServiceDb implements ObjectQueries {
 		return null;
 	}
 
+	@Override
+	public List<ObjectBoundary> getObjectsByType(String superapp, String email,String type, int size, int page) {
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			return this.objectCrud.findAllByTypeAndActiveIsTrue(type,PageRequest.of(page, size, Direction.DESC, "type","id"))
+			.stream()
+			.map(this::toBoundary)
+			.toList();
+		}else if(userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findAllByType(type,PageRequest.of(page, size, Direction.DESC, "type","id"))
+			.stream()
+			.map(this::toBoundary)
+			.toList();
+		}else {
+			throw new ForbiddenException("This user does not have permission to do this");
+		}
+	}
+	
+	@Override
+	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email,String alias, int size, int page) {
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + superapp + " and email = " + email));
+		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			System.out.println("here");
+			return this.objectCrud.findAllByAliasAndActiveIsTrue(alias,PageRequest.of(page, size, Direction.DESC, "alias","id"))
+			.stream()
+			.map(this::toBoundary)
+			.toList();
+		}else if(userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findAllByAlias(alias,PageRequest.of(page, size, Direction.DESC, "alias","id"))
+			.stream()
+			.map(this::toBoundary)
+			.toList();
+		}else {
+			throw new ForbiddenException("This user does not have permission to do this");
+		}
+	}
+
 }

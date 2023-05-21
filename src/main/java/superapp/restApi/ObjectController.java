@@ -60,5 +60,30 @@ public class ObjectController {
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
 		return objectService.getAllObjectsCheckingRole(superapp, email, size, page).toArray(new ObjectBoundary[0]);
 	}
+	
+	
+	@RequestMapping( // Get All objects
+			path = { "/superapp/objects/search/byType/{type}" }, method = { RequestMethod.GET }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public ObjectBoundary[] getObjectsByType(
+			@PathVariable("type") String type,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
+			@RequestParam(name = "userEmail", required = true) String email,
+			@RequestParam(name = "size", required = true) int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+		return objectService.getObjectsByType(superapp, email,type, size, page).toArray(new ObjectBoundary[0]);
+	}
+	
+	@RequestMapping( // Get All objects
+			path = { "/superapp/objects/search/byAlias/{alias}" }, method = { RequestMethod.GET }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public ObjectBoundary[] getObjectsByAlias(
+			@PathVariable("alias") String alias,
+			@RequestParam(name = "userSuperapp", required = true) String superapp,
+			@RequestParam(name = "userEmail", required = true) String email,
+			@RequestParam(name = "size", required = true) int size,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+		return objectService.getObjectsByAlias(superapp, email,alias, size, page).toArray(new ObjectBoundary[0]);
+	}
 
 }
