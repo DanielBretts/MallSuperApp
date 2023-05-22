@@ -24,9 +24,6 @@ public interface ObjectCrud
 
 	public Optional<ArrayList<ObjectEntity>> findAllByChildrenObjectsContains(ObjectEntity theChildrenObjects);
 
-//	public Optional<ObjectEntity> findById(@Param("superapp") String superApp,
-//			@Param("email") String email);
-
 	public List<ObjectEntity> findAllByCreatedByUserIdEmail(@Param("superapp") String userSuperapp,
 			@Param("email") String email, Pageable pageable);
 
@@ -46,5 +43,12 @@ public interface ObjectCrud
 
 	public List<ObjectEntity> findByIdAndLocationNear(@Param("id") String id,@Param("point") Point point, @Param("distance") Distance distance, Pageable pageable);
 
+	public List<ObjectEntity> findAllByParentObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
+
+	public List<ObjectEntity> findAllByParentObjectsIsContaining(ObjectEntity origin, Pageable pageable);
+
+	public List<ObjectEntity> findAllByChildrenObjectsIsContaining(ObjectEntity children, Pageable pageable);
+	
+	public List<ObjectEntity> findAllByChildrenObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
 }

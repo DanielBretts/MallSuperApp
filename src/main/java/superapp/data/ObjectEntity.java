@@ -26,12 +26,17 @@ public class ObjectEntity {
 	private CreatedBy createdBy;
 	private GeoJsonPoint location;
 	private Map<String, Object> objectDetails;
+	
 	@DBRef
 	private List<ObjectEntity> childrenObjects;
+	
+	@DBRef
+	private List<ObjectEntity> parentObjects;
 
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
 		this.childrenObjects = new ArrayList<>();
+		this.parentObjects = new ArrayList<>();
 	}
 
 	public ObjectEntity(String id, String type, String alias, boolean active, Date creationTimestamp,
@@ -120,7 +125,10 @@ public class ObjectEntity {
 	public void addChildren(ObjectEntity children) {
 		this.childrenObjects.add(children);
 	}
-
+	
+	public List<ObjectEntity> getParentObjects() {
+		return parentObjects;
+	}
 
 	public GeoJsonPoint getLocation() {
 		return location;
@@ -131,4 +139,11 @@ public class ObjectEntity {
 		this.location = location;
 	}
 
+	public void setParentObjects(List<ObjectEntity> parentObjects) {
+		this.parentObjects = parentObjects;
+	}
+	
+	public void addParent(ObjectEntity parent) {
+		this.parentObjects.add(parent);
+	}
 }

@@ -17,17 +17,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import superapp.data.exceptions.ForbiddenException;
 import superapp.data.exceptions.MiniAppCommandException;
+import superapp.data.exceptions.ObjectNotFoundException;
 import superapp.data.exceptions.UserNotFoundException;
 import superapp.logic.MiniAppCommandsCrud;
 import superapp.logic.MiniAppCommandsQueries;
+import superapp.logic.ObjectCrud;
 import superapp.logic.UserCrud;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
+import superapp.restApi.boundaries.UserBoundary;
 
 @Service
 public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 	private MiniAppCommandsCrud miniAppCommandsCrud;
 	private UserCrud userCrud;
+	private ObjectCrud objectCrud;
 	private String superapp;
 	private char delimeter = '_';
 	private ObjectMapper jackson;
@@ -37,9 +41,15 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	public void setMiniAppCommandsCrud(MiniAppCommandsCrud miniAppCommandsCrud) {
 		this.miniAppCommandsCrud = miniAppCommandsCrud;
 	}
+
 	@Autowired
 	public void setUserCrud(UserCrud userCrud) {
 		this.userCrud = userCrud;
+	}
+
+	@Autowired
+	public void setObjectCrud(ObjectCrud objectCrud) {
+		this.objectCrud = objectCrud;
 	}
 
 	@PostConstruct
@@ -58,10 +68,28 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 		this.superapp = name;
 	}
 
+	@Deprecated
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary command) {
+		String userSuperapp = command.getInvokedBy().getUserId().getSuperapp();
+		String userEmail = command.getInvokedBy().getUserId().getEmail();
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + userEmail)
+				.orElseThrow(() -> new UserNotFoundException(
+						"Could not find User with superapp = " + userSuperapp + " and email = " + userEmail));
+
+		String objcetSuperapp = command.getTargetObject().getObjectId().getSuperapp();
+		String objectInternalId = command.getTargetObject().getObjectId().getInternalObjectId();
+		ObjectEntity objectEntity = this.objectCrud.findById(objcetSuperapp + delimeter + objectInternalId)
+				.orElseThrow(() -> new ObjectNotFoundException("Could not find object with superapp = " + objcetSuperapp
+						+ " and internalObjectId = " + objectInternalId));
+		;
+
+		if (userEntity.getRole() != UserRole.MINIAPP_USER || objectEntity.getActive() == false) {
+			throw new ForbiddenException("User not allowed to make this operation");
+		}
+
 		command.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
-		if (command.getTargetObject().getObjectId().getSuperapp() != null)
+		if (objcetSuperapp != null)
 			command.getCommandId().setSuperapp(this.superapp);
 		else
 			throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
@@ -166,11 +194,11 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	public MiniAppCommandBoundary invokeCommandWithAsyncOption(MiniAppCommandBoundary miniAppCommandBoundary, boolean isAsync) {
 		miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 		miniAppCommandBoundary.setInvocationTimestamp(new Date());
-		if(miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
 		if (miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
-			miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
-		else
-			throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
+			if (miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
+				miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
+			else
+				throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
 		if (miniAppCommandBoundary.getInvokedBy().getUserId().getSuperapp() != null)
 			miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
 		else
@@ -191,7 +219,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	}
 
 	@JmsListener(destination = "handleLaterCommand")
-	public void listenToCommand (String json) {
+	public void listenToCommand(String json) {
 		try {
 			System.err.println("*** received: " + json);
 			MiniAppCommandBoundary miniAppCommandBoundary = this.jackson.readValue(json, MiniAppCommandBoundary.class);
@@ -208,8 +236,6 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 			e.printStackTrace(System.err);
 		}
 	}
-	
-
 
 	@Override
 	public List<MiniAppCommandBoundary> getSpecificMiniAppCommandsAdminOnly(String miniAppName, String superapp,
@@ -219,23 +245,23 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.ADMIN)
 			return this.miniAppCommandsCrud
-					.findAllByMiniApp(miniAppName, PageRequest.of(page, size, Direction.DESC, "id"))
-					.stream()
-					.map(this::toBoundary)
-					.toList();
+					.findAllByMiniApp(miniAppName, PageRequest.of(page, size, Direction.DESC, "id")).stream()
+					.map(this::toBoundary).toList();
 		else
 			throw new ForbiddenException("This user does not have permission to do this");
 	}
 
 	@Override
 	public void deleteAllCommandsAdminOnly(String superapp, String email) {
-		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email).orElseThrow(() -> new UserNotFoundException(
+		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.ADMIN)
 			this.miniAppCommandsCrud.deleteAll();
 		else
 			throw new ForbiddenException("This user does not have permission to do this");
 	}
+
 	@Override
 	public List<MiniAppCommandBoundary> getAllMiniAppsCommandsAdminOnly(String superapp, String email, int size,
 			int page) {
@@ -244,10 +270,8 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.ADMIN)
 			return this.miniAppCommandsCrud
-						.findAll(PageRequest.of(page, size, Direction.DESC, "miniApp","internalCommandId"))
-						.stream()
-						.map(this::toBoundary)
-						.toList();
+					.findAll(PageRequest.of(page, size, Direction.DESC, "miniApp", "internalCommandId")).stream()
+					.map(this::toBoundary).toList();
 		else
 			throw new ForbiddenException("This user does not have permission to do this");
 	}

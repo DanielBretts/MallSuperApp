@@ -1,5 +1,6 @@
 package superapp.logic;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,4 +32,6 @@ public interface ObjectQueries extends ObjectServiceWithBindingCapabilities {
 	public List<ObjectBoundary> getObjectsByLocation(String superapp, String email, double lat, double lng, double distance,
 			String distanceUnits, int size, int page);
 
+	public List<ObjectBoundary> getAllParentsByPermission(String superApp, String childrenId, String userSuperapp,
+			String email, int size, int page);
 }

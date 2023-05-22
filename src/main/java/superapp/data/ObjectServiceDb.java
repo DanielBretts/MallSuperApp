@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.activemq.artemis.core.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -37,8 +36,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	private UserCrud userCrud;
 	private String superapp;
 	private String delimeter = "_";
-	
-	
+
 	@Autowired
 	public void setObjectCrud(ObjectCrud objectCrud) {
 		this.objectCrud = objectCrud;
@@ -65,14 +63,10 @@ public class ObjectServiceDb implements ObjectQueries {
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
-		//ob.setLocation(new Location().setLat(entity.getLat()).setLng(entity.getLng()));
-		ob.setLocation(new Location(entity.getLocation().getX(),entity.getLocation().getY()));
+		// ob.setLocation(new
+		// Location().setLat(entity.getLat()).setLng(entity.getLng()));
+		ob.setLocation(new Location(entity.getLocation().getX(), entity.getLocation().getY()));
 		ob.setCreatedBy(entity.getCreatedBy());
-//		CreatedBy createdBy_temp = new CreatedBy();
-//		createdBy_temp.setUserId(new UserId());
-//		createdBy_temp.getUserId().setEmail(entity.getEmail());
-//		createdBy_temp.getUserId().setSuperapp(superapp);
-//		ob.setCreatedBy(createdBy_temp);
 		ob.setObjectDetails(entity.getObjectDetails());
 		return ob;
 	}
@@ -87,12 +81,12 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (object.getType() != null && !object.getType().replaceAll(" ", "").isEmpty()) {
 			entity.setType(object.getType());
 		} else {
-			throw new ObjectNotFoundException("Type can not be null or empty string");
+			throw new ObjectNotFoundException("Type can not be null or empty");
 		}
 		if (object.getAlias() != null && !object.getAlias().replaceAll(" ", "").isEmpty()) {
 			entity.setAlias(object.getAlias());
 		} else {
-			throw new ObjectNotFoundException("Alias can not be null or empty string");
+			throw new ObjectNotFoundException("Alias can not be null or empty");
 		}
 		if (object.getActive() != null) {
 			entity.setActive(object.getActive());
@@ -102,8 +96,9 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (object.getLocation() != null) {
 //			entity.setLat(object.getLocation().getLat());
 //			entity.setLng(object.getLocation().getLng());
-			
-			entity.setLocation(new GeoJsonPoint(new Point(object.getLocation().getLat(),object.getLocation().getLng())));
+
+			entity.setLocation(
+					new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
 		} else {
 //			entity.setLat((double) 0);
 //			entity.setLng((double) 0);
@@ -116,13 +111,13 @@ public class ObjectServiceDb implements ObjectQueries {
 					entity.setCreatedBy(object.getCreatedBy());
 					entity.getCreatedBy().getUserId().setSuperapp(superapp);
 				} else {
-					throw new UserNotFoundException("The email user this action was not a valid email");
+					throw new UserNotFoundException("The email entered is not a valid email");
 				}
 			} else {
-				throw new UserNotFoundException("The user this action was UserId is not a valid user");
+				throw new UserNotFoundException("The id entered is not a valid id");
 			}
 		} else {
-			throw new UserNotFoundException("The user this action was created by is not a valid user");
+			throw new UserNotFoundException("The user that the object has been created by is not a valid user");
 		}
 		if (object.getObjectDetails() != null) {
 			entity.setObjectDetails(object.getObjectDetails());
@@ -137,7 +132,7 @@ public class ObjectServiceDb implements ObjectQueries {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
 		object.getObjectId().setSuperapp(superapp);
 		ObjectEntity entity = (ObjectEntity) toEntity(object);
-		entity.setLocation(new GeoJsonPoint(new Point(object.getLocation().getLat(),object.getLocation().getLng())));
+		entity.setLocation(new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
 		entity.setCreationTimestamp(new Date());
 		entity = this.objectCrud.save(entity);
 		return (ObjectBoundary) toBoundary(entity);
@@ -147,7 +142,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public ObjectBoundary updateObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectEntity existing = this.objectCrud.findById(superApp + delimeter + id).orElseThrow(
-				() -> new ObjectNotFoundException("could not find object for update by id: " + (superApp + id)));
+				() -> new ObjectNotFoundException("Could not find an object to update by id: " + (superApp + id)));
 		if (ob.getType() != null) {
 			existing.setType(ob.getType());
 		}
@@ -160,7 +155,7 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (ob.getLocation() != null) {
 //			existing.setLat(ob.getLocation().getLat());
 //			existing.setLng(ob.getLocation().getLng());
-			existing.setLocation(new GeoJsonPoint(new Point(ob.getLocation().getLat(),ob.getLocation().getLng())));
+			existing.setLocation(new GeoJsonPoint(new Point(ob.getLocation().getLat(), ob.getLocation().getLng())));
 		}
 		if (ob.getObjectDetails() != null) {
 			existing.setObjectDetails(ob.getObjectDetails());
@@ -192,13 +187,15 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Deprecated
 	@Override
 	public void bind(String InternalObjectIdOrigin, String InternalObjectIdChildren) {
-		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + InternalObjectIdOrigin).orElseThrow(
-				() -> new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
+		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + InternalObjectIdOrigin)
+				.orElseThrow(() -> new ObjectNotFoundException(
+						"Could not find the origin object by the given id: " + InternalObjectIdOrigin));
 
-		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + InternalObjectIdChildren).orElseThrow(
-				() -> new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
+		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + InternalObjectIdChildren)
+				.orElseThrow(() -> new ObjectNotFoundException(
+						"Could not find the child object by id: " + InternalObjectIdChildren));
 		if (origin.getId().equals(children.getId()))
-			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
+			throw new ObjectNotFoundException("The origin Id and children Id can not be the same");
 
 		origin.addChildren(children);
 
@@ -258,7 +255,7 @@ public class ObjectServiceDb implements ObjectQueries {
 			if (ob.getLocation() != null) {
 //				existing.setLat(ob.getLocation().getLat());
 //				existing.setLng(ob.getLocation().getLng());
-				existing.setLocation(new GeoJsonPoint(new Point(ob.getLocation().getLat(),ob.getLocation().getLng())));
+				existing.setLocation(new GeoJsonPoint(new Point(ob.getLocation().getLat(), ob.getLocation().getLng())));
 			}
 			if (ob.getObjectDetails() != null) {
 				existing.setObjectDetails(ob.getObjectDetails());
@@ -333,8 +330,10 @@ public class ObjectServiceDb implements ObjectQueries {
 			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 
 		origin.addChildren(children);
+		children.addParent(origin);
 
 		this.objectCrud.save(origin);
+		this.objectCrud.save(children);
 
 	}
 
@@ -343,67 +342,88 @@ public class ObjectServiceDb implements ObjectQueries {
 			String email, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + userSuperapp + " and email = " + email));
+						"Could not find User with superapp = " + userSuperapp + " and email = " + email));
 
 		ObjectEntity origin = this.objectCrud.findById(superApp + delimeter + originId)
-				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
+				.orElseThrow(() -> new ObjectNotFoundException("Could not find origin Object by id: " + originId));
 
-		List<ObjectEntity> children = origin.getChildrenObjects();
-		
 		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return children.stream().map(this::toBoundary).toList();
+			return objectCrud
+					.findAllByParentObjectsIsContaining(origin, PageRequest.of(page, size, Direction.DESC, "id"))
+					.stream().map(this::toBoundary).toList();
 		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
-			if(origin.getActive() == false)
-				throw new ObjectNotFoundException("Object not found");
+			if (origin.getActive() == false)
+				return new ArrayList<>();
 			else {
 				return this.objectCrud
-						.findAllByActiveIsTrue(PageRequest.of(page, size, Direction.DESC, "id"))
+						.findAllByParentObjectsIsContainingAndActiveIsTrue(origin,
+								PageRequest.of(page, size, Direction.DESC, "id"))
 						.stream().map(this::toBoundary).toList();
 			}
 		}
-
-		List<ObjectBoundary> rv = new ArrayList<>();
-		//TODO fix return value
-
-		return null;
+		throw new ObjectNotFoundException("Object not found");
 	}
 
 	@Override
-	public List<ObjectBoundary> getObjectsByType(String superapp, String email,String type, int size, int page) {
+	public List<ObjectBoundary> getAllParentsByPermission(String superApp, String childrenId, String userSuperapp,
+			String email, int size, int page) {
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"Could not find User with superapp = " + userSuperapp + " and email = " + email));
+
+		ObjectEntity children = this.objectCrud.findById(superApp + delimeter + childrenId)
+				.orElseThrow(() -> new ObjectNotFoundException("Could not find children Object by id: " + childrenId));
+
+		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return objectCrud
+					.findAllByChildrenObjectsIsContaining(children, PageRequest.of(page, size, Direction.DESC, "id"))
+					.stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			if (children.getActive() == false)
+				return new ArrayList<>();
+			else {
+				return this.objectCrud
+						.findAllByChildrenObjectsIsContainingAndActiveIsTrue(children,
+								PageRequest.of(page, size, Direction.DESC, "id"))
+						.stream().map(this::toBoundary).toList();
+			}
+		}
+		throw new ObjectNotFoundException("Object not found");
+	}
+
+	@Override
+	public List<ObjectBoundary> getObjectsByType(String superapp, String email, String type, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
-			return this.objectCrud.findAllByTypeAndActiveIsTrue(type,PageRequest.of(page, size, Direction.DESC, "type","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else if(userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findAllByType(type,PageRequest.of(page, size, Direction.DESC, "type","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else {
+			return this.objectCrud
+					.findAllByTypeAndActiveIsTrue(type, PageRequest.of(page, size, Direction.DESC, "type", "id"))
+					.stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findAllByType(type, PageRequest.of(page, size, Direction.DESC, "type", "id"))
+					.stream().map(this::toBoundary).toList();
+		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}
 	}
-	
+
 	@Override
-	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email,String alias, int size, int page) {
+	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email, String alias, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
-			return this.objectCrud.findAllByAliasAndActiveIsTrue(alias,PageRequest.of(page, size, Direction.DESC, "alias","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else if(userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findAllByAlias(alias,PageRequest.of(page, size, Direction.DESC, "alias","id"))
-			.stream()
-			.map(this::toBoundary)
-			.toList();
-		}else {
+			return this.objectCrud
+					.findAllByAliasAndActiveIsTrue(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
+					.stream()
+					.map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findAllByAlias(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
+					.stream()
+					.map(this::toBoundary)
+					.toList();
+		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}
 	}
@@ -414,41 +434,39 @@ public class ObjectServiceDb implements ObjectQueries {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
-		
-        Point center = new Point(lat,lng);
-        
-        Metrics distanceType;
-        switch(distanceUnits) {
-        case "NEUTRAL":
-        	distanceType = Metrics.NEUTRAL;
-        	break;
-        case "KILOMETERS":
-        	distanceType = Metrics.KILOMETERS;
-            break;
-        case "MILES":
-        	distanceType = Metrics.MILES;
-            break;
-        default:
-        	distanceType = Metrics.NEUTRAL;
-            break;
-        }
-        	
-        Distance radius = new Distance(distance, distanceType);
-        Circle circle = new Circle(center, radius);
-        if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+
+		Point center = new Point(lat, lng);
+
+		Metrics distanceType;
+		switch (distanceUnits) {
+		case "NEUTRAL":
+			distanceType = Metrics.NEUTRAL;
+			break;
+		case "KILOMETERS":
+			distanceType = Metrics.KILOMETERS;
+			break;
+		case "MILES":
+			distanceType = Metrics.MILES;
+			break;
+		default:
+			distanceType = Metrics.NEUTRAL;
+			break;
+		}
+
+		Distance radius = new Distance(distance, distanceType);
+		Circle circle = new Circle(center, radius);
+		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 //        	return this.objectCrud.findByLocationNearAndActiveIsTrue(center,radius,PageRequest.of(page, size, Direction.DESC, "id"))
 //        			.stream()
 //        			.map(this::toBoundary)
 //        			.toList();
-        	return null;
-        }else if(userEntity.getRole() == UserRole.SUPERAPP_USER) {
-        	return this.objectCrud.findByIdAndLocationNear(superapp.concat(delimeter).concat(email),center,radius,PageRequest.of(page, size, Direction.DESC, "id"))
-        			.stream()
-        			.map(this::toBoundary)
-        			.toList();
-        }else {
-        	throw new ForbiddenException("This user does not have permission to do this");
-        }
+			return null;
+		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud.findByIdAndLocationNear(superapp.concat(delimeter).concat(email), center, radius,
+					PageRequest.of(page, size, Direction.DESC, "id")).stream().map(this::toBoundary).toList();
+		} else {
+			throw new ForbiddenException("This user does not have permission to do this");
+		}
 	}
 
 }
