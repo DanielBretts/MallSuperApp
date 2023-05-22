@@ -96,7 +96,7 @@ public class ObjectController {
 			@PathVariable("lat") Double lat,
 			@PathVariable("lng") Double lng,
 			@PathVariable("distance") double distance,
-			@RequestParam(name = "distanceUnits", required = false, defaultValue = "NEUTRAL") String distanceUnits,
+			@RequestParam(name = "units", required = false, defaultValue = "NEUTRAL") String distanceUnits,
 			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
 			@RequestParam(name = "size", required = true) int size,

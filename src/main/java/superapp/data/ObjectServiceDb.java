@@ -456,7 +456,8 @@ public class ObjectServiceDb implements ObjectQueries {
 			
 			break;
 		}
-
+		System.err.println(distance);
+		System.err.println(userEntity.getRole());
 		//Distance radius = new Distance(distance, distanceType);
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			System.err.println("HERE");
