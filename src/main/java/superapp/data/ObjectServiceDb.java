@@ -462,7 +462,7 @@ public class ObjectServiceDb implements ObjectQueries {
 //        			.toList();
 			return null;
 		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findLocationNear(lat,lng,radius,
+			return this.objectCrud.findLocationNear(lat,lng,distance,
 					PageRequest.of(page, size, Direction.DESC, "id")).stream().map(this::toBoundary).toList();
 		} else {
 			throw new ForbiddenException("This user does not have permission to do this");

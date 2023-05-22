@@ -41,8 +41,8 @@ public interface ObjectCrud
 
 	//public List<ObjectEntity> findByLocationNearAndActiveIsTrue(Point center, Distance radius, Pageable pageable);
 	
-    @Query("{ 'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
-	public List<ObjectEntity> findLocationNear(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")Distance maxDistance, Pageable pageable);
+    @Query("{ 'location': { $nearSphere: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
+	public List<ObjectEntity> findLocationNear(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")double maxDistance, Pageable pageable);
 
 	public List<ObjectEntity> findAllByParentObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
