@@ -45,6 +45,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	@PostConstruct
 	public void setup() {
 		this.jackson = new ObjectMapper();
+		this.jmsTemplate.setDeliveryDelay(3000L);
 	}
 
 	@Autowired
@@ -162,7 +163,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	}
 
 	@Override
-	public MiniAppCommandBoundary handleLater(MiniAppCommandBoundary miniAppCommandBoundary, boolean isAsync) {
+	public MiniAppCommandBoundary invokeCommandWithAsyncOption(MiniAppCommandBoundary miniAppCommandBoundary, boolean isAsync) {
 		miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 		miniAppCommandBoundary.setInvocationTimestamp(new Date());
 		if(miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)

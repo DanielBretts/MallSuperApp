@@ -32,7 +32,7 @@ public class MiniAppController {
 			@RequestBody MiniAppCommandBoundary miniApp,
 			@RequestParam(name = "async", required = false, defaultValue = "false") String async) {
 		miniApp.setCommandId(new CommandId(miniAppName));
-		return miniAppCommandsService.handleLater(miniApp, Boolean.parseBoolean(async));
+		return miniAppCommandsService.invokeCommandWithAsyncOption(miniApp, Boolean.parseBoolean(async));
 	}
 
 }

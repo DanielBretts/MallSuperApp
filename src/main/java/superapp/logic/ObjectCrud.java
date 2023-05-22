@@ -7,12 +7,17 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metric;
+import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.util.Streamable;
 
 import superapp.data.ObjectEntity;
+import superapp.data.ObjectId;
 
 public interface ObjectCrud
 		extends ListCrudRepository<ObjectEntity, String>, PagingAndSortingRepository<ObjectEntity, String> {
@@ -36,5 +41,10 @@ public interface ObjectCrud
 	public List<ObjectEntity> findAllByAliasAndActiveIsTrue(String alias, Pageable pageable);
 
 	public List<ObjectEntity> findAllByAlias(String alias, Pageable pageable);
+
+	//public List<ObjectEntity> findByLocationNearAndActiveIsTrue(Point center, Distance radius, Pageable pageable);
+
+	public List<ObjectEntity> findByIdAndLocationNear(@Param("id") String id,@Param("point") Point point, @Param("distance") Distance distance, Pageable pageable);
+
 
 }
