@@ -69,12 +69,12 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (object.getType() != null && !object.getType().replaceAll(" ", "").isEmpty()) {
 			entity.setType(object.getType());
 		} else {
-			throw new ObjectNotFoundException("Type can not be null or empty string");
+			throw new ObjectNotFoundException("Type can not be null or empty");
 		}
 		if (object.getAlias() != null && !object.getAlias().replaceAll(" ", "").isEmpty()) {
 			entity.setAlias(object.getAlias());
 		} else {
-			throw new ObjectNotFoundException("Alias can not be null or empty string");
+			throw new ObjectNotFoundException("Alias can not be null or empty");
 		}
 		if (object.getActive() != null) {
 			entity.setActive(object.getActive());
@@ -94,13 +94,13 @@ public class ObjectServiceDb implements ObjectQueries {
 					entity.setCreatedBy(object.getCreatedBy());
 					entity.getCreatedBy().getUserId().setSuperapp(superapp);
 				} else {
-					throw new UserNotFoundException("The email user this action was not a valid email");
+					throw new UserNotFoundException("The email entered is not a valid email");
 				}
 			} else {
-				throw new UserNotFoundException("The user this action was UserId is not a valid user");
+				throw new UserNotFoundException("The id entered is not a valid id");
 			}
 		} else {
-			throw new UserNotFoundException("The user this action was created by is not a valid user");
+			throw new UserNotFoundException("The user that the object has been created by is not a valid user");
 		}
 		if (object.getObjectDetails() != null) {
 			entity.setObjectDetails(object.getObjectDetails());
@@ -124,7 +124,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public ObjectBoundary updateObject(String superApp, String id, ObjectBoundary ob) {
 		ObjectEntity existing = this.objectCrud.findById(superApp + delimeter + id).orElseThrow(
-				() -> new ObjectNotFoundException("could not find object for update by id: " + (superApp + id)));
+				() -> new ObjectNotFoundException("Could not find an object to update by id: " + (superApp + id)));
 		if (ob.getType() != null) {
 			existing.setType(ob.getType());
 		}
@@ -169,12 +169,12 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public void bind(String InternalObjectIdOrigin, String InternalObjectIdChildren) {
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + InternalObjectIdOrigin).orElseThrow(
-				() -> new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
+				() -> new ObjectNotFoundException("Could not find the origin object by the given id: " + InternalObjectIdOrigin));
 
 		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + InternalObjectIdChildren).orElseThrow(
-				() -> new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
+				() -> new ObjectNotFoundException("Could not find the child object by id: " + InternalObjectIdChildren));
 		if (origin.getId().equals(children.getId()))
-			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
+			throw new ObjectNotFoundException("The origin Id and children Id can not be the same");
 
 		origin.addChildren(children);
 
@@ -328,10 +328,37 @@ public class ObjectServiceDb implements ObjectQueries {
 					.stream().map(this::toBoundary).toList();
 		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			if (origin.getActive() == false)
-				throw new ObjectNotFoundException("Object not found");
+				return new ArrayList<>();
 			else {
 				return this.objectCrud
 						.findAllByParentObjectsIsContainingAndActiveIsTrue(origin,
+								PageRequest.of(page, size, Direction.DESC, "id"))
+						.stream().map(this::toBoundary).toList();
+			}
+		}
+		throw new ObjectNotFoundException("Object not found");
+	}
+
+	@Override
+	public List<ObjectBoundary> getAllParentsByPermission(String superApp, String childrenId, String userSuperapp,
+			String email, int size, int page) {
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"Could not find User with superapp = " + userSuperapp + " and email = " + email));
+
+		ObjectEntity children = this.objectCrud.findById(superApp + delimeter + childrenId)
+				.orElseThrow(() -> new ObjectNotFoundException("Could not find children Object by id: " + childrenId));
+
+		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return objectCrud
+					.findAllByChildrenObjectsIsContaining(children, PageRequest.of(page, size, Direction.DESC, "id"))
+					.stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
+			if (children.getActive() == false)
+				return new ArrayList<>();
+			else {
+				return this.objectCrud
+						.findAllByChildrenObjectsIsContainingAndActiveIsTrue(children,
 								PageRequest.of(page, size, Direction.DESC, "id"))
 						.stream().map(this::toBoundary).toList();
 			}
