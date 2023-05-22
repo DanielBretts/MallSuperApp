@@ -132,7 +132,11 @@ public class ObjectServiceDb implements ObjectQueries {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
 		object.getObjectId().setSuperapp(superapp);
 		ObjectEntity entity = (ObjectEntity) toEntity(object);
-		entity.setLocation(new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+		if(object.getLocation() != null)
+			entity.setLocation(new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+		else {
+			entity.setLocation(new GeoJsonPoint(new Point(0,0)));
+		}
 		entity.setCreationTimestamp(new Date());
 		entity = this.objectCrud.save(entity);
 		return (ObjectBoundary) toBoundary(entity);
@@ -434,35 +438,35 @@ public class ObjectServiceDb implements ObjectQueries {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
-
-		Point center = new Point(lat, lng);
-
 		Metrics distanceType;
 		switch (distanceUnits) {
 		case "NEUTRAL":
-			distanceType = Metrics.NEUTRAL;
+			//distanceType = Metrics.NEUTRAL;
 			break;
 		case "KILOMETERS":
-			distanceType = Metrics.KILOMETERS;
+			//distanceType = Metrics.KILOMETERS;
+			distance*= 1000;
 			break;
 		case "MILES":
-			distanceType = Metrics.MILES;
+			//distanceType = Metrics.MILES;
+			distance*=1609.344;
 			break;
 		default:
-			distanceType = Metrics.NEUTRAL;
+			//distanceType = Metrics.NEUTRAL;
+			
 			break;
 		}
 
-		Distance radius = new Distance(distance, distanceType);
-		Circle circle = new Circle(center, radius);
+		//Distance radius = new Distance(distance, distanceType);
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
-//        	return this.objectCrud.findByLocationNearAndActiveIsTrue(center,radius,PageRequest.of(page, size, Direction.DESC, "id"))
-//        			.stream()
-//        			.map(this::toBoundary)
-//        			.toList();
-			return null;
+			System.err.println("HERE");
+        	return this.objectCrud.findByLocationNearAndActiveIsTrue(lat,lng,distance,
+					PageRequest.of(page, size, Direction.DESC, "id"))
+        			.stream()
+        			.map(this::toBoundary)
+        			.toList();
 		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findLocationNear(lat,lng,distance,
+			return this.objectCrud.findByLocationNear(lat,lng,distance,
 					PageRequest.of(page, size, Direction.DESC, "id")).stream().map(this::toBoundary).toList();
 		} else {
 			throw new ForbiddenException("This user does not have permission to do this");

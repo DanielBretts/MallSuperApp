@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.util.Streamable;
 
 import superapp.data.ObjectEntity;
 import superapp.data.ObjectId;
@@ -41,8 +42,6 @@ public interface ObjectCrud
 
 	//public List<ObjectEntity> findByLocationNearAndActiveIsTrue(Point center, Distance radius, Pageable pageable);
 	
-    @Query("{ 'location': { $nearSphere: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
-	public List<ObjectEntity> findLocationNear(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")double maxDistance, Pageable pageable);
 
 	public List<ObjectEntity> findAllByParentObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
@@ -52,4 +51,9 @@ public interface ObjectCrud
 	
 	public List<ObjectEntity> findAllByChildrenObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
+	@Query("{ 'location': { $nearSphere: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
+	public List<ObjectEntity> findByLocationNear(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")double maxDistance, Pageable pageable);
+
+	@Query("{ 'active': true, 'location': { $nearSphere: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
+	public List<ObjectEntity> findByLocationNearAndActiveIsTrue(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")double maxDistance, PageRequest of);
 }
