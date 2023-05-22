@@ -40,8 +40,9 @@ public interface ObjectCrud
 	public List<ObjectEntity> findAllByAlias(String alias, Pageable pageable);
 
 	//public List<ObjectEntity> findByLocationNearAndActiveIsTrue(Point center, Distance radius, Pageable pageable);
-
-	public List<ObjectEntity> findByIdAndLocationNear(@Param("id") String id,@Param("point") Point point, @Param("distance") Distance distance, Pageable pageable);
+	
+    @Query("{ 'location': { $near: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
+	public List<ObjectEntity> findLocationNear(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")Distance maxDistance, Pageable pageable);
 
 	public List<ObjectEntity> findAllByParentObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
