@@ -33,6 +33,7 @@ public class ObjectEntity {
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
 		this.childrenObjects = new ArrayList<>();
+		this.parentObjects = new ArrayList<>();
 	}
 
 	public String getId() {

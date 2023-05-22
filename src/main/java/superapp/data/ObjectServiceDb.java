@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.activemq.artemis.core.security.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -318,28 +317,26 @@ public class ObjectServiceDb implements ObjectQueries {
 			String email, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + userSuperapp + " and email = " + email));
+						"Could not find User with superapp = " + userSuperapp + " and email = " + email));
 
 		ObjectEntity origin = this.objectCrud.findById(superApp + delimeter + originId)
-				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
-
-		List<ObjectEntity> children = origin.getChildrenObjects();
+				.orElseThrow(() -> new ObjectNotFoundException("Could not find origin Object by id: " + originId));
 
 		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return children.stream().map(this::toBoundary).toList();
+			return objectCrud
+					.findAllByParentObjectsIsContaining(origin, PageRequest.of(page, size, Direction.DESC, "id"))
+					.stream().map(this::toBoundary).toList();
 		} else if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			if (origin.getActive() == false)
-				throw new ObjectNotFoundException("Objects not found");
+				throw new ObjectNotFoundException("Object not found");
 			else {
 				return this.objectCrud
 						.findAllByParentObjectsIsContainingAndActiveIsTrue(origin,
 								PageRequest.of(page, size, Direction.DESC, "id"))
 						.stream().map(this::toBoundary).toList();
-//						this.objectCrud.findAllByActiveIsTrue(PageRequest.of(page, size, Direction.DESC, "id")).stream()
-//						.map(this::toBoundary).toList();
 			}
 		}
-		throw new ObjectNotFoundException("Objects not found");
+		throw new ObjectNotFoundException("Object not found");
 	}
 
 	@Override

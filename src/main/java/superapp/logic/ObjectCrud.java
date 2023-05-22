@@ -39,4 +39,6 @@ public interface ObjectCrud
 
 	public List<ObjectEntity> findAllByParentObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
+	public List<ObjectEntity> findAllByParentObjectsIsContaining(ObjectEntity origin, PageRequest of);
+
 }

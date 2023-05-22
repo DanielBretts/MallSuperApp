@@ -29,7 +29,7 @@ public class ObjectOperationController {
 	}
 
 	@RequestMapping(method = {
-			RequestMethod.PUT }, path = "/superapp/objects/{superapp}/{InternalObjectId}/children", consumes = {
+			RequestMethod.PUT }, path = "/superapp/objects/{superApp}/{InternalObjectId}/children", consumes = {
 					MediaType.APPLICATION_JSON_VALUE })
 	public void BindAnExistingObjectToChildren(@PathVariable("superApp") String superApp,
 			@PathVariable("InternalObjectId") String originId,
@@ -40,7 +40,7 @@ public class ObjectOperationController {
 	}
 
 	@RequestMapping(method = {
-			RequestMethod.GET }, path = "/superapp/objects/{superapp}/{InternalObjectId}/children", produces = {
+			RequestMethod.GET }, path = "/superapp/objects/{superApp}/{InternalObjectId}/children", produces = {
 					MediaType.APPLICATION_JSON_VALUE })
 	public ObjectBoundary[] getAllChildren(@PathVariable("superApp") String superApp,
 			@PathVariable("InternalObjectId") String originId,
@@ -54,7 +54,7 @@ public class ObjectOperationController {
 	}
 
 	@RequestMapping(method = {
-			RequestMethod.GET }, path = "/superapp/objects/{superapp}/{InternalObjectId}/parents", produces = {
+			RequestMethod.GET }, path = "/superapp/objects/{superApp}/{InternalObjectId}/parents", produces = {
 					MediaType.APPLICATION_JSON_VALUE })
 	public ObjectBoundary[] GetAnArrayWithObjectParent(@PathVariable("InternalObjectId") String childrenId) {
 		Optional<ArrayList<ObjectBoundary>> rv = this.objects.getOrigin(childrenId);
