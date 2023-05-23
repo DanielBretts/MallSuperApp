@@ -24,7 +24,6 @@ import superapp.logic.MiniAppCommandsQueries;
 import superapp.logic.ObjectCrud;
 import superapp.logic.UserCrud;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
-import superapp.restApi.boundaries.UserBoundary;
 
 @Service
 public class MiniAppCommandsDb implements MiniAppCommandsQueries {
@@ -118,13 +117,16 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 	private MiniAppCommandEntity toEntity(MiniAppCommandBoundary command) {
 		MiniAppCommandEntity entity = new MiniAppCommandEntity();
-		if (command.getCommand() == null) {
+		if (command.getCommand() == null || command.getCommand().isEmpty()) {
 			throw new MiniAppCommandException("Command can not be empty");
 		} else {
 			entity.setCommand(command.getCommand());
 		}
 		entity.setInvocationTimeStamp(new Date());
-		if (command.getInvokedBy() == null || command.getInvokedBy().getUserId().getEmail() == null) {
+		if (command.getInvokedBy() == null ||
+				command.getInvokedBy().getUserId().getEmail() == null ||
+				command.getInvokedBy().getUserId().getEmail().isEmpty() ||
+				command.getInvokedBy().getUserId().getSuperapp().isEmpty()) {
 			throw new MiniAppCommandException("InvokedBy can not be empty");
 		} else {
 			command.getInvokedBy().getUserId().setSuperapp(this.superapp);
@@ -142,8 +144,10 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 		entity.setId(id);
 		entity.setInternalCommandId(command.getCommandId().getInternalCommandId());
 		if (command.getTargetObject() == null
-				|| command.getTargetObject().getObjectId().getInternalObjectId() == null) {
-			throw new MiniAppCommandException("TargetObject can not be empty");
+				|| command.getTargetObject().getObjectId().getInternalObjectId() == null
+				|| command.getTargetObject().getObjectId().getInternalObjectId().isEmpty()
+				|| command.getTargetObject().getObjectId().getSuperapp().isEmpty()) {
+			throw new MiniAppCommandException("TargetObject can not be empty or null");
 		} else {
 			command.getTargetObject().getObjectId().setSuperapp(this.superapp);
 			entity.setTargetObject(command.getTargetObject());

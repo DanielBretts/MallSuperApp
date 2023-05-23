@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import superapp.logic.ObjectQueries;
-import superapp.logic.ObjectService;
 import superapp.restApi.boundaries.ObjectBoundary;
 
 @RestController

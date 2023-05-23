@@ -10,17 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metric;
-import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectQueries;
 import superapp.logic.UserCrud;
@@ -438,7 +430,6 @@ public class ObjectServiceDb implements ObjectQueries {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"could not find User with superapp = " + superapp + " and email = " + email));
-		Metrics distanceType;
 		switch (distanceUnits) {
 		case "NEUTRAL":
 			//distanceType = Metrics.NEUTRAL;

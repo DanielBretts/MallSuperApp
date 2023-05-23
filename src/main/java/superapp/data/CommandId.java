@@ -1,7 +1,6 @@
 package superapp.data;
 
 import org.springframework.beans.factory.annotation.Value;
-
 import jakarta.annotation.PostConstruct;
 
 public class CommandId {

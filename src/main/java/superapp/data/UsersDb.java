@@ -3,7 +3,6 @@ package superapp.data;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +14,8 @@ import superapp.restApi.boundaries.UserBoundary;
 import superapp.data.exceptions.UserParamException;
 import superapp.data.exceptions.ForbiddenException;
 import superapp.data.exceptions.UserNotFoundException;
-
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 @Service
 public class UsersDb implements UsersQueries {
 
@@ -50,8 +50,12 @@ public class UsersDb implements UsersQueries {
 	}
 
 	@Override
-	public Optional<UserBoundary> login(String userSuperApp, String userEmail) {
-		return this.userCrud.findById(userSuperApp + delimeter + userEmail).map(this::toBoundary);
+	public UserBoundary login(String userSuperApp, String userEmail) {
+		UserEntity userEntity = userCrud.findById(userSuperApp + delimeter + userEmail)
+				.orElseThrow(()-> new UserNotFoundException("Could not find user: " + userEmail + " in superapp:" + userSuperApp));
+//		if(userEntity == null)
+//			throw new UserNotFoundException("Could not find user: " + userEmail + "in superapp:" + userSuperApp);
+		return toBoundary(userEntity);
 	}
 
 	@Override
@@ -119,23 +123,35 @@ public class UsersDb implements UsersQueries {
 	public UserEntity toEntity(UserBoundary boundary) {
 		UserEntity ue = new UserEntity();
 
-		if (boundary.getAvatar() == null) {
-			ue.setAvatar(null);
-		} else {
+		if (boundary.getAvatar() != null && !boundary.getAvatar().isEmpty())
 			ue.setAvatar(boundary.getAvatar());
+		else{
+			throw new UserParamException("Avatar can not be empty or null");
 		}
 		ue.setRole(toEntityAsEnum(boundary.getRole()));
-		if (boundary.getUsername() == null) {
-			throw new UserParamException("Username can not be empty");
+		if (boundary.getUsername() == null || boundary.getUsername().isEmpty()) {
+			throw new UserParamException("Username can not be empty or null");
 		} else {
 			ue.setUsername(boundary.getUsername());
 		}
 		if (boundary.getUserId() == null || boundary.getUserId().getEmail() == null) {
 			throw new UserParamException("User id field is not valid");
 		} else {
-			ue.setId(this.superapp + delimeter + boundary.getUserId().getEmail());
+			if(isValidEmail(boundary.getUserId().getEmail())) {
+				ue.setId(this.superapp + delimeter + boundary.getUserId().getEmail());
+			}else {
+				throw new UserParamException("Email format is not valid");
+			}
+			
 		}
 		return ue;
+	}
+	private boolean isValidEmail(String email) {
+	    // Regex pattern for email validation
+	    String pattern = "^[\\w\\.-]+@[\\w\\.-]+\\.[\\w]+$";
+	    Pattern regex = Pattern.compile(pattern);
+	    Matcher matcher = regex.matcher(email);
+	    return matcher.matches();
 	}
 
 	private UserRole toEntityAsEnum(String value) {
