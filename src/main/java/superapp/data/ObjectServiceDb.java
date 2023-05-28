@@ -121,18 +121,29 @@ public class ObjectServiceDb implements ObjectQueries {
 
 	@Override
 	public ObjectBoundary createObject(ObjectBoundary object) {
-		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
-		object.getObjectId().setSuperapp(superapp);
-		ObjectEntity entity = (ObjectEntity) toEntity(object);
-		if (object.getLocation() != null)
-			entity.setLocation(
-					new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
-		else {
-			entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
+		String userSuperapp = object.getCreatedBy().getUserId().getSuperapp();
+		String userEmail = object.getCreatedBy().getUserId().getEmail();
+
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + userEmail)
+				.orElseThrow(() -> new UserNotFoundException(
+						"Could not find User with superapp = " + userSuperapp + " and email = " + userEmail));
+		if (userEntity.getRole() != UserRole.SUPERAPP_USER) {
+			throw new ForbiddenException("User not allowed to make this action");
+		} else {
+			object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
+			object.getObjectId().setSuperapp(superapp);
+			ObjectEntity entity = (ObjectEntity) toEntity(object);
+			if (object.getLocation() != null)
+				entity.setLocation(
+						new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+			else {
+				entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
+			}
+			entity.setCreationTimestamp(new Date());
+			entity = this.objectCrud.save(entity);
+			return (ObjectBoundary) toBoundary(entity);
+
 		}
-		entity.setCreationTimestamp(new Date());
-		entity = this.objectCrud.save(entity);
-		return (ObjectBoundary) toBoundary(entity);
 	}
 
 	@Deprecated
@@ -204,7 +215,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public List<ObjectBoundary> getAllChildren(String InternalObjectIdOrigin) {
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + InternalObjectIdOrigin).orElseThrow(
-				() -> new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
+				() -> new ObjectNotFoundException("Could not find origin Object by id: " + InternalObjectIdOrigin));
 
 		List<ObjectEntity> ChildrenObjects = origin.getChildrenObjects();
 
@@ -218,7 +229,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public Optional<ArrayList<ObjectBoundary>> getOrigin(String InternalObjectIdChildren) {
 		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + InternalObjectIdChildren).orElseThrow(
-				() -> new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
+				() -> new ObjectNotFoundException("Could not find child Object by id: " + InternalObjectIdChildren));
 
 		Optional<ArrayList<ObjectEntity>> originOptional = this.objectCrud.findAllByChildrenObjectsContains(children);
 		return originOptional.map(list -> {
@@ -235,10 +246,10 @@ public class ObjectServiceDb implements ObjectQueries {
 			String userSuperapp, String email) {
 		ObjectEntity existing = this.objectCrud.findById(superApp + delimeter + internalObjectId)
 				.orElseThrow(() -> new ObjectNotFoundException(
-						"could not find object for update by id: " + (superApp + internalObjectId)));
+						"Could not find object for update by id: " + (superApp + internalObjectId)));
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 			if (ob.getActive() != null) {
 				existing.setActive(ob.getActive());
@@ -267,11 +278,11 @@ public class ObjectServiceDb implements ObjectQueries {
 			String email) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 
 		ObjectEntity objectEntity = this.objectCrud.findById(superApp + delimeter + internalObjectId)
 				.orElseThrow(() -> new ObjectNotFoundException(
-						"could not find object for update by id: " + (superApp + internalObjectId)));
+						"Could not find object for update by id: " + (superApp + internalObjectId)));
 
 		if (objectEntity.getActive() == false) {
 			if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
@@ -289,7 +300,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	public List<ObjectBoundary> getAllObjectsCheckingRole(String userSuperapp, String email, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 
 		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 			return this.objectCrud.findAll(PageRequest.of(page, size, Direction.DESC, "creationTimestamp", "id"))
@@ -306,7 +317,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	public void deleteAllObjectsAdminOnly(String superapp, String email) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.ADMIN)
 			this.objectCrud.deleteAll();
 		else
@@ -325,10 +336,10 @@ public class ObjectServiceDb implements ObjectQueries {
 		} else {
 			String id = superAppObjectIdBoundary.getInternalObjectId();
 			ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
-					.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
+					.orElseThrow(() -> new ObjectNotFoundException("Could not find origin Object by id: " + originId));
 
 			ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
-					.orElseThrow(() -> new ObjectNotFoundException("could not find child Object by id: " + id));
+					.orElseThrow(() -> new ObjectNotFoundException("Could not find child Object by id: " + id));
 			if (origin.getId().equals(children.getId()))
 				throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 
@@ -398,7 +409,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	public List<ObjectBoundary> getObjectsByType(String superapp, String email, String type, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			return this.objectCrud
 					.findAllByTypeAndActiveIsTrue(type, PageRequest.of(page, size, Direction.DESC, "type", "id"))
@@ -415,7 +426,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email, String alias, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			return this.objectCrud
 					.findAllByAliasAndActiveIsTrue(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
@@ -433,7 +444,7 @@ public class ObjectServiceDb implements ObjectQueries {
 			double distance, String distanceUnits, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		switch (distanceUnits) {
 		case "NEUTRAL":
 			// distanceType = Metrics.NEUTRAL;
