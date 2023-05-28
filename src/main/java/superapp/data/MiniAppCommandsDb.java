@@ -203,35 +203,45 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 		String objSuperapp = miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp();
 		String objIntId = miniAppCommandBoundary.getTargetObject().getObjectId().getInternalObjectId();
+		String objEmail = miniAppCommandBoundary.getInvokedBy().getUserId().getEmail();
 
-		ObjectEntity objectEntity = this.objectCrud.findById(objSuperapp + delimeter + objIntId)
-				.orElseThrow(() -> new ObjectNotFoundException("Could not find object with superapp = " + objSuperapp
-						+ " and internalObjectId = " + objIntId));
-		if (objectEntity.getActive() == false) {
-			throw new ForbiddenException("It is not allowed to operate on a non-active object");
-		}
-		if (objIntId != null)
-			if (objSuperapp != null)
+		UserEntity userEntity = this.userCrud.findById(objSuperapp + delimeter + objEmail)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + objSuperapp + " and email = " + objEmail));
+		if (userEntity.getRole() != UserRole.MINIAPP_USER) {
+			throw new ForbiddenException("This action is not allowed");
+		} else {
+			ObjectEntity objectEntity = this.objectCrud.findById(objSuperapp + delimeter + objIntId)
+					.orElseThrow(() -> new ObjectNotFoundException("Could not find object with superapp = "
+							+ objSuperapp + " and internalObjectId = " + objIntId));
+			if (objectEntity.getActive() == false) {
+				throw new ForbiddenException("It is not allowed to operate on a non-active object");
+			}
+			if (objIntId != null)
+				if (objSuperapp != null)
+					miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
+				else
+					throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
+			if (miniAppCommandBoundary.getInvokedBy().getUserId().getSuperapp() != null)
 				miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
 			else
-				throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
-		if (miniAppCommandBoundary.getInvokedBy().getUserId().getSuperapp() != null)
-			miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
-		else
-			throw new MiniAppCommandException("Superapp inside userId can not be empty!");
-		if (isAsync) {
-			try {
-				String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
-				this.jmsTemplate.convertAndSend("handleLaterCommand", json);
-				return miniAppCommandBoundary;
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new MiniAppCommandException("Superapp inside userId can not be empty!");
+			if (isAsync) {
+				try {
+					String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
+					this.jmsTemplate.convertAndSend("handleLaterCommand", json);
+					return miniAppCommandBoundary;
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				MiniAppCommandEntity entity = this.toEntity(miniAppCommandBoundary);
+				entity = this.miniAppCommandsCrud.save(entity);
+				return (MiniAppCommandBoundary) toBoundary(entity);
 			}
-		} else {
-			MiniAppCommandEntity entity = this.toEntity(miniAppCommandBoundary);
-			entity = this.miniAppCommandsCrud.save(entity);
-			return (MiniAppCommandBoundary) toBoundary(entity);
+
 		}
+
 	}
 
 	@JmsListener(destination = "handleLaterCommand")
