@@ -16,6 +16,9 @@ import superapp.restApi.boundaries.ObjectBoundary;
 
 @RestController
 public class ObjectOperationController {
+	
+	private final String DEFAULT_PAGE_SIZE = "3";
+	private final String DEFAULT_PAGE_NUM = "0";
 	private ObjectQueries objectService;
 
 	@Autowired
@@ -42,8 +45,8 @@ public class ObjectOperationController {
 			@PathVariable("InternalObjectId") String originId,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String email,
-			@RequestParam(name = "size", required = true) int size,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+			@RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUM) int page) {
 		List<ObjectBoundary> rv = this.objectService.getAllChildrenByPermission(superApp, originId, userSuperapp, email,
 				size, page);
 		return rv.toArray(new ObjectBoundary[0]);
@@ -56,8 +59,8 @@ public class ObjectOperationController {
 			@PathVariable("InternalObjectId") String childrenId,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String email,
-			@RequestParam(name = "size", required = true) int size,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+			@RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUM) int page) {
 		List<ObjectBoundary> rv = this.objectService.getAllParentsByPermission(superApp, childrenId, userSuperapp,
 				email, size, page);
 		return rv.toArray(new ObjectBoundary[0]);

@@ -123,10 +123,9 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 			entity.setCommand(command.getCommand());
 		}
 		entity.setInvocationTimeStamp(new Date());
-		if (command.getInvokedBy() == null ||
-				command.getInvokedBy().getUserId().getEmail() == null ||
-				command.getInvokedBy().getUserId().getEmail().isEmpty() ||
-				command.getInvokedBy().getUserId().getSuperapp().isEmpty()) {
+		if (command.getInvokedBy() == null || command.getInvokedBy().getUserId().getEmail() == null
+				|| command.getInvokedBy().getUserId().getEmail().isEmpty()
+				|| command.getInvokedBy().getUserId().getSuperapp().isEmpty()) {
 			throw new MiniAppCommandException("InvokedBy can not be empty");
 		} else {
 			command.getInvokedBy().getUserId().setSuperapp(this.superapp);
@@ -143,8 +142,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 		entity.setId(id);
 		entity.setInternalCommandId(command.getCommandId().getInternalCommandId());
-		if (command.getTargetObject() == null
-				|| command.getTargetObject().getObjectId().getInternalObjectId() == null
+		if (command.getTargetObject() == null || command.getTargetObject().getObjectId().getInternalObjectId() == null
 				|| command.getTargetObject().getObjectId().getInternalObjectId().isEmpty()
 				|| command.getTargetObject().getObjectId().getSuperapp().isEmpty()) {
 			throw new MiniAppCommandException("TargetObject can not be empty or null");
@@ -195,11 +193,25 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	}
 
 	@Override
-	public MiniAppCommandBoundary invokeCommandWithAsyncOption(MiniAppCommandBoundary miniAppCommandBoundary, boolean isAsync) {
+	public MiniAppCommandBoundary invokeCommandWithAsyncOption(MiniAppCommandBoundary miniAppCommandBoundary,
+			boolean isAsync) {
 		miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 		miniAppCommandBoundary.setInvocationTimestamp(new Date());
-		if (miniAppCommandBoundary.getTargetObject().getObjectId().getInternalObjectId() != null)
-			if (miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
+		if (miniAppCommandBoundary.getTargetObject() == null) {
+			throw new ObjectNotFoundException("The object that the command was invoked on was null");
+		}
+
+		String objSuperapp = miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp();
+		String objIntId = miniAppCommandBoundary.getTargetObject().getObjectId().getInternalObjectId();
+
+		ObjectEntity objectEntity = this.objectCrud.findById(objSuperapp + delimeter + objIntId)
+				.orElseThrow(() -> new ObjectNotFoundException("Could not find object with superapp = " + objSuperapp
+						+ " and internalObjectId = " + objIntId));
+		if (objectEntity.getActive() == false) {
+			throw new ForbiddenException("It is not allowed to operate on a non-active object");
+		}
+		if (objIntId != null)
+			if (objSuperapp != null)
 				miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
 			else
 				throw new MiniAppCommandException("Superapp inside commandId can not be empty!");

@@ -124,10 +124,11 @@ public class ObjectServiceDb implements ObjectQueries {
 		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
 		object.getObjectId().setSuperapp(superapp);
 		ObjectEntity entity = (ObjectEntity) toEntity(object);
-		if(object.getLocation() != null)
-			entity.setLocation(new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+		if (object.getLocation() != null)
+			entity.setLocation(
+					new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
 		else {
-			entity.setLocation(new GeoJsonPoint(new Point(0,0)));
+			entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
 		}
 		entity.setCreationTimestamp(new Date());
 		entity = this.objectCrud.save(entity);
@@ -316,21 +317,27 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public void bindByPermission(String originId, SuperAppObjectIdBoundary superAppObjectIdBoundary,
 			String userSuperapp, String email) {
-		String id = superAppObjectIdBoundary.getInternalObjectId();
-		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
-				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"Could not find User with superapp = " + userSuperapp + " and email = " + email));
+		if (userEntity.getRole() != UserRole.SUPERAPP_USER) {
+			throw new ForbiddenException("This user has no permission binding these objects");
+		} else {
+			String id = superAppObjectIdBoundary.getInternalObjectId();
+			ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
+					.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
 
-		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
-				.orElseThrow(() -> new ObjectNotFoundException("could not find child Object by id: " + id));
-		if (origin.getId().equals(children.getId()))
-			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
+			ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
+					.orElseThrow(() -> new ObjectNotFoundException("could not find child Object by id: " + id));
+			if (origin.getId().equals(children.getId()))
+				throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 
-		origin.addChildren(children);
-		children.addParent(origin);
+			origin.addChildren(children);
+			children.addParent(origin);
 
-		this.objectCrud.save(origin);
-		this.objectCrud.save(children);
-
+			this.objectCrud.save(origin);
+			this.objectCrud.save(children);
+		}
 	}
 
 	@Override
@@ -412,13 +419,10 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			return this.objectCrud
 					.findAllByAliasAndActiveIsTrue(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
-					.stream()
-					.map(this::toBoundary).toList();
+					.stream().map(this::toBoundary).toList();
 		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 			return this.objectCrud.findAllByAlias(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
-					.stream()
-					.map(this::toBoundary)
-					.toList();
+					.stream().map(this::toBoundary).toList();
 		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}
@@ -432,34 +436,32 @@ public class ObjectServiceDb implements ObjectQueries {
 						"could not find User with superapp = " + superapp + " and email = " + email));
 		switch (distanceUnits) {
 		case "NEUTRAL":
-			//distanceType = Metrics.NEUTRAL;
+			// distanceType = Metrics.NEUTRAL;
 			break;
 		case "KILOMETERS":
-			//distanceType = Metrics.KILOMETERS;
-			distance*= 1000;
+			// distanceType = Metrics.KILOMETERS;
+			distance *= 1000;
 			break;
 		case "MILES":
-			//distanceType = Metrics.MILES;
-			distance*=1609.344;
+			// distanceType = Metrics.MILES;
+			distance *= 1609.344;
 			break;
 		default:
-			//distanceType = Metrics.NEUTRAL;
-			
+			// distanceType = Metrics.NEUTRAL;
+
 			break;
 		}
 		System.err.println(distance);
 		System.err.println(userEntity.getRole());
-		//Distance radius = new Distance(distance, distanceType);
+		// Distance radius = new Distance(distance, distanceType);
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			System.err.println("HERE");
-        	return this.objectCrud.findByLocationNearAndActiveIsTrue(lat,lng,distance,
-					PageRequest.of(page, size, Direction.DESC, "id"))
-        			.stream()
-        			.map(this::toBoundary)
-        			.toList();
-		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findByLocationNear(lat,lng,distance,
+			return this.objectCrud.findByLocationNearAndActiveIsTrue(lat, lng, distance,
 					PageRequest.of(page, size, Direction.DESC, "id")).stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud
+					.findByLocationNear(lat, lng, distance, PageRequest.of(page, size, Direction.DESC, "id")).stream()
+					.map(this::toBoundary).toList();
 		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}

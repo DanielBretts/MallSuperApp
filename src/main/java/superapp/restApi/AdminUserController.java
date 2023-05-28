@@ -15,6 +15,8 @@ import superapp.restApi.boundaries.UserBoundary;
 @RestController
 public class AdminUserController {
 
+	private final String DEFAULT_PAGE_SIZE = "3";
+	private final String DEFAULT_PAGE_NUM = "0";
 	private UsersQueries usersService;
 	private ObjectQueries objectService;
 	private MiniAppCommandsQueries miniAppCommandsService;
@@ -56,8 +58,8 @@ public class AdminUserController {
 			MediaType.APPLICATION_JSON_VALUE })
 	public List<UserBoundary> getAllUsers(@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
-			@RequestParam(name = "size", required = true) int size,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+			@RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUM) int page) {
 		return usersService.getAllUsersAdminOnly(superapp,email,size,page);
 	}
 
@@ -66,8 +68,8 @@ public class AdminUserController {
 	public List<MiniAppCommandBoundary> getAllCommandsHistory(
 			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
-			@RequestParam(name = "size", required = true) int size,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+			@RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUM) int page) {
 		return miniAppCommandsService.getAllMiniAppsCommandsAdminOnly(superapp, email, size, page);
 	}
 
@@ -76,8 +78,8 @@ public class AdminUserController {
 	public List<MiniAppCommandBoundary> getMiniAppCommandHistory(@PathVariable String miniAppName,
 			@RequestParam(name = "userSuperapp", required = true) String superapp,
 			@RequestParam(name = "userEmail", required = true) String email,
-			@RequestParam(name = "size", required = true) int size,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+			@RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUM) int page) {
 		return miniAppCommandsService.getSpecificMiniAppCommandsAdminOnly(miniAppName, superapp, email, size, page);
 	}
 
