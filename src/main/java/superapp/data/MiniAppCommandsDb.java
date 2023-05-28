@@ -107,7 +107,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 		boundary.setCommand(entity.getCommand());
 		boundary.setCommandId(new CommandId(entity.getMiniApp()));
 		boundary.getCommandId().setSuperapp(this.superapp);
-		boundary.getCommandId().setInternalCommandId(entity.getId());
+		boundary.getCommandId().setInternalCommandId(entity.getId().split("_")[2]);
 		boundary.setInvocationTimestamp(entity.getInvocationTimeStamp());
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		boundary.setInvokedBy(entity.getInvokedBy());
