@@ -198,7 +198,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	public MiniAppCommandBoundary invokeCommandWithAsyncOption(MiniAppCommandBoundary miniAppCommandBoundary, boolean isAsync) {
 		miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 		miniAppCommandBoundary.setInvocationTimestamp(new Date());
-		if (miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
+		if (miniAppCommandBoundary.getTargetObject().getObjectId().getInternalObjectId() != null)
 			if (miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
 				miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
 			else
