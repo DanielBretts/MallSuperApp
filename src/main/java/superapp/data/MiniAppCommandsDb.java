@@ -24,6 +24,7 @@ import superapp.logic.MiniAppCommandsQueries;
 import superapp.logic.ObjectCrud;
 import superapp.logic.UserCrud;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
+import superapp.restApi.boundaries.ObjectBoundary;
 
 @Service
 public class MiniAppCommandsDb implements MiniAppCommandsQueries {
@@ -301,5 +302,6 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 		else
 			throw new ForbiddenException("This user does not have permission to do this");
 	}
+	
 
 }

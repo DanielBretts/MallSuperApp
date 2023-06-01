@@ -326,9 +326,9 @@ public class ObjectServiceDb implements ObjectQueries {
 	}
 
 	@Override
-	public void bindByPermission(String originId, ObjectId objectId,
+	public void bindByPermission(String originId, ObjectId childrenObjectId,
 			String userSuperapp, String email) {
-		String id = objectId.getInternalObjectId();
+		String childrenId = childrenObjectId.getInternalObjectId();
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
 				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
 		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
@@ -337,8 +337,8 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (userEntity.getRole() != UserRole.SUPERAPP_USER) {
 			throw new ForbiddenException("This user has no permission binding these objects");
 		} else {
-			ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
-					.orElseThrow(() -> new ObjectNotFoundException("Could not find child Object by id: " + id));
+			ObjectEntity children = this.objectCrud.findById(superapp + delimeter + childrenId)
+					.orElseThrow(() -> new ObjectNotFoundException("Could not find child Object by id: " + childrenId));
 			if (origin.getId().equals(children.getId()))
 				throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 
