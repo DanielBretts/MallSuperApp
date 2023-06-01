@@ -341,7 +341,10 @@ public class ObjectServiceDb implements ObjectQueries {
 					.orElseThrow(() -> new ObjectNotFoundException("Could not find child Object by id: " + childrenId));
 			if (origin.getId().equals(children.getId()))
 				throw new ObjectNotFoundException("The origin ID and children ID can not be same");
-
+			for (ObjectEntity objectEntity : origin.getChildrenObjects()) {
+				if(objectEntity.getId().equals(children.getId()))
+					throw new ObjectNotFoundException("The childern already exist!");
+			}
 			origin.addChildren(children);
 			children.addParent(origin);
 
