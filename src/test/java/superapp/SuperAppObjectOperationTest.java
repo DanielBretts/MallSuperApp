@@ -9,10 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
-
-import superapp.data.SuperAppObjectIdBoundary;
 import superapp.data.CreatedBy;
 import superapp.data.Location;
+import superapp.data.ObjectId;
 import superapp.data.UserId;
 import superapp.restApi.boundaries.ObjectBoundary;
 
@@ -90,7 +89,7 @@ public class SuperAppObjectOperationTest {
 		// WHEN I PUT /superapp/objects/{superapp}/{InternalObjectId}/children with
 		// {"responseId":"o2"}
 		this.restTemplate.put(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/children",
-				new SuperAppObjectIdBoundary(o2, superapp), superapp, o1);
+				new ObjectId(o2, superapp), superapp, o1);
 
 		// THEN the database is updated with relation between o1 and o2 as its response
 		ObjectBoundary[] actualChildersns = this.restTemplate.getForObject(
@@ -149,21 +148,21 @@ public class SuperAppObjectOperationTest {
 				.getObjectId());
 		String ob1 = objectBoundary1.getObjectId().getInternalObjectId();
 		this.restTemplate.put(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/children",
-				new SuperAppObjectIdBoundary(ob1, superapp), superapp, ob0);
+				new ObjectId(ob1, superapp), superapp, ob0);
 
 		objectBoundary2.setObjectId(this.restTemplate
 				.postForObject(this.baseUrl + "/superapp/objects", objectBoundary2, ObjectBoundary.class)
 				.getObjectId());
 		String ob2 = objectBoundary2.getObjectId().getInternalObjectId();
 		this.restTemplate.put(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/children",
-				new SuperAppObjectIdBoundary(ob2, superapp), superapp, ob0);
+				new ObjectId(ob2, superapp), superapp, ob0);
 
 		objectBoundary3.setObjectId(this.restTemplate
 				.postForObject(this.baseUrl + "/superapp/objects", objectBoundary3, ObjectBoundary.class)
 				.getObjectId());
 		String ob3 = objectBoundary3.getObjectId().getInternalObjectId();
 		this.restTemplate.put(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/children",
-				new SuperAppObjectIdBoundary(ob3, superapp), superapp, ob0);
+				new ObjectId(ob3, superapp), superapp, ob0);
 
 		// WHEN I GET /superapp/objects/{superapp}/{InternalObjectId}/children
 		ObjectBoundary[] actualchildrens = this.restTemplate.getForObject(
@@ -223,7 +222,7 @@ public class SuperAppObjectOperationTest {
 		// WHEN I PUT /superapp/objects/{superapp}/{InternalObjectId}/children with
 		// {"responseId":"o2"}
 		this.restTemplate.put(this.baseUrl + "/superapp/objects/{superapp}/{InternalObjectId}/children",
-				new SuperAppObjectIdBoundary(o2, superapp), superapp, o1);
+				new ObjectId(o2, superapp), superapp, o1);
 
 		// THEN the database is updated with relation between o1 and o2 as its response
 		ObjectBoundary actualOrigin = this.restTemplate.getForObject(

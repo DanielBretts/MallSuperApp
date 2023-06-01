@@ -322,9 +322,9 @@ public class ObjectServiceDb implements ObjectQueries {
 	}
 
 	@Override
-	public void bindByPermission(String originId, SuperAppObjectIdBoundary superAppObjectIdBoundary,
+	public void bindByPermission(String originId, ObjectId objectId,
 			String userSuperapp, String email) {
-		String id = superAppObjectIdBoundary.getInternalObjectId();
+		String id = objectId.getInternalObjectId();
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
 				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
 

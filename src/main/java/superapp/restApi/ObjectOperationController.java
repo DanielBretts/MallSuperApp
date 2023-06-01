@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import superapp.data.SuperAppObjectIdBoundary;
+
+import superapp.data.ObjectId;
 import superapp.logic.ObjectQueries;
 import superapp.restApi.boundaries.ObjectBoundary;
 
@@ -29,7 +30,7 @@ public class ObjectOperationController {
 					MediaType.APPLICATION_JSON_VALUE })
 	public void BindAnExistingObjectToChildren(@PathVariable("superApp") String superApp,
 			@PathVariable("InternalObjectId") String originId,
-			@RequestBody SuperAppObjectIdBoundary superAppObjectIdBoundary,
+			@RequestBody ObjectId superAppObjectIdBoundary,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String email) {
 		this.objectService.bindByPermission(originId, superAppObjectIdBoundary, userSuperapp, email);

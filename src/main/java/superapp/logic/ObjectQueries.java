@@ -1,10 +1,9 @@
 package superapp.logic;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import superapp.data.SuperAppObjectIdBoundary;
+import superapp.data.ObjectId;
 import superapp.restApi.boundaries.ObjectBoundary;
 
 public interface ObjectQueries extends ObjectServiceWithBindingCapabilities {
@@ -19,7 +18,7 @@ public interface ObjectQueries extends ObjectServiceWithBindingCapabilities {
 
 	public void deleteAllObjectsAdminOnly(String superapp, String email);
 
-	public void bindByPermission(String originId, SuperAppObjectIdBoundary superAppObjectIdBoundary,
+	public void bindByPermission(String originId, ObjectId superAppObjectIdBoundary,
 			String userSuperapp, String email);
 
 	public List<ObjectBoundary> getAllChildrenByPermission(String superApp, String originId, String userSuperapp,
