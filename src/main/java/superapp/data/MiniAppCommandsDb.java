@@ -24,7 +24,6 @@ import superapp.logic.MiniAppCommandsQueries;
 import superapp.logic.ObjectCrud;
 import superapp.logic.UserCrud;
 import superapp.restApi.boundaries.MiniAppCommandBoundary;
-import superapp.restApi.boundaries.UserBoundary;
 
 @Service
 public class MiniAppCommandsDb implements MiniAppCommandsQueries {
@@ -108,7 +107,7 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 		boundary.setCommand(entity.getCommand());
 		boundary.setCommandId(new CommandId(entity.getMiniApp()));
 		boundary.getCommandId().setSuperapp(this.superapp);
-		boundary.getCommandId().setInternalCommandId(entity.getId());
+		boundary.getCommandId().setInternalCommandId(entity.getId().split("_")[2]);
 		boundary.setInvocationTimestamp(entity.getInvocationTimeStamp());
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		boundary.setInvokedBy(entity.getInvokedBy());
@@ -118,13 +117,15 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 	private MiniAppCommandEntity toEntity(MiniAppCommandBoundary command) {
 		MiniAppCommandEntity entity = new MiniAppCommandEntity();
-		if (command.getCommand() == null) {
+		if (command.getCommand() == null || command.getCommand().isEmpty()) {
 			throw new MiniAppCommandException("Command can not be empty");
 		} else {
 			entity.setCommand(command.getCommand());
 		}
 		entity.setInvocationTimeStamp(new Date());
-		if (command.getInvokedBy() == null || command.getInvokedBy().getUserId().getEmail() == null) {
+		if (command.getInvokedBy() == null || command.getInvokedBy().getUserId().getEmail() == null
+				|| command.getInvokedBy().getUserId().getEmail().isEmpty()
+				|| command.getInvokedBy().getUserId().getSuperapp().isEmpty()) {
 			throw new MiniAppCommandException("InvokedBy can not be empty");
 		} else {
 			command.getInvokedBy().getUserId().setSuperapp(this.superapp);
@@ -141,9 +142,10 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 
 		entity.setId(id);
 		entity.setInternalCommandId(command.getCommandId().getInternalCommandId());
-		if (command.getTargetObject() == null
-				|| command.getTargetObject().getObjectId().getInternalObjectId() == null) {
-			throw new MiniAppCommandException("TargetObject can not be empty");
+		if (command.getTargetObject() == null || command.getTargetObject().getObjectId().getInternalObjectId() == null
+				|| command.getTargetObject().getObjectId().getInternalObjectId().isEmpty()
+				|| command.getTargetObject().getObjectId().getSuperapp().isEmpty()) {
+			throw new MiniAppCommandException("TargetObject can not be empty or null");
 		} else {
 			command.getTargetObject().getObjectId().setSuperapp(this.superapp);
 			entity.setTargetObject(command.getTargetObject());
@@ -191,31 +193,55 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 	}
 
 	@Override
-	public MiniAppCommandBoundary invokeCommandWithAsyncOption(MiniAppCommandBoundary miniAppCommandBoundary, boolean isAsync) {
+	public MiniAppCommandBoundary invokeCommandWithAsyncOption(MiniAppCommandBoundary miniAppCommandBoundary,
+			boolean isAsync) {
 		miniAppCommandBoundary.getCommandId().setInternalCommandId(UUID.randomUUID().toString());
 		miniAppCommandBoundary.setInvocationTimestamp(new Date());
-		if (miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
-			if (miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp() != null)
+		if (miniAppCommandBoundary.getTargetObject() == null) {
+			throw new ObjectNotFoundException("The object that the command was invoked on was null");
+		}
+
+		String objSuperapp = miniAppCommandBoundary.getTargetObject().getObjectId().getSuperapp();
+		String objIntId = miniAppCommandBoundary.getTargetObject().getObjectId().getInternalObjectId();
+		String objEmail = miniAppCommandBoundary.getInvokedBy().getUserId().getEmail();
+
+		UserEntity userEntity = this.userCrud.findById(objSuperapp + delimeter + objEmail)
+				.orElseThrow(() -> new UserNotFoundException(
+						"could not find User with superapp = " + objSuperapp + " and email = " + objEmail));
+		if (userEntity.getRole() != UserRole.MINIAPP_USER) {
+			throw new ForbiddenException("This action is not allowed");
+		} else {
+			ObjectEntity objectEntity = this.objectCrud.findById(objSuperapp + delimeter + objIntId)
+					.orElseThrow(() -> new ObjectNotFoundException("Could not find object with superapp = "
+							+ objSuperapp + " and internalObjectId = " + objIntId));
+			if (objectEntity.getActive() == false) {
+				throw new ForbiddenException("It is not allowed to operate on a non-active object");
+			}
+			if (objIntId != null)
+				if (objSuperapp != null)
+					miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
+				else
+					throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
+			if (miniAppCommandBoundary.getInvokedBy().getUserId().getSuperapp() != null)
 				miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
 			else
-				throw new MiniAppCommandException("Superapp inside commandId can not be empty!");
-		if (miniAppCommandBoundary.getInvokedBy().getUserId().getSuperapp() != null)
-			miniAppCommandBoundary.getCommandId().setSuperapp(this.superapp);
-		else
-			throw new MiniAppCommandException("Superapp inside userId can not be empty!");
-		if (isAsync) {
-			try {
-				String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
-				this.jmsTemplate.convertAndSend("handleLaterCommand", json);
-				return miniAppCommandBoundary;
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new MiniAppCommandException("Superapp inside userId can not be empty!");
+			if (isAsync) {
+				try {
+					String json = this.jackson.writeValueAsString(miniAppCommandBoundary);
+					this.jmsTemplate.convertAndSend("handleLaterCommand", json);
+					return miniAppCommandBoundary;
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				MiniAppCommandEntity entity = this.toEntity(miniAppCommandBoundary);
+				entity = this.miniAppCommandsCrud.save(entity);
+				return (MiniAppCommandBoundary) toBoundary(entity);
 			}
-		} else {
-			MiniAppCommandEntity entity = this.toEntity(miniAppCommandBoundary);
-			entity = this.miniAppCommandsCrud.save(entity);
-			return (MiniAppCommandBoundary) toBoundary(entity);
+
 		}
+
 	}
 
 	@JmsListener(destination = "handleLaterCommand")

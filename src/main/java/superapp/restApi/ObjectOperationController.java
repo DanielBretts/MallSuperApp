@@ -17,6 +17,9 @@ import superapp.restApi.boundaries.ObjectBoundary;
 
 @RestController
 public class ObjectOperationController {
+	
+	private final String DEFAULT_PAGE_SIZE = "3";
+	private final String DEFAULT_PAGE_NUM = "0";
 	private ObjectQueries objectService;
 
 	@Autowired
@@ -28,7 +31,7 @@ public class ObjectOperationController {
 	@RequestMapping(method = {
 			RequestMethod.PUT }, path = "/superapp/objects/{superApp}/{InternalObjectId}/children", consumes = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public void BindAnExistingObjectToChildren(@PathVariable("superApp") String superApp,
+	public void bindExistingObjectToChildObject(@PathVariable("superApp") String superApp,
 			@PathVariable("InternalObjectId") String originId,
 			@RequestBody ObjectId superAppObjectIdBoundary,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
@@ -39,12 +42,12 @@ public class ObjectOperationController {
 	@RequestMapping(method = {
 			RequestMethod.GET }, path = "/superapp/objects/{superApp}/{InternalObjectId}/children", produces = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public ObjectBoundary[] getAllChildren(@PathVariable("superApp") String superApp,
+	public ObjectBoundary[] getAllChildrenOfObject(@PathVariable("superApp") String superApp,
 			@PathVariable("InternalObjectId") String originId,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String email,
-			@RequestParam(name = "size", required = true) int size,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+			@RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUM) int page) {
 		List<ObjectBoundary> rv = this.objectService.getAllChildrenByPermission(superApp, originId, userSuperapp, email,
 				size, page);
 		return rv.toArray(new ObjectBoundary[0]);
@@ -53,12 +56,12 @@ public class ObjectOperationController {
 	@RequestMapping(method = {
 			RequestMethod.GET }, path = "/superapp/objects/{superApp}/{InternalObjectId}/parents", produces = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public ObjectBoundary[] GetAnArrayWithObjectParent(@PathVariable("superApp") String superApp,
+	public ObjectBoundary[] getAnArrayWithObjectParent(@PathVariable("superApp") String superApp,
 			@PathVariable("InternalObjectId") String childrenId,
 			@RequestParam(name = "userSuperapp", required = true) String userSuperapp,
 			@RequestParam(name = "userEmail", required = true) String email,
-			@RequestParam(name = "size", required = true) int size,
-			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+			@RequestParam(name = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+			@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE_NUM) int page) {
 		List<ObjectBoundary> rv = this.objectService.getAllParentsByPermission(superApp, childrenId, userSuperapp,
 				email, size, page);
 		return rv.toArray(new ObjectBoundary[0]);

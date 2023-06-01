@@ -10,17 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metric;
-import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
-import jakarta.annotation.PostConstruct;
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectQueries;
 import superapp.logic.UserCrud;
@@ -129,17 +121,29 @@ public class ObjectServiceDb implements ObjectQueries {
 
 	@Override
 	public ObjectBoundary createObject(ObjectBoundary object) {
-		object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
-		object.getObjectId().setSuperapp(superapp);
-		ObjectEntity entity = (ObjectEntity) toEntity(object);
-		if(object.getLocation() != null)
-			entity.setLocation(new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
-		else {
-			entity.setLocation(new GeoJsonPoint(new Point(0,0)));
+		String userSuperapp = object.getCreatedBy().getUserId().getSuperapp();
+		String userEmail = object.getCreatedBy().getUserId().getEmail();
+
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + userEmail)
+				.orElseThrow(() -> new UserNotFoundException(
+						"Could not find User with superapp = " + userSuperapp + " and email = " + userEmail));
+		if (userEntity.getRole() != UserRole.SUPERAPP_USER) {
+			throw new ForbiddenException("User not allowed to make this action");
+		} else {
+			object.setObjectId(new ObjectId().setInternalObjectId(UUID.randomUUID().toString()));
+			object.getObjectId().setSuperapp(superapp);
+			ObjectEntity entity = (ObjectEntity) toEntity(object);
+			if (object.getLocation() != null)
+				entity.setLocation(
+						new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+			else {
+				entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
+			}
+			entity.setCreationTimestamp(new Date());
+			entity = this.objectCrud.save(entity);
+			return (ObjectBoundary) toBoundary(entity);
+
 		}
-		entity.setCreationTimestamp(new Date());
-		entity = this.objectCrud.save(entity);
-		return (ObjectBoundary) toBoundary(entity);
 	}
 
 	@Deprecated
@@ -211,7 +215,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public List<ObjectBoundary> getAllChildren(String InternalObjectIdOrigin) {
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + InternalObjectIdOrigin).orElseThrow(
-				() -> new ObjectNotFoundException("could not find origin Object by id: " + InternalObjectIdOrigin));
+				() -> new ObjectNotFoundException("Could not find origin Object by id: " + InternalObjectIdOrigin));
 
 		List<ObjectEntity> ChildrenObjects = origin.getChildrenObjects();
 
@@ -225,7 +229,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	@Override
 	public Optional<ArrayList<ObjectBoundary>> getOrigin(String InternalObjectIdChildren) {
 		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + InternalObjectIdChildren).orElseThrow(
-				() -> new ObjectNotFoundException("could not find child Object by id: " + InternalObjectIdChildren));
+				() -> new ObjectNotFoundException("Could not find child Object by id: " + InternalObjectIdChildren));
 
 		Optional<ArrayList<ObjectEntity>> originOptional = this.objectCrud.findAllByChildrenObjectsContains(children);
 		return originOptional.map(list -> {
@@ -242,10 +246,10 @@ public class ObjectServiceDb implements ObjectQueries {
 			String userSuperapp, String email) {
 		ObjectEntity existing = this.objectCrud.findById(superApp + delimeter + internalObjectId)
 				.orElseThrow(() -> new ObjectNotFoundException(
-						"could not find object for update by id: " + (superApp + internalObjectId)));
+						"Could not find object for update by id: " + (superApp + internalObjectId)));
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 			if (ob.getActive() != null) {
 				existing.setActive(ob.getActive());
@@ -274,11 +278,11 @@ public class ObjectServiceDb implements ObjectQueries {
 			String email) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 
 		ObjectEntity objectEntity = this.objectCrud.findById(superApp + delimeter + internalObjectId)
 				.orElseThrow(() -> new ObjectNotFoundException(
-						"could not find object for update by id: " + (superApp + internalObjectId)));
+						"Could not find object for update by id: " + (superApp + internalObjectId)));
 
 		if (objectEntity.getActive() == false) {
 			if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
@@ -296,7 +300,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	public List<ObjectBoundary> getAllObjectsCheckingRole(String userSuperapp, String email, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 
 		if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 			return this.objectCrud.findAll(PageRequest.of(page, size, Direction.DESC, "creationTimestamp", "id"))
@@ -313,7 +317,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	public void deleteAllObjectsAdminOnly(String superapp, String email) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.ADMIN)
 			this.objectCrud.deleteAll();
 		else
@@ -327,18 +331,23 @@ public class ObjectServiceDb implements ObjectQueries {
 		String id = objectId.getInternalObjectId();
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
 				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
+		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
+				.orElseThrow(() -> new UserNotFoundException(
+						"Could not find User with superapp = " + userSuperapp + " and email = " + email));
+		if (userEntity.getRole() != UserRole.SUPERAPP_USER) {
+			throw new ForbiddenException("This user has no permission binding these objects");
+		} else {
+			ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
+					.orElseThrow(() -> new ObjectNotFoundException("Could not find child Object by id: " + id));
+			if (origin.getId().equals(children.getId()))
+				throw new ObjectNotFoundException("The origin ID and children ID can not be same");
 
-		ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
-				.orElseThrow(() -> new ObjectNotFoundException("could not find child Object by id: " + id));
-		if (origin.getId().equals(children.getId()))
-			throw new ObjectNotFoundException("The origin ID and children ID can not be same");
+			origin.addChildren(children);
+			children.addParent(origin);
 
-		origin.addChildren(children);
-		children.addParent(origin);
-
-		this.objectCrud.save(origin);
-		this.objectCrud.save(children);
-
+			this.objectCrud.save(origin);
+			this.objectCrud.save(children);
+		}
 	}
 
 	@Override
@@ -399,7 +408,7 @@ public class ObjectServiceDb implements ObjectQueries {
 	public List<ObjectBoundary> getObjectsByType(String superapp, String email, String type, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			return this.objectCrud
 					.findAllByTypeAndActiveIsTrue(type, PageRequest.of(page, size, Direction.DESC, "type", "id"))
@@ -416,17 +425,14 @@ public class ObjectServiceDb implements ObjectQueries {
 	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email, String alias, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			return this.objectCrud
 					.findAllByAliasAndActiveIsTrue(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
-					.stream()
-					.map(this::toBoundary).toList();
+					.stream().map(this::toBoundary).toList();
 		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
 			return this.objectCrud.findAllByAlias(alias, PageRequest.of(page, size, Direction.DESC, "alias", "id"))
-					.stream()
-					.map(this::toBoundary)
-					.toList();
+					.stream().map(this::toBoundary).toList();
 		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}
@@ -437,38 +443,35 @@ public class ObjectServiceDb implements ObjectQueries {
 			double distance, String distanceUnits, int size, int page) {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
-						"could not find User with superapp = " + superapp + " and email = " + email));
-		Metrics distanceType;
+						"Could not find User with superapp = " + superapp + " and email = " + email));
 		switch (distanceUnits) {
 		case "NEUTRAL":
-			//distanceType = Metrics.NEUTRAL;
+			// distanceType = Metrics.NEUTRAL;
 			break;
 		case "KILOMETERS":
-			//distanceType = Metrics.KILOMETERS;
-			distance*= 1000;
+			// distanceType = Metrics.KILOMETERS;
+			distance *= 1000;
 			break;
 		case "MILES":
-			//distanceType = Metrics.MILES;
-			distance*=1609.344;
+			// distanceType = Metrics.MILES;
+			distance *= 1609.344;
 			break;
 		default:
-			//distanceType = Metrics.NEUTRAL;
-			
+			// distanceType = Metrics.NEUTRAL;
+
 			break;
 		}
 		System.err.println(distance);
 		System.err.println(userEntity.getRole());
-		//Distance radius = new Distance(distance, distanceType);
+		// Distance radius = new Distance(distance, distanceType);
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
 			System.err.println("HERE");
-        	return this.objectCrud.findByLocationNearAndActiveIsTrue(lat,lng,distance,
-					PageRequest.of(page, size, Direction.DESC, "id"))
-        			.stream()
-        			.map(this::toBoundary)
-        			.toList();
-		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud.findByLocationNear(lat,lng,distance,
+			return this.objectCrud.findByLocationNearAndActiveIsTrue(lat, lng, distance,
 					PageRequest.of(page, size, Direction.DESC, "id")).stream().map(this::toBoundary).toList();
+		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
+			return this.objectCrud
+					.findByLocationNear(lat, lng, distance, PageRequest.of(page, size, Direction.DESC, "id")).stream()
+					.map(this::toBoundary).toList();
 		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}
