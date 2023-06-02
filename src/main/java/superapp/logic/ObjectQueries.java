@@ -28,9 +28,12 @@ public interface ObjectQueries extends ObjectServiceWithBindingCapabilities {
 
 	public List<ObjectBoundary> getObjectsByAlias(String superapp, String email, String alias, int size, int page);
 
-	public List<ObjectBoundary> getObjectsByLocation(String superapp, String email, double lat, double lng, double distance,
-			String distanceUnits, int size, int page);
 
 	public List<ObjectBoundary> getAllParentsByPermission(String superApp, String childrenId, String userSuperapp,
 			String email, int size, int page);
+
+	public List<ObjectBoundary> getObjectsByLocation(String superapp, String email, double lat, double lng, double distance,
+			String distanceUnits, int size, int page);
+	
+
 }

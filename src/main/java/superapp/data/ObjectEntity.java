@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
@@ -24,7 +24,13 @@ public class ObjectEntity {
 	private boolean active;
 	private Date creationTimestamp;
 	private CreatedBy createdBy;
-	private GeoJsonPoint location;
+	@GeoSpatialIndexed
+	private Location location;
+public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	//	private GeoJsonPoint location;
 	private Map<String, Object> objectDetails;
 	
 	@DBRef
@@ -40,7 +46,7 @@ public class ObjectEntity {
 	}
 
 	public ObjectEntity(String id, String type, String alias, boolean active, Date creationTimestamp,
-			CreatedBy createdBy, GeoJsonPoint location, Map<String, Object> objectDetails,
+			CreatedBy createdBy, Location location, Map<String, Object> objectDetails,
 			List<ObjectEntity> childrenObjects) {
 		super();
 		this.id = id;
@@ -52,6 +58,10 @@ public class ObjectEntity {
 		this.location = location;
 		this.objectDetails = objectDetails;
 		this.childrenObjects = childrenObjects;
+	}
+
+	public Location getLocation() {
+		return location;
 	}
 
 	public String getId() {
@@ -130,14 +140,14 @@ public class ObjectEntity {
 		return parentObjects;
 	}
 
-	public GeoJsonPoint getLocation() {
-		return location;
-	}
-
-
-	public void setLocation(GeoJsonPoint location) {
-		this.location = location;
-	}
+//	public GeoJsonPoint getLocation() {
+//		return location;
+//	}
+//
+//
+//	public void setLocation(GeoJsonPoint location) {
+//		this.location = location;
+//	}
 
 	public void setParentObjects(List<ObjectEntity> parentObjects) {
 		this.parentObjects = parentObjects;

@@ -301,5 +301,6 @@ public class MiniAppCommandsDb implements MiniAppCommandsQueries {
 		else
 			throw new ForbiddenException("This user does not have permission to do this");
 	}
+	
 
 }

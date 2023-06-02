@@ -10,8 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Service;
 import superapp.logic.ObjectCrud;
 import superapp.logic.ObjectQueries;
@@ -57,7 +58,8 @@ public class ObjectServiceDb implements ObjectQueries {
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
 		// ob.setLocation(new
 		// Location().setLat(entity.getLat()).setLng(entity.getLng()));
-		ob.setLocation(new Location(entity.getLocation().getX(), entity.getLocation().getY()));
+//		ob.setLocation(new Location(entity.getLocation().getX(), entity.getLocation().getY()));
+		ob.setLocation(new Location(entity.getLocation().getLat(), entity.getLocation().getLng()));
 		ob.setCreatedBy(entity.getCreatedBy());
 		ob.setObjectDetails(entity.getObjectDetails());
 		return ob;
@@ -90,12 +92,13 @@ public class ObjectServiceDb implements ObjectQueries {
 //			entity.setLng(object.getLocation().getLng());
 
 			entity.setLocation(
-					new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+					//new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+					new Location(object.getLocation().getLat(), object.getLocation().getLng()));
 		} else {
 //			entity.setLat((double) 0);
 //			entity.setLng((double) 0);
-			entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
-
+//			entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
+			entity.setLocation(new Location(0,0));
 		}
 		if (object.getCreatedBy() != null) {
 			if (object.getCreatedBy().getUserId() != null) {
@@ -135,9 +138,12 @@ public class ObjectServiceDb implements ObjectQueries {
 			ObjectEntity entity = (ObjectEntity) toEntity(object);
 			if (object.getLocation() != null)
 				entity.setLocation(
-						new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+//						new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+						new Location(object.getLocation().getLat(), object.getLocation().getLng()));
+
 			else {
-				entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
+//				entity.setLocation(new GeoJsonPoint(new Point(0, 0)));
+				entity.setLocation(new Location(0,0));
 			}
 			entity.setCreationTimestamp(new Date());
 			entity = this.objectCrud.save(entity);
@@ -163,7 +169,9 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (ob.getLocation() != null) {
 //			existing.setLat(ob.getLocation().getLat());
 //			existing.setLng(ob.getLocation().getLng());
-			existing.setLocation(new GeoJsonPoint(new Point(ob.getLocation().getLat(), ob.getLocation().getLng())));
+			existing.setLocation//(new GeoJsonPoint(new Point(ob.getLocation().getLat(), ob.getLocation().getLng())));
+			(new Location(ob.getLocation().getLat(), ob.getLocation().getLng()));
+
 		}
 		if (ob.getObjectDetails() != null) {
 			existing.setObjectDetails(ob.getObjectDetails());
@@ -263,7 +271,9 @@ public class ObjectServiceDb implements ObjectQueries {
 			if (ob.getLocation() != null) {
 //				existing.setLat(ob.getLocation().getLat());
 //				existing.setLng(ob.getLocation().getLng());
-				existing.setLocation(new GeoJsonPoint(new Point(ob.getLocation().getLat(), ob.getLocation().getLng())));
+				existing.setLocation(//new GeoJsonPoint(new Point(ob.getLocation().getLat(), ob.getLocation().getLng())));
+						new Location(ob.getLocation().getLat(), ob.getLocation().getLng()));
+
 			}
 			if (ob.getObjectDetails() != null) {
 				existing.setObjectDetails(ob.getObjectDetails());
@@ -326,9 +336,9 @@ public class ObjectServiceDb implements ObjectQueries {
 	}
 
 	@Override
-	public void bindByPermission(String originId, ObjectId objectId,
+	public void bindByPermission(String originId, ObjectId childrenObjectId,
 			String userSuperapp, String email) {
-		String id = objectId.getInternalObjectId();
+		String childrenId = childrenObjectId.getInternalObjectId();
 		ObjectEntity origin = this.objectCrud.findById(superapp + delimeter + originId)
 				.orElseThrow(() -> new ObjectNotFoundException("could not find origin Object by id: " + originId));
 		UserEntity userEntity = this.userCrud.findById(userSuperapp + delimeter + email)
@@ -337,11 +347,14 @@ public class ObjectServiceDb implements ObjectQueries {
 		if (userEntity.getRole() != UserRole.SUPERAPP_USER) {
 			throw new ForbiddenException("This user has no permission binding these objects");
 		} else {
-			ObjectEntity children = this.objectCrud.findById(superapp + delimeter + id)
-					.orElseThrow(() -> new ObjectNotFoundException("Could not find child Object by id: " + id));
+			ObjectEntity children = this.objectCrud.findById(superapp + delimeter + childrenId)
+					.orElseThrow(() -> new ObjectNotFoundException("Could not find child Object by id: " + childrenId));
 			if (origin.getId().equals(children.getId()))
 				throw new ObjectNotFoundException("The origin ID and children ID can not be same");
-
+			for (ObjectEntity objectEntity : origin.getChildrenObjects()) {
+				if(objectEntity.getId().equals(children.getId()))
+					throw new ObjectNotFoundException("The childern already exist!");
+			}
 			origin.addChildren(children);
 			children.addParent(origin);
 
@@ -444,34 +457,41 @@ public class ObjectServiceDb implements ObjectQueries {
 		UserEntity userEntity = this.userCrud.findById(superapp + delimeter + email)
 				.orElseThrow(() -> new UserNotFoundException(
 						"Could not find User with superapp = " + superapp + " and email = " + email));
+		
+		Point point = new Point(lat,lng);
+		Metrics distanceType;
+		
 		switch (distanceUnits) {
 		case "NEUTRAL":
-			// distanceType = Metrics.NEUTRAL;
+			 distanceType = Metrics.NEUTRAL;
 			break;
 		case "KILOMETERS":
-			// distanceType = Metrics.KILOMETERS;
+			 distanceType = Metrics.KILOMETERS;
 			distance *= 1000;
 			break;
 		case "MILES":
-			// distanceType = Metrics.MILES;
+			 distanceType = Metrics.MILES;
 			distance *= 1609.344;
 			break;
 		default:
-			// distanceType = Metrics.NEUTRAL;
+			 distanceType = Metrics.NEUTRAL;
 
 			break;
 		}
-		System.err.println(distance);
-		System.err.println(userEntity.getRole());
-		// Distance radius = new Distance(distance, distanceType);
+		
+		Distance radiusDistance = new Distance(distance, distanceType);
 		if (userEntity.getRole() == UserRole.MINIAPP_USER) {
-			System.err.println("HERE");
-			return this.objectCrud.findByLocationNearAndActiveIsTrue(lat, lng, distance,
-					PageRequest.of(page, size, Direction.DESC, "id")).stream().map(this::toBoundary).toList();
+			return this.objectCrud.findByActiveIsTrueAndLocationNear(
+					point, 
+					radiusDistance, 
+					PageRequest.of(page, size, Direction.DESC, "id"))
+					.stream().map(this::toBoundary).toList();
 		} else if (userEntity.getRole() == UserRole.SUPERAPP_USER) {
-			return this.objectCrud
-					.findByLocationNear(lat, lng, distance, PageRequest.of(page, size, Direction.DESC, "id")).stream()
-					.map(this::toBoundary).toList();
+			return this.objectCrud.findByLocationNear(
+					point, 
+					radiusDistance, 
+					PageRequest.of(page, size, Direction.DESC, "id"))
+					.stream().map(this::toBoundary).toList();
 		} else {
 			throw new ForbiddenException("This user does not have permission to do this");
 		}

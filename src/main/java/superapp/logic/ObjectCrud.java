@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -33,8 +33,6 @@ public interface ObjectCrud
 
 	public List<ObjectEntity> findAllByAlias(String alias, Pageable pageable);
 
-	//public List<ObjectEntity> findByLocationNearAndActiveIsTrue(Point center, Distance radius, Pageable pageable);
-
 	public List<ObjectEntity> findAllByParentObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
 	public List<ObjectEntity> findAllByParentObjectsIsContaining(ObjectEntity origin, Pageable pageable);
@@ -43,9 +41,8 @@ public interface ObjectCrud
 	
 	public List<ObjectEntity> findAllByChildrenObjectsIsContainingAndActiveIsTrue(ObjectEntity parent, Pageable pageable);
 
-	@Query("{ 'location': { $nearSphere: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
-	public List<ObjectEntity> findByLocationNear(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")double maxDistance, Pageable pageable);
-
-	@Query("{ 'active': true, 'location': { $nearSphere: { $geometry: { type: 'Point', coordinates: [?0, ?1] }, $maxDistance: ?2 } } }")
-	public List<ObjectEntity> findByLocationNearAndActiveIsTrue(@Param("lat")double lat, @Param("lng")double lng,@Param("maxDistance")double maxDistance, PageRequest of);
+	public List<ObjectEntity> findByLocationNear(@Param("location") Point location,@Param("maxDistance") Distance maxDistance,Pageable pageable);
+	
+	public List<ObjectEntity> findByActiveIsTrueAndLocationNear(@Param("location") Point location,@Param("maxDistance") Distance maxDistance,Pageable pageable);
+	
 }

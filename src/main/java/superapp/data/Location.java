@@ -2,14 +2,14 @@ package superapp.data;
 
 public class Location {
 
-	private Double lat;
-	private Double lng;
+	private double lat;
+	private double lng;
 
 	public Location() {
 		super();
 	}
 
-	public Location(Double lat, Double lng) {
+	public Location(double lat, double lng) {
 		this.lat = lat;
 		this.lng = lng;
 	}
@@ -18,7 +18,7 @@ public class Location {
 		return lat;
 	}
 
-	public Location setLat(Double lat) {
+	public Location setLat(double lat) {
 		this.lat = lat;
 		return this;
 	}
@@ -27,7 +27,7 @@ public class Location {
 		return lng;
 	}
 
-	public Location setLng(Double lng) {
+	public Location setLng(double lng) {
 		this.lng = lng;
 		return this;
 	}
