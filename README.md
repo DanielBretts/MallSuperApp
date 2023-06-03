@@ -58,6 +58,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   GET /superapp/objects/{superApp}/{internalObjectId}
 ```
+
 | Variable | Type     | Description                       |
 | :-------- | :------- | :------------------------------- |
 | `superapp` | `string` | Your superapp name              |
@@ -68,6 +69,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
   GET /superapp/objects
 ```
   * By their type
+
   | Variable | Type |Description           |
   | :-------- | :------- | :-------------- |
   | `type` | `string` | The requested type |
@@ -80,6 +82,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
   ```http
   GET /superapp/objects/search/byType/{type}
   ```
+
   | Variable | Type     | Description      |
   | :-------- | :------- | :-------------- |
   | `type` | `string` | The requested type |
@@ -93,6 +96,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
   ```http
   GET /superapp/objects/search/byAlias/{alias}
   ```
+
   | Variable | Type     | Description        |
   | :-------- | :------- | :---------------- |
   | `alias` | `string` | The requested alias |
@@ -106,6 +110,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
   ```http
   POST /superapp/objects/search/byLocation/{lat}/{lng}/{distance}
   ```
+  
   | Variable | Type     | Description                     |
   | :-------- | :------- | :----------------------------- |
   | `lat` | `string` | The current latitude               |
@@ -133,6 +138,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   GET /superapp/objects/{superApp}/{InternalObjectId}/children
 ```
+
 | Variable | Type     | Description                   |
 | :-------- | :------- | :--------------------------- |
 | `superapp` | `string` | Your superapp name          |
@@ -148,6 +154,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   GET /superapp/objects/{superApp}/{InternalObjectId}/parents
 ```
+
 | Variable | Type     | Description                     |
 | :-------- | :------- | :----------------------------- |
 | `superapp` | `string` | Your superapp name            |
@@ -164,6 +171,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   POST /superapp/miniapp/{miniAppName}
 ```
+
   | Variable | Type |Description                              |
   | :-------- | :------- | :--------------------------------  |
   | `miniAppName` | `string` | The miniapp in which to invoke |
@@ -176,6 +184,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   DELETE /superapp/admin/users
 ```
+
   | Parameter | Type |Description                               |
   | :-------- | :------- | :--------------------------------    |
   |`userSuperapp`| `string`| The superapp                       |
@@ -185,6 +194,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   DELETE /superapp/admin/objects
 ```
+
   | Parameter | Type |Description                               |
   | :-------- | :------- | :----------------------------------- |
   |`userSuperapp`| `string`| The superapp                       |
@@ -194,6 +204,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   DELETE /superapp/admin/miniapp
 ```
+
   | Parameter | Type |Description                               |
   | :-------- | :------- | :----------------------------------- |
   |`userSuperapp`| `string`| The superapp                       |
@@ -203,6 +214,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   GET /superapp/admin/users
 ```
+
   | Parameter | Type |Description                            |
   | :-------- | :------- | :-------------------------------- |
   |`userSuperapp`| `string`| The superapp                    |
@@ -214,6 +226,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   GET /superapp/admin/miniapp
 ```
+
   | Parameter | Type |Description |
   | :-------- | :------- | :-------------------------------- |
   |`userSuperapp`| `string`| The superapp                    |
@@ -225,6 +238,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   GET /superapp/admin/miniapp/{miniAppName}
 ```
+
   | Variable | Type |Description |
   | :-------- | :------- | :-------------------------------- |
   |`miniAppName`|`string`| The specific miniapp              |
