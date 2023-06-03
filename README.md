@@ -128,6 +128,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   PUT /superapp/objects/{superApp}/{InternalObjectId}/children
 ```
+
     Requiers a JSON body
   | Variable | Type     | Description                   |
   | :-------- | :------- | :--------------------------- |
