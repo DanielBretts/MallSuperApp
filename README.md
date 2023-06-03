@@ -68,7 +68,6 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 ```http
   GET /superapp/objects
 ```
-  * By their type
 
   | Variable | Type |Description           |
   | :-------- | :------- | :-------------- |
@@ -79,6 +78,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
   |`size`| `int`|                          |
   |`page`| `int`|                          |
   
+  * By their type
   ```http
   GET /superapp/objects/search/byType/{type}
   ```
