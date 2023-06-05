@@ -26,18 +26,20 @@ public class ObjectEntity {
 	private CreatedBy createdBy;
 	@GeoSpatialIndexed
 	private Location location;
-public void setLocation(Location location) {
-		this.location = location;
-	}
-
-	//	private GeoJsonPoint location;
 	private Map<String, Object> objectDetails;
 	
-	@DBRef
+	@DBRef(lazy = true)
 	private List<ObjectEntity> childrenObjects;
 	
-	@DBRef
+	@DBRef(lazy = true)
 	private List<ObjectEntity> parentObjects;
+
+//		@GeoSpatialIndexed
+//		private GeoJsonPoint location;
+	
+//	public void setLocation(GeoJsonPoint location) {
+//		this.location = location;
+//	}
 
 	public ObjectEntity() {
 		this.objectDetails = new HashMap<>();
@@ -60,12 +62,17 @@ public void setLocation(Location location) {
 		this.childrenObjects = childrenObjects;
 	}
 
-	public Location getLocation() {
-		return location;
-	}
-
 	public String getId() {
 		return id;
+	}
+
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	
+	public Location getLocation() {
+		return location;
 	}
 
 	public void setId(String id) {
@@ -155,5 +162,13 @@ public void setLocation(Location location) {
 	
 	public void addParent(ObjectEntity parent) {
 		this.parentObjects.add(parent);
+	}
+	
+	@Override
+	public String toString() {
+		return "ObjectEntity [id=" + id + ", type=" + type + ", alias=" + alias + ", active=" + active
+				+ ", creationTimestamp=" + creationTimestamp + ", createdBy=" + createdBy + ", location=" + location
+				+ ", objectDetails=" + objectDetails + ", childrenObjects=" + childrenObjects + ", parentObjects="
+				+ parentObjects + "]";
 	}
 }

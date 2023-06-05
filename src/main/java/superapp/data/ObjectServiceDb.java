@@ -56,8 +56,8 @@ public class ObjectServiceDb implements ObjectQueries {
 		ob.setAlias(entity.getAlias());
 		ob.setActive(entity.getActive());
 		ob.setCreationTimestamp(entity.getCreationTimestamp());
-		// ob.setLocation(new
-		// Location().setLat(entity.getLat()).setLng(entity.getLng()));
+//		 ob.setLocation(new
+//		 Location().setLat(entity.getLat()).setLng(entity.getLng()));
 //		ob.setLocation(new Location(entity.getLocation().getX(), entity.getLocation().getY()));
 		ob.setLocation(new Location(entity.getLocation().getLat(), entity.getLocation().getLng()));
 		ob.setCreatedBy(entity.getCreatedBy());
@@ -92,7 +92,7 @@ public class ObjectServiceDb implements ObjectQueries {
 //			entity.setLng(object.getLocation().getLng());
 
 			entity.setLocation(
-					//new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
+//					new GeoJsonPoint(new Point(object.getLocation().getLat(), object.getLocation().getLng())));
 					new Location(object.getLocation().getLat(), object.getLocation().getLng()));
 		} else {
 //			entity.setLat((double) 0);
