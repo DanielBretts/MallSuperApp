@@ -256,6 +256,18 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
 
 **Server:** Spring using Tomcat and Artemis, MongoDB, Docker.
 
+### RUN SERVER WITH DOCKER
+
+#### Prerequisites:
+    Docker: [Installation instructions](https://docs.docker.com/get-docker/)
+    Windows Subsystem for Linux 2 (WSL 2): [Installation instructions](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+### RUN DOCKER COMPOSE
+```http
+  docker-compose up --build 
+```
+build flag will build the images of the server and the mongo
+
 ## Installation
 To install the superapp, follow these steps:
 
