@@ -262,7 +262,7 @@ This API serves as the backend for the SuperApp, a powerful and versatile applic
     Docker: [Installation instructions](https://docs.docker.com/get-docker/)
     Windows Subsystem for Linux 2 (WSL 2): [Installation instructions](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 
-### RUN DOCKER COMPOSE
+#### Run Docker Compose
 Inside \gradle\wrapper - add gradle-wrapper.jar
 
 If you don't have the gradle-wrapper.jar file in your project, you can follow the steps below to generate it:
@@ -271,7 +271,13 @@ If you don't have the gradle-wrapper.jar file in your project, you can follow th
     2. Navigate to your project directory.
     3. Run the following Gradle wrapper command to generate the gradle-wrapper.jar file: gradlew wrapper
 
-Then to create the jar file run this command:
+In application.properties file, remove the comment for this line:
+
+```shell
+  spring.data.mongodb.uri=mongodb://mongoDb:27017/2023bshirzurdb
+```
+
+Then to create the server jar file run this command:
 
 ```shell
   gradlew build -x test
